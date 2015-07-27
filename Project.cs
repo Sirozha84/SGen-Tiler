@@ -11,6 +11,10 @@ namespace SGen_Tiler
         const string ErrorFileIntegrity = "Ошибка целостности файла, либо файл не поддерживается.";
         static Random RND = new Random();
         /// <summary>
+        /// Редактируемый файл
+        /// </summary>
+        public static string FileName = "";
+        /// <summary>
         /// Максимальное количество слоёв
         /// </summary>
         public const int MaxLayers = 8;
@@ -22,10 +26,6 @@ namespace SGen_Tiler
         /// Максимальная высота карты
         /// </summary>
         public const int MaxHeight = 5000;
-        /// <summary>
-        /// Редактируемый файл
-        /// </summary>
-        public static string FileName = "";
         /// <summary>
         /// Прикреплять ли текстуру к карте
         /// </summary>
@@ -116,6 +116,7 @@ namespace SGen_Tiler
             AutoRulesClear();
             RandomClear();
             StampesClear();
+            Saved = true;
         }
 
         /// <summary>

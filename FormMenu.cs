@@ -12,7 +12,7 @@ namespace SGen_Tiler
     public partial class FormMenu : Form
     {
         const string FilterPNG = "Изображение(*.png)|*.png|Все файлы|*.*";
-
+        const string FilterMAP = "Карты(*.map)|*.map|Все файлы|*.*";
         /// <summary>
         /// Пользователь ли меняет данные на форме или программа?
         /// Нужно для того что бы пересчёт делался только если именно пользователь меняет данные, а не программа
@@ -74,31 +74,97 @@ namespace SGen_Tiler
             //Рандом
             checkBox_random.Checked = RandomTile.Enable;
             RefreshRandomList();
-
+            //Имя файла
+            RefreshName();
             UserChange = true;
         }
 
-        // Выбор файла карты, загрузка или создание новой
-        private void button1_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Оновлени заголовка окна
+        /// </summary>
+        void RefreshName()
         {
-            if (!Project.Saved && MessageBox.Show("Сохранить карту перед открытием новой?", Program.Name, MessageBoxButtons.YesNo) ==
-                DialogResult.Yes)
-                Project.Save();
-            OpenFileDialog save = new OpenFileDialog();
-            save.Filter = "Карты (*.map)|*.map|Все файлы|*.*";
-            save.Title = "Выберите файл карты, или введите имя для новой";
-            save.FileName = Project.FileName;
-            save.CheckFileExists = false;
-            if (save.ShowDialog() == DialogResult.Cancel) return;
-            Project.FileName = save.FileName;
-            button1.Text = Project.FileName;
-            if (System.IO.File.Exists(Project.FileName)) Project.Load();
-            else Project.NewMap();
+            string star = "";
+            string name = "Новый";
+            if (!Project.Saved) star = "*";
+            if (Project.FileName != "") name = System.IO.Path.GetFileNameWithoutExtension(Project.FileName);
+            Text = name + star + " - " + Program.Name;
+        }
+
+        #region Работа с файлом
+
+        /// <summary>
+        /// Кнопка Новый
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_new_Click(object sender, EventArgs e)
+        {
+            DialogResult rslt = DialogResult.No;
+            if (!Project.Saved) rslt = MessageBox.Show("Сохранить карту перед созданием новой?", Program.Name, MessageBoxButtons.YesNoCancel);
+            if (rslt == DialogResult.Cancel) return;
+            if (rslt == DialogResult.Yes && !Save(false)) return;
+            Project.NewMap();
+            Project.FileName = "";
             FormRefresh();
         }
 
+        /// <summary>
+        /// Кнопка открыть
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_open_Click(object sender, EventArgs e)
+        {
+            DialogResult rslt = DialogResult.No;
+            if (!Project.Saved) rslt = MessageBox.Show("Сохранить карту перед открытием другой?", Program.Name, MessageBoxButtons.YesNoCancel);
+            if (rslt == DialogResult.Cancel) return;
+            if (rslt == DialogResult.Yes && !Save(false)) return;
+            //Диалог открытия
+            OpenFileDialog open = new OpenFileDialog();
+            open.Filter = FilterMAP;
+            if (open.ShowDialog() == DialogResult.Cancel) return;
+            Project.FileName = open.FileName;
+            Project.Load();
+            FormRefresh();
+        }
+
+        /// <summary>
+        /// Кнопка сохранить
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_save_Click(object sender, EventArgs e) { Save(false); }
+
+        /// <summary>
+        /// Кнопка Сохранить как
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_saveas_Click(object sender, EventArgs e) { Save(true); }
+
+        /// <summary>
+        /// Сохранить как
+        /// </summary>
+        /// <returns></returns>
+        bool Save(bool AS)
+        {
+            if (Project.FileName == "" | AS)
+            {
+                //Диалог сохранения
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = FilterMAP;
+                if (save.ShowDialog() == DialogResult.Cancel) return false;
+                Project.FileName = save.FileName;
+            }
+            Project.Save();
+            FormRefresh();
+            return true;
+        }
+        #endregion
+
         #region Основные параметры
-        
+
         //Выбор файлов текстур и галочки
         private void button_tiletexture_Click(object sender, EventArgs e)
         {
@@ -124,13 +190,13 @@ namespace SGen_Tiler
         private void checkBox_savetexture_CheckedChanged(object sender, EventArgs e)
         {
             Project.AttachTexture = checkBox_savetexture.Checked;
-            if (UserChange) Project.Change();
+            Change();
         }
 
         private void checkBox_savekarkas_CheckedChanged(object sender, EventArgs e)
         {
             Project.AttachCarcase = checkBox_savekarkas.Checked;
-            if (UserChange) Project.Change();
+            Change();
         }
         //Настройки размеров
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -138,7 +204,7 @@ namespace SGen_Tiler
             Project.TileSize = (int)numericUpDown_tilesize.Value;
             label10.Text = Program.game.SpritesCount().ToString();
             CalculateVisibleTiles();
-            if (UserChange) Project.Change();
+            Change();
         }
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
@@ -146,7 +212,7 @@ namespace SGen_Tiler
             Project.ScreenWidth = (int)numericUpDown_resx.Value;
             CalculateVisibleTiles();
             Program.game.ChangeWindowSize();
-            if (UserChange) Project.Change();
+            Change();
         }
 
         private void numericUpDown3_ValueChanged(object sender, EventArgs e)
@@ -154,19 +220,19 @@ namespace SGen_Tiler
             Project.ScreenHeight = (int)numericUpDown_rexy.Value;
             CalculateVisibleTiles();
             Program.game.ChangeWindowSize();
-            if (UserChange) Project.Change();
+            Change();
         }
 
         private void numericUpDown4_ValueChanged(object sender, EventArgs e)
         {
             Project.Width = (int)numericUpDown_width.Value;
-            if (UserChange) Project.Change();
+            Change();
         }
 
         private void numericUpDown5_ValueChanged(object sender, EventArgs e)
         {
             Project.Height = (int)numericUpDown_height.Value;
-            if (UserChange) Project.Change();
+            Change();
         }
 
 
@@ -175,22 +241,22 @@ namespace SGen_Tiler
             Project.Save();
         }
 
-        private void numericUpDown8_ValueChanged(object sender, EventArgs e) { Project.Px[1].X = (float)numericUpDown_shiftx1.Value; }
-        private void numericUpDown9_ValueChanged(object sender, EventArgs e) { Project.Px[1].Y = (float)numericUpDown_shifty1.Value; }
-        private void numericUpDown10_ValueChanged(object sender, EventArgs e) { Project.Px[2].X = (float)numericUpDown_shiftx2.Value; }
-        private void numericUpDown11_ValueChanged(object sender, EventArgs e) { Project.Px[2].Y = (float)numericUpDown_shifty2.Value; }
-        private void numericUpDown12_ValueChanged(object sender, EventArgs e) { Project.Px[3].X = (float)numericUpDown_shiftx3.Value; }
-        private void numericUpDown13_ValueChanged(object sender, EventArgs e) { Project.Px[3].Y = (float)numericUpDown_shifty3.Value; }
-        private void numericUpDown14_ValueChanged(object sender, EventArgs e) { Project.Px[4].X = (float)numericUpDown_shiftx4.Value; }
-        private void numericUpDown15_ValueChanged(object sender, EventArgs e) { Project.Px[4].Y = (float)numericUpDown_shifty4.Value; }
-        private void numericUpDown16_ValueChanged(object sender, EventArgs e) { Project.Px[5].X = (float)numericUpDown_shiftx5.Value; }
-        private void numericUpDown17_ValueChanged(object sender, EventArgs e) { Project.Px[5].Y = (float)numericUpDown_shifty5.Value; }
-        private void numericUpDown18_ValueChanged(object sender, EventArgs e) { Project.Px[6].X = (float)numericUpDown_shiftx6.Value; }
-        private void numericUpDown19_ValueChanged(object sender, EventArgs e) { Project.Px[6].Y = (float)numericUpDown_shifty6.Value; }
-        private void numericUpDown20_ValueChanged(object sender, EventArgs e) { Project.Px[7].X = (float)numericUpDown_shiftx7.Value; }
-        private void numericUpDown21_ValueChanged(object sender, EventArgs e) { Project.Px[7].Y = (float)numericUpDown_shifty7.Value; }
-        private void numericUpDown22_ValueChanged(object sender, EventArgs e) { Project.Px[8].X = (float)numericUpDown_shiftx8.Value; }
-        private void numericUpDown23_ValueChanged(object sender, EventArgs e) { Project.Px[8].Y = (float)numericUpDown_shifty8.Value; }
+        private void numericUpDown8_ValueChanged(object sender, EventArgs e) { Project.Px[1].X = (float)numericUpDown_shiftx1.Value; Change(); }
+        private void numericUpDown9_ValueChanged(object sender, EventArgs e) { Project.Px[1].Y = (float)numericUpDown_shifty1.Value; Change(); }
+        private void numericUpDown10_ValueChanged(object sender, EventArgs e) { Project.Px[2].X = (float)numericUpDown_shiftx2.Value; Change(); }
+        private void numericUpDown11_ValueChanged(object sender, EventArgs e) { Project.Px[2].Y = (float)numericUpDown_shifty2.Value; Change(); }
+        private void numericUpDown12_ValueChanged(object sender, EventArgs e) { Project.Px[3].X = (float)numericUpDown_shiftx3.Value; Change(); }
+        private void numericUpDown13_ValueChanged(object sender, EventArgs e) { Project.Px[3].Y = (float)numericUpDown_shifty3.Value; Change(); }
+        private void numericUpDown14_ValueChanged(object sender, EventArgs e) { Project.Px[4].X = (float)numericUpDown_shiftx4.Value; Change(); }
+        private void numericUpDown15_ValueChanged(object sender, EventArgs e) { Project.Px[4].Y = (float)numericUpDown_shifty4.Value; Change(); }
+        private void numericUpDown16_ValueChanged(object sender, EventArgs e) { Project.Px[5].X = (float)numericUpDown_shiftx5.Value; Change(); }
+        private void numericUpDown17_ValueChanged(object sender, EventArgs e) { Project.Px[5].Y = (float)numericUpDown_shifty5.Value; Change(); }
+        private void numericUpDown18_ValueChanged(object sender, EventArgs e) { Project.Px[6].X = (float)numericUpDown_shiftx6.Value; Change(); }
+        private void numericUpDown19_ValueChanged(object sender, EventArgs e) { Project.Px[6].Y = (float)numericUpDown_shifty6.Value; Change(); }
+        private void numericUpDown20_ValueChanged(object sender, EventArgs e) { Project.Px[7].X = (float)numericUpDown_shiftx7.Value; Change(); }
+        private void numericUpDown21_ValueChanged(object sender, EventArgs e) { Project.Px[7].Y = (float)numericUpDown_shifty7.Value; Change(); }
+        private void numericUpDown22_ValueChanged(object sender, EventArgs e) { Project.Px[8].X = (float)numericUpDown_shiftx8.Value; Change(); }
+        private void numericUpDown23_ValueChanged(object sender, EventArgs e) { Project.Px[8].Y = (float)numericUpDown_shifty8.Value; Change(); }
 
         private void numericUpDown6_ValueChanged(object sender, EventArgs e)
         {
@@ -205,6 +271,7 @@ namespace SGen_Tiler
             Project.Layers = n;
             if (Editor.Layer >= n) Editor.Layer = n;
             numericUpDown_avtoMain.Maximum = numericUpDown_layers.Value;
+            Change();
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -224,16 +291,22 @@ namespace SGen_Tiler
         #endregion
 
         #region Автозаполнение
+        private void numericUpDown_avtoMain_ValueChanged(object sender, EventArgs e)
+        {
+            AutoRule.Layer = (int)numericUpDown_avtoMain.Value;
+            Change();
+        }
+
         private void button_avtoAdd_Click(object sender, EventArgs e)
         {
             AutoRule rule = new AutoRule((ushort)numericUpDown_avtoCode.Value,
                 (ushort)numericUpDown_avtoFrom.Value, (ushort)numericUpDown_avtoTo.Value);
             Project.AutoRules.Add(rule);
             RefreshRulesList();
-            Project.Change();
+            Change();
         }
 
-        private void checkBox_avtoEnable_CheckedChanged(object sender, EventArgs e) { AutoRule.Enable = checkBox_avtoEnable.Checked; }
+        private void checkBox_avtoEnable_CheckedChanged(object sender, EventArgs e) { AutoRule.Enable = checkBox_avtoEnable.Checked; Change(); }
 
         void RefreshRulesList()
         {
@@ -249,7 +322,7 @@ namespace SGen_Tiler
             {
                 Project.AutoRules.RemoveAt(listBox_avto.SelectedIndex);
                 listBox_avto.Items.RemoveAt(listBox_avto.SelectedIndex);
-                Project.Change();
+                Change();
             }
         }
 
@@ -259,7 +332,7 @@ namespace SGen_Tiler
             {
                 Project.AutoRulesClear();
                 RefreshRulesList();
-                Project.Change();
+                Change();
             }
         }
         #endregion
@@ -268,6 +341,7 @@ namespace SGen_Tiler
         private void checkBox_animation_CheckedChanged(object sender, EventArgs e)
         {
             Animation.Enable = checkBox_animation.Checked;
+            Change();
         }
 
         private void button_animationadd_Click(object sender, EventArgs e)
@@ -281,7 +355,7 @@ namespace SGen_Tiler
             Project.Animations.Add(new Animation((ushort)numericUpDown_animation_code.Value, (byte)numericUpDown_animation_frames.Value,
                 (byte)numericUpDown_animation_time.Value, (Animation.Types)comboBox_animation_type.SelectedIndex));
             RefreshAnimationList();
-            Project.Change();
+            Change();
         }
 
         /// <summary>
@@ -300,7 +374,7 @@ namespace SGen_Tiler
             {
                 Project.Animations.RemoveAt(listBox_animation.SelectedIndex);
                 RefreshAnimationList();
-                Project.Change();
+                Change();
             }
         }
 
@@ -310,7 +384,7 @@ namespace SGen_Tiler
             {
                 Project.Animations.Clear();
                 listBox_animation.Items.Clear();
-                Project.Change();
+                Change();
             }
         }
         #endregion
@@ -321,7 +395,7 @@ namespace SGen_Tiler
             Project.Randoms.Add(new RandomTile((ushort)numericUpDown_rnd_code.Value, (ushort)numericUpDown_rnd_rdntile.Value, 
                 (byte)numericUpDown_rnd_persent.Value));
             RefreshRandomList();
-            Project.Change();
+            Change();
         }
 
         /// <summary>
@@ -337,7 +411,7 @@ namespace SGen_Tiler
         private void checkBox_random_CheckedChanged(object sender, EventArgs e)
         {
             RandomTile.Enable = checkBox_random.Checked;
-            if (UserChange) Project.Change();
+            Change();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -346,7 +420,7 @@ namespace SGen_Tiler
             {
                 Project.Randoms.RemoveAt(listBox_random.SelectedIndex);
                 RefreshRandomList();
-                Project.Change();
+                Change();
             }
         }
 
@@ -356,9 +430,21 @@ namespace SGen_Tiler
             {
                 Project.Randoms.Clear();
                 listBox_random.Items.Clear();
-                Project.Change();
+                Change();
             }
         }
         #endregion
+
+        /// <summary>
+        /// Регистрация изменений
+        /// </summary>
+        void Change()
+        {
+            if (UserChange)
+            {
+                Project.Change();
+                RefreshName();
+            }
+        }
     }
 }

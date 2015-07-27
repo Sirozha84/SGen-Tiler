@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBox_savetexture = new System.Windows.Forms.CheckBox();
             this.label_texture = new System.Windows.Forms.Label();
@@ -141,6 +139,10 @@
             this.checkBox_random = new System.Windows.Forms.CheckBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button_new = new System.Windows.Forms.Button();
+            this.button_open = new System.Windows.Forms.Button();
+            this.button_save = new System.Windows.Forms.Button();
+            this.button_saveas = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -190,34 +192,16 @@
             this.tabPage6.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(381, 12);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(77, 34);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Сохранить";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(12, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(341, 34);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Нажмине чтобы открыть или создать новую";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.checkBox_savetexture);
             this.groupBox2.Controls.Add(this.label_texture);
             this.groupBox2.Controls.Add(this.button_tiletexture);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(506, 77);
+            this.groupBox2.Size = new System.Drawing.Size(507, 77);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Текстура для тайлов";
@@ -254,12 +238,14 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.checkBox_savekarkas);
             this.groupBox3.Controls.Add(this.label_karkas);
             this.groupBox3.Controls.Add(this.button_carcasetexture);
             this.groupBox3.Location = new System.Drawing.Point(6, 89);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(506, 77);
+            this.groupBox3.Size = new System.Drawing.Size(507, 77);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Текстура для каркаса";
@@ -296,6 +282,8 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.label10);
             this.groupBox4.Controls.Add(this.label11);
             this.groupBox4.Controls.Add(this.label_visibletiles);
@@ -308,7 +296,7 @@
             this.groupBox4.Controls.Add(this.label1);
             this.groupBox4.Location = new System.Drawing.Point(6, 172);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(506, 92);
+            this.groupBox4.Size = new System.Drawing.Size(507, 92);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Тайлы";
@@ -462,6 +450,8 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox5.Controls.Add(this.numericUpDown_layers);
             this.groupBox5.Controls.Add(this.numericUpDown_height);
             this.groupBox5.Controls.Add(this.label30);
@@ -470,7 +460,7 @@
             this.groupBox5.Controls.Add(this.label8);
             this.groupBox5.Location = new System.Drawing.Point(6, 270);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(506, 48);
+            this.groupBox5.Size = new System.Drawing.Size(507, 48);
             this.groupBox5.TabIndex = 4;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Размеры карты";
@@ -1091,8 +1081,9 @@
             // 
             // button_Close
             // 
+            this.button_Close.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_Close.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button_Close.Location = new System.Drawing.Point(408, 625);
+            this.button_Close.Location = new System.Drawing.Point(409, 554);
             this.button_Close.Name = "button_Close";
             this.button_Close.Size = new System.Drawing.Size(130, 25);
             this.button_Close.TabIndex = 4;
@@ -1101,8 +1092,9 @@
             // 
             // linkLabel1
             // 
+            this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(12, 640);
+            this.linkLabel1.Location = new System.Drawing.Point(13, 560);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(75, 13);
             this.linkLabel1.TabIndex = 3;
@@ -1112,16 +1104,19 @@
             // 
             // tabControl1
             // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage6);
-            this.tabControl1.Location = new System.Drawing.Point(12, 77);
+            this.tabControl1.Location = new System.Drawing.Point(12, 59);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(526, 542);
+            this.tabControl1.Size = new System.Drawing.Size(527, 489);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -1133,7 +1128,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(518, 516);
+            this.tabPage1.Size = new System.Drawing.Size(519, 463);
             this.tabPage1.TabIndex = 1;
             this.tabPage1.Text = "Основные параметры";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1144,13 +1139,15 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(518, 516);
+            this.tabPage2.Size = new System.Drawing.Size(519, 463);
             this.tabPage2.TabIndex = 0;
             this.tabPage2.Text = "Параллакс";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // groupBox6
             // 
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox6.Controls.Add(this.label13);
             this.groupBox6.Controls.Add(this.label22);
             this.groupBox6.Controls.Add(this.numericUpDown_shifty1);
@@ -1185,7 +1182,7 @@
             this.groupBox6.Controls.Add(this.label28);
             this.groupBox6.Location = new System.Drawing.Point(6, 6);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(506, 238);
+            this.groupBox6.Size = new System.Drawing.Size(507, 238);
             this.groupBox6.TabIndex = 62;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Коэффициенты смещения слоёв";
@@ -1198,13 +1195,16 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(518, 516);
+            this.tabPage3.Size = new System.Drawing.Size(519, 463);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Автозаполнение";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.button_avtoClear);
             this.groupBox1.Controls.Add(this.button_avtoDel);
             this.groupBox1.Controls.Add(this.button_avtoAdd);
@@ -1218,14 +1218,15 @@
             this.groupBox1.Controls.Add(this.label29);
             this.groupBox1.Location = new System.Drawing.Point(6, 29);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(506, 481);
+            this.groupBox1.Size = new System.Drawing.Size(507, 469);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Правила автозаполнения";
             // 
             // button_avtoClear
             // 
-            this.button_avtoClear.Location = new System.Drawing.Point(425, 131);
+            this.button_avtoClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_avtoClear.Location = new System.Drawing.Point(426, 131);
             this.button_avtoClear.Name = "button_avtoClear";
             this.button_avtoClear.Size = new System.Drawing.Size(75, 23);
             this.button_avtoClear.TabIndex = 11;
@@ -1235,7 +1236,8 @@
             // 
             // button_avtoDel
             // 
-            this.button_avtoDel.Location = new System.Drawing.Point(425, 102);
+            this.button_avtoDel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_avtoDel.Location = new System.Drawing.Point(426, 102);
             this.button_avtoDel.Name = "button_avtoDel";
             this.button_avtoDel.Size = new System.Drawing.Size(75, 23);
             this.button_avtoDel.TabIndex = 10;
@@ -1245,7 +1247,8 @@
             // 
             // button_avtoAdd
             // 
-            this.button_avtoAdd.Location = new System.Drawing.Point(425, 73);
+            this.button_avtoAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_avtoAdd.Location = new System.Drawing.Point(426, 73);
             this.button_avtoAdd.Name = "button_avtoAdd";
             this.button_avtoAdd.Size = new System.Drawing.Size(75, 23);
             this.button_avtoAdd.TabIndex = 9;
@@ -1255,10 +1258,13 @@
             // 
             // listBox_avto
             // 
+            this.listBox_avto.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox_avto.FormattingEnabled = true;
             this.listBox_avto.Location = new System.Drawing.Point(9, 73);
             this.listBox_avto.Name = "listBox_avto";
-            this.listBox_avto.Size = new System.Drawing.Size(410, 394);
+            this.listBox_avto.Size = new System.Drawing.Size(411, 381);
             this.listBox_avto.TabIndex = 8;
             // 
             // label12
@@ -1374,6 +1380,7 @@
             this.numericUpDown_avtoMain.Name = "numericUpDown_avtoMain";
             this.numericUpDown_avtoMain.Size = new System.Drawing.Size(40, 20);
             this.numericUpDown_avtoMain.TabIndex = 8;
+            this.numericUpDown_avtoMain.ValueChanged += new System.EventHandler(this.numericUpDown_avtoMain_ValueChanged);
             // 
             // checkBox_avtoEnable
             // 
@@ -1393,13 +1400,16 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(518, 516);
+            this.tabPage4.Size = new System.Drawing.Size(519, 463);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Анимация";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // groupBox7
             // 
+            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox7.Controls.Add(this.comboBox_animation_type);
             this.groupBox7.Controls.Add(this.label36);
             this.groupBox7.Controls.Add(this.numericUpDown_animation_time);
@@ -1415,7 +1425,7 @@
             this.groupBox7.Controls.Add(this.label37);
             this.groupBox7.Location = new System.Drawing.Point(6, 29);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(506, 481);
+            this.groupBox7.Size = new System.Drawing.Size(507, 469);
             this.groupBox7.TabIndex = 11;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Правила анимации";
@@ -1467,7 +1477,8 @@
             // 
             // button_animation_clear
             // 
-            this.button_animation_clear.Location = new System.Drawing.Point(425, 131);
+            this.button_animation_clear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_animation_clear.Location = new System.Drawing.Point(426, 131);
             this.button_animation_clear.Name = "button_animation_clear";
             this.button_animation_clear.Size = new System.Drawing.Size(75, 23);
             this.button_animation_clear.TabIndex = 11;
@@ -1486,7 +1497,8 @@
             // 
             // button_animation_del
             // 
-            this.button_animation_del.Location = new System.Drawing.Point(425, 102);
+            this.button_animation_del.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_animation_del.Location = new System.Drawing.Point(426, 102);
             this.button_animation_del.Name = "button_animation_del";
             this.button_animation_del.Size = new System.Drawing.Size(75, 23);
             this.button_animation_del.TabIndex = 10;
@@ -1496,7 +1508,8 @@
             // 
             // button_animationadd
             // 
-            this.button_animationadd.Location = new System.Drawing.Point(425, 73);
+            this.button_animationadd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_animationadd.Location = new System.Drawing.Point(426, 73);
             this.button_animationadd.Name = "button_animationadd";
             this.button_animationadd.Size = new System.Drawing.Size(75, 23);
             this.button_animationadd.TabIndex = 9;
@@ -1506,10 +1519,13 @@
             // 
             // listBox_animation
             // 
+            this.listBox_animation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox_animation.FormattingEnabled = true;
             this.listBox_animation.Location = new System.Drawing.Point(9, 73);
             this.listBox_animation.Name = "listBox_animation";
-            this.listBox_animation.Size = new System.Drawing.Size(410, 394);
+            this.listBox_animation.Size = new System.Drawing.Size(411, 381);
             this.listBox_animation.TabIndex = 8;
             // 
             // label34
@@ -1595,13 +1611,17 @@
             this.tabPage5.Controls.Add(this.checkBox_random);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(518, 516);
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(519, 463);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Рандом";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
             // groupBox8
             // 
+            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox8.Controls.Add(this.numericUpDown_rnd_persent);
             this.groupBox8.Controls.Add(this.button3);
             this.groupBox8.Controls.Add(this.label6);
@@ -1615,7 +1635,7 @@
             this.groupBox8.Controls.Add(this.label40);
             this.groupBox8.Location = new System.Drawing.Point(6, 29);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(506, 481);
+            this.groupBox8.Size = new System.Drawing.Size(507, 469);
             this.groupBox8.TabIndex = 13;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Правила случайного заполнения";
@@ -1644,7 +1664,8 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(425, 131);
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Location = new System.Drawing.Point(426, 131);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 11;
@@ -1663,7 +1684,8 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(425, 102);
+            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button4.Location = new System.Drawing.Point(426, 102);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 10;
@@ -1673,7 +1695,8 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(425, 73);
+            this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button5.Location = new System.Drawing.Point(426, 73);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 9;
@@ -1683,10 +1706,13 @@
             // 
             // listBox_random
             // 
+            this.listBox_random.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox_random.FormattingEnabled = true;
             this.listBox_random.Location = new System.Drawing.Point(9, 73);
             this.listBox_random.Name = "listBox_random";
-            this.listBox_random.Size = new System.Drawing.Size(410, 394);
+            this.listBox_random.Size = new System.Drawing.Size(411, 381);
             this.listBox_random.TabIndex = 8;
             // 
             // label7
@@ -1772,38 +1798,83 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(518, 516);
+            this.tabPage6.Size = new System.Drawing.Size(519, 463);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Справка";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
             // textBox1
             // 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Location = new System.Drawing.Point(6, 6);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(506, 504);
+            this.textBox1.Size = new System.Drawing.Size(507, 492);
             this.textBox1.TabIndex = 0;
             this.textBox1.Text = "SGen Tiler\r\n\r\nГорячие клавиши:\r\n\r\nPgUp/PgDown - переключение между слоями\r\nПробел" +
     " - вкл/выкл редактирование каркаса\r\nC - вкл/выкл отображение кодов";
+            // 
+            // button_new
+            // 
+            this.button_new.Location = new System.Drawing.Point(12, 12);
+            this.button_new.Name = "button_new";
+            this.button_new.Size = new System.Drawing.Size(122, 41);
+            this.button_new.TabIndex = 5;
+            this.button_new.Text = "Новый";
+            this.button_new.UseVisualStyleBackColor = true;
+            this.button_new.Click += new System.EventHandler(this.button_new_Click);
+            // 
+            // button_open
+            // 
+            this.button_open.Location = new System.Drawing.Point(143, 12);
+            this.button_open.Name = "button_open";
+            this.button_open.Size = new System.Drawing.Size(122, 41);
+            this.button_open.TabIndex = 6;
+            this.button_open.Text = "Открыть...";
+            this.button_open.UseVisualStyleBackColor = true;
+            this.button_open.Click += new System.EventHandler(this.button_open_Click);
+            // 
+            // button_save
+            // 
+            this.button_save.Location = new System.Drawing.Point(271, 12);
+            this.button_save.Name = "button_save";
+            this.button_save.Size = new System.Drawing.Size(122, 41);
+            this.button_save.TabIndex = 7;
+            this.button_save.Text = "Сохранить";
+            this.button_save.UseVisualStyleBackColor = true;
+            this.button_save.Click += new System.EventHandler(this.button_save_Click);
+            // 
+            // button_saveas
+            // 
+            this.button_saveas.Location = new System.Drawing.Point(399, 12);
+            this.button_saveas.Name = "button_saveas";
+            this.button_saveas.Size = new System.Drawing.Size(122, 41);
+            this.button_saveas.TabIndex = 8;
+            this.button_saveas.Text = "Сохранить как...";
+            this.button_saveas.UseVisualStyleBackColor = true;
+            this.button_saveas.Click += new System.EventHandler(this.button_saveas_Click);
             // 
             // FormMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.button_Close;
-            this.ClientSize = new System.Drawing.Size(550, 662);
-            this.Controls.Add(this.button2);
+            this.ClientSize = new System.Drawing.Size(551, 591);
+            this.Controls.Add(this.button_saveas);
+            this.Controls.Add(this.button_save);
+            this.Controls.Add(this.button_open);
+            this.Controls.Add(this.button_new);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.button_Close);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Location = new System.Drawing.Point(50, 150);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(567, 39);
             this.Name = "FormMenu";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
@@ -1875,8 +1946,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button button_tiletexture;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -1988,5 +2057,9 @@
         private System.Windows.Forms.CheckBox checkBox_savekarkas;
         private System.Windows.Forms.Label label_karkas;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button_new;
+        private System.Windows.Forms.Button button_open;
+        private System.Windows.Forms.Button button_save;
+        private System.Windows.Forms.Button button_saveas;
     }
 }
