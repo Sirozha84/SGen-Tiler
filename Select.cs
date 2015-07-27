@@ -94,7 +94,11 @@ namespace SGen_Tiler
             get
             {
                 if (Active)
-                    return StartX <= EndX ? EndX - StartX + 1 : StartX - EndX + 1;
+                {
+                    int width = StartX <= EndX ? EndX - StartX + 1 : StartX - EndX + 1;
+                    if (width > 100) width = 100; //Чтоб за границы не вылезти
+                    return width;
+                }
                 else
                     return 1;
             }
@@ -109,7 +113,11 @@ namespace SGen_Tiler
             get
             {
                 if (Active)
-                    return StartY <= EndY ? EndY - StartY + 1 : StartY - EndY + 1;
+                {
+                    int height = StartY <= EndY ? EndY - StartY + 1 : StartY - EndY + 1;
+                    if (height > 100) height = 100; //Чтоб за границы не вылезти
+                    return height;
+                }
                 else
                     return 1;
             }

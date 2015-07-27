@@ -11,17 +11,14 @@ namespace SGen_Tiler
         /// Ширина инстумента
         /// </summary>
         public int Width = 1;
-
         /// <summary>
         /// Высота инструмента
         /// </summary>
         public int Height = 1;
-
         /// <summary>
         /// Матрица инструмента
         /// </summary>
         public ushort[,] M = new ushort[100, 100];
-
         /// <summary>
         /// Позиция прокрутки в режиме выбора тайла
         /// </summary>
@@ -38,6 +35,29 @@ namespace SGen_Tiler
             if (X < 0) X = 0;
             if (X > Project.ScreenWidth / Project.TileSize - 1) X = Project.ScreenWidth / Project.TileSize - 1;
             return X;
+        }
+
+        /// <summary>
+        /// Копирование инструмента
+        /// </summary>
+        /// <param name="donor"></param>
+        public void CopyBy(Tool donor)
+        {
+            Width = donor.Width;
+            Height = donor.Height;
+            for (int i = 0; i < Width; i++)
+                for (int j = 0; j < Height; j++)
+                    M[i, j] = donor.M[i, j];
+        }
+
+        /// <summary>
+        /// Сбрасываем инсрумент в дефолтный
+        /// </summary>
+        public void Reset()
+        {
+            Width = 1;
+            Height = 1;
+            M[0, 0] = 0;
         }
     }
 }

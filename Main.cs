@@ -37,6 +37,7 @@ namespace SGen_Tiler
         bool KeyHold = true;    //В релизе сделать false, чтобы окно настроек не появлялось сразу же, хотя надо ещё подумать как удобней
         public bool Actived = true; //Так мы будем узнавать акнивно ли главное окно или нет, раз уш так получилось, то будем извращаться :-(
         FormMenu form = new FormMenu();
+        byte StampNum = 0;  //Номер штампа, если 0 - значит не выбран
 
         #region Инициализация
         public Main(string[] arg)
@@ -213,6 +214,25 @@ namespace SGen_Tiler
                 //Переключение в режим тайлинга
                 if ((Keyboard.GetState().IsKeyDown(Keys.LeftShift) | Keyboard.GetState().IsKeyDown(Keys.RightShift)) & !KeyHold)
                 { Mode = Modes.Tiling; Select.Active = false; }
+                //Вызов штампа
+                if (EditMode == EditModes.Layers)
+                {
+                    if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) | Keyboard.GetState().IsKeyDown(Keys.RightControl))
+                        SaveStamp(t);
+                    else
+                    {
+                        if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; t.CopyBy(Project.Stamps[1]); }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; t.CopyBy(Project.Stamps[2]); }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; t.CopyBy(Project.Stamps[3]); }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; t.CopyBy(Project.Stamps[4]); }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; t.CopyBy(Project.Stamps[5]); }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; t.CopyBy(Project.Stamps[6]); }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; t.CopyBy(Project.Stamps[7]); }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; t.CopyBy(Project.Stamps[8]); }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; t.CopyBy(Project.Stamps[9]); }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D0)) { StampNum = 0; t.Reset(); }
+                    }
+                }
             }
             if (Mode == Modes.SelectTool) //Тут только для выбора большого инструмента
             {
@@ -232,6 +252,7 @@ namespace SGen_Tiler
                             t.M[i, j] = (ushort)(Select.Left + i + (Select.Top + j + t.Scroll) * (Project.ScreenWidth / Project.TileSize));
                     Select.Active = false;
                     Mode = Modes.Edit;
+                    StampNum = 0;
                 }
                 //Прокрутка
                 t.Scroll += (Wheel - Mouse.GetState().ScrollWheelValue) / 120;
@@ -248,7 +269,7 @@ namespace SGen_Tiler
                 if (Mouse.GetState().LeftButton != ButtonState.Pressed & Select.Active)
                 {
                     Select.End(cx, cy);
-                    //Создаём штамп с имеющейся карты!
+                    //Создаём штамп с имеющейся карты
                     t.Width = Select.Width;
                     t.Height = Select.Height;
                     for (int i = 0; i < t.Width; i++)
@@ -257,7 +278,10 @@ namespace SGen_Tiler
                     Select.Active = false;
                     Mode = Modes.Edit;
                     KeyHold = true;
+                    StampNum = 0;
                 }
+                //Сохранение штампа
+                if (EditMode == EditModes.Layers) SaveStamp(t);
             }
             if (Mode == Modes.Tiling)
             {
@@ -287,6 +311,23 @@ namespace SGen_Tiler
             base.Update(gameTime);
             Wheel = Mouse.GetState().ScrollWheelValue; //Делаем это независимо от режима, а то получается что прокрутка работает даже при другом режиме
         }
+
+        /// <summary>
+        /// Сохранение штампа
+        /// </summary>
+        void SaveStamp(Tool t)
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; Project.Stamps[1].CopyBy(t); }
+            if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; Project.Stamps[2].CopyBy(t); }
+            if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; Project.Stamps[3].CopyBy(t); }
+            if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; Project.Stamps[4].CopyBy(t); }
+            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; Project.Stamps[5].CopyBy(t); }
+            if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; Project.Stamps[6].CopyBy(t); }
+            if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; Project.Stamps[7].CopyBy(t); }
+            if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; Project.Stamps[8].CopyBy(t); }
+            if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; Project.Stamps[9].CopyBy(t); }
+        }
+
         #endregion
 
         #region draw
@@ -318,9 +359,17 @@ namespace SGen_Tiler
                 int s = Project.TileSize;
                 float kx = Editor.X * Project.Px[l].X;
                 float ky = Editor.Y * Project.Px[l].Y;
-                spriteBatch.Draw(WhitePixel, new Rectangle(
-                    (int)(Mouse.GetState().X + kx) / s * s - (int)(kx), (int)(Mouse.GetState().Y + ky) / s * s - (int)(ky),
-                    t.Width * Project.TileSize, t.Height * Project.TileSize), new Rectangle(0, 0, 1, 1), col); //Ебическая сила
+                int x = (int)(Mouse.GetState().X + kx) / s * s - (int)(kx);
+                int y = (int)(Mouse.GetState().Y + ky) / s * s - (int)(ky);
+                spriteBatch.Draw(WhitePixel, new Rectangle(x, y, t.Width * Project.TileSize, t.Height * Project.TileSize),
+                    new Rectangle(0, 0, 1, 1), col);
+                //Прозрачно рисуем инструмент на курсоре (подумаю ещё, надо ли это)
+                for (int i = 0; i < t.Width; i++)
+                    for (int j = 0; j < t.Height; j++)
+                        spriteBatch.Draw(tex, new Vector2(x + i * Project.TileSize, y + j * Project.TileSize),
+                            SpriteByNum(tex, t.M[i, j], false), Color.FromNonPremultiplied(255, 255, 255, al));
+                //Код штампа, если используется
+                if (StampNum > 0) DrawSmallNum(x, y, StampNum, Color.White);
                 //Табличка слоёв
                 if (TimerTitles > 1)
                 {
@@ -478,7 +527,7 @@ namespace SGen_Tiler
         {
             string str = num.ToString();
             for (int i = 0; i < str.Length; i++)
-                spriteBatch.Draw(SmallDigits, new Vector2(x + i * 5, y), new Rectangle((str[i] - 48) * 5, 0, 5, 7), color);
+                spriteBatch.Draw(SmallDigits, new Vector2(x + i * 6, y), new Rectangle((str[i] - 48) * 6, 0, 6, 8), color);
         }
 
         /// <summary>

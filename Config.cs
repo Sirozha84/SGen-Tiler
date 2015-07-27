@@ -18,7 +18,6 @@ namespace SGen_Tiler
         /// Файл с каркасом
         /// </summary>
         public static string FileKarkas = "";
-
         /// <summary>
         /// Инициализация параметров
         /// </summary>

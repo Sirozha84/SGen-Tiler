@@ -9,6 +9,7 @@ namespace SGen_Tiler
     class Project
     {
         const string ErrorFileIntegrity = "Ошибка целостности файла, либо файл не поддерживается.";
+        static Random RND = new Random();
         /// <summary>
         /// Максимальное количество слоёв
         /// </summary>
@@ -81,8 +82,11 @@ namespace SGen_Tiler
         /// Список правил случайного заполнения
         /// </summary>
         public static List<RandomTile> Randoms = new List<RandomTile>();
+        /// <summary>
+        /// Инструменты для быстрого доступа
+        /// </summary>
+        public static Tool[] Stamps = new Tool[10];
 
-        static Random RND = new Random();
         /// <summary>
         /// Создание новой дефолтной карты
         /// </summary>
@@ -111,12 +115,22 @@ namespace SGen_Tiler
             AnimationClear();
             AutoRulesClear();
             RandomClear();
+            StampesClear();
+        }
+
+        /// <summary>
+        /// Очистка штампов
+        /// </summary>
+        static void StampesClear()
+        {
+            for (int i = 0; i < 10; i++)
+                Stamps[i] = new Tool();
         }
 
         /// <summary>
         /// Очистка правил случайного заполнения
         /// </summary>
-        public static void RandomClear()
+        static void RandomClear()
         {
             RandomTile.Enable = true;
             Randoms.Clear();
@@ -125,7 +139,7 @@ namespace SGen_Tiler
         /// <summary>
         /// Очистка правил анимации
         /// </summary>
-        public static void AnimationClear()
+        static void AnimationClear()
         {
             Animation.Enable = true;
             Animations.Clear();
@@ -193,6 +207,8 @@ namespace SGen_Tiler
                 count = file.ReadInt32();
                 for (int i = 0; i < count; i++)
                     Animations.Add(new Animation(file.ReadUInt16(), file.ReadByte(), file.ReadByte(), (Animation.Types)file.ReadByte()));
+                file.Close();
+                file = new BinaryReader (new FileStream(Project.FileName + " extra", FileMode.Open));
                 //Правила автозаполнения каркаса
                 if (file.ReadString() != "AutoRules") throw new Exception(ErrorFileIntegrity); //Маркер правил автозаполнения
                 AutoRule.Layer = file.ReadByte();
@@ -211,12 +227,25 @@ namespace SGen_Tiler
                 ft = file.ReadString();
                 AttachCarcase = ft != "";
                 if (AttachCarcase) Config.FileKarkas = ft;
-
+                //Штампы
+                if (file.ReadString() != "Stamps") throw new Exception(ErrorFileIntegrity);
+                for (int s = 0; s < 10; s++)
+                {
+                    Stamps[s].Width = file.ReadByte();
+                    Stamps[s].Height = file.ReadByte();
+                    for (int i = 0; i < Stamps[s].Width; i++)
+                        for (int j = 0; j < Stamps[s].Height; j++)
+                            Stamps[s].M[i, j] = file.ReadUInt16();
+                }
+                if (file.ReadString() != "Options") throw new Exception(ErrorFileIntegrity);
+                Editor.Codes = file.ReadBoolean();
+                AutoRule.Enable = file.ReadBoolean();
+                Animation.Enable = file.ReadBoolean();
+                RandomTile.Enable = file.ReadBoolean();
                 file.Close();
                 Saved = true;
-                //CalculateTiles();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 System.Windows.Forms.MessageBox.Show("Произошла ошибка при открытии файла.\n" + e.Message, Program.Name);
                 NewMap();
@@ -268,6 +297,9 @@ namespace SGen_Tiler
                     file.Write(anim.Time);
                     file.Write((byte)anim.Type);
                 }
+                file.Close();
+                //Сохраняем дополнительные данные в отдельный файл
+                file = new BinaryWriter(new FileStream(FileName+" extra", FileMode.Create));
                 file.Write("AutoRules");
                 file.Write((byte)AutoRule.Layer);
                 file.Write(AutoRules.Count);
@@ -288,6 +320,20 @@ namespace SGen_Tiler
                 file.Write("Attach");
                 if (AttachTexture) file.Write(Config.FileTexture); else file.Write("");
                 if (AttachCarcase) file.Write(Config.FileKarkas); else file.Write("");
+                file.Write("Stamps");
+                for (int s = 0; s < 10; s++)
+                {
+                    file.Write((byte)Stamps[s].Width);
+                    file.Write((byte)Stamps[s].Height);
+                    for (int i = 0; i < Stamps[s].Width; i++)
+                        for (int j = 0; j < Stamps[s].Height; j++)
+                            file.Write(Stamps[s].M[i, j]);
+                }
+                file.Write("Options");
+                file.Write(Editor.Codes);
+                file.Write(AutoRule.Enable);
+                file.Write(Animation.Enable);
+                file.Write(RandomTile.Enable);
                 file.Close();
                 Saved = true;
             }
