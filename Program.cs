@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace SGen_Tiler
 {
@@ -19,17 +20,21 @@ namespace SGen_Tiler
         [STAThread]
         static void Main(string[] arg)
         {
-            //using (var game = new Game1())
-            //    game.Run();
-            //arg = new string[1];
-            //arg[0] = @"c:\Users\sg\Dropbox\Проекты\map.map";
-
             game = new Main(arg);
             game.Run();
-            if (!Project.Saved && System.Windows.Forms.MessageBox.Show("Сохранить карту перед выходом?", Name,
-                System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-                Project.Save();
             Config.Save();
+            if (!Project.Saved && MessageBox.Show("Сохранить карту перед выходом?", Name, MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                if (Project.FileName == "")
+                {
+                    //Диалог сохранения
+                    SaveFileDialog save = new SaveFileDialog();
+                    save.Filter = FormMenu.FilterMAP;
+                    if (save.ShowDialog() == DialogResult.Cancel) return;
+                    Project.FileName = save.FileName;
+                }
+                Project.Save();
+            }
         }
     }
 #endif

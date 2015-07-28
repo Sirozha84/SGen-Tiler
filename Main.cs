@@ -15,22 +15,22 @@ namespace SGen_Tiler
         GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
         public static Texture2D WhitePixel; //Просто белый пиксель, используем для заливки областей
-        public static Texture2D ControlPanel; //Текстура панели управления
         int Cursorcolor = 0;    //И его цвет
         Texture2D Checkbox;
         Texture2D Cursor;
         Texture2D SmallDigits;
         Texture2D WALL;
         Texture2D Karkas;
-        Texture2D Labels;
-        Texture2D LabelStamp;
-        Texture2D LabelTiling;
         Texture2D Tiling;
+        SpriteFont Font;
         Modes Mode = Modes.Edit;
         EditModes EditMode = EditModes.Layers;
         Tool ToolL = new Tool();    //Инструмент для слоёв
         Tool ToolC = new Tool();    //Инструмент для каркаса
-        byte TimerTitles = 255; //Таймер на отображение титров
+        int TimerTitles = 255; //Таймер на отображение титров
+        int TimerLabels = 0;   //Таймер для подписей
+        string Label;
+        int LabelSize;
         byte TimerLayer = 0;    //Таймер на подсветку слоя
         int Wheel = 0;  //Последняя позиция колеса мышки (для вычисления инкремента)
         bool RightClickHold = false;    //Держится ли до сих пор правая кнопка (чтобы корректно менять режим)
@@ -46,17 +46,15 @@ namespace SGen_Tiler
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             Window.Title = Program.Name;
-            graphics.PreferredBackBufferWidth = Project.ScreenWidth;
-            graphics.PreferredBackBufferHeight = Project.ScreenHeight;
             Config.Load();
             Project.NewMap();
-
-            //arg = new string[0];
             if (arg.Length > 0)
             {
                 Project.Load(arg[0]);
                 ChangeWindowSize();
             }
+            graphics.PreferredBackBufferWidth = Project.ScreenWidth;
+            graphics.PreferredBackBufferHeight = Project.ScreenHeight;
         }
 
         /// <summary>
@@ -78,24 +76,15 @@ namespace SGen_Tiler
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            WhitePixel = Content.Load<Texture2D>("WhitePixel");
             WhitePixel = new Texture2D(GraphicsDevice, 1, 1);
             Color[] color = { new Color(255, 255, 255, 255) };
             WhitePixel.SetData<Color>(color);
-            ControlPanel = Content.Load<Texture2D>("ControlPanel");
             SmallDigits = Content.Load<Texture2D>("SmallDigits");
             Cursor = Content.Load<Texture2D>("Cursor");
-            Labels = Content.Load<Texture2D>("Labels");
-            LabelStamp = Content.Load<Texture2D>("LabelStamp");
-            LabelTiling = Content.Load<Texture2D>("LabelTiling");
             Tiling = Content.Load<Texture2D>("Tiling");
             Checkbox = Content.Load<Texture2D>("Checkbox");
+            Font = Content.Load<SpriteFont>("Font");
             InitialTextures();
-            if (Project.FileName == "")
-            {
-                form.ShowDialog();
-                KeyHold = true; //Для того, что бы не вызывать меню повторно когда нажат ESC для выхода из него
-            }
         }
 
         /// <summary>
@@ -124,17 +113,8 @@ namespace SGen_Tiler
             //Вычисляем какая ячейка находится под мышкой
             int cx = (int)(Mouse.GetState().X + Editor.X * Project.Px[l].X) / Project.TileSize;
             int cy = (int)(Mouse.GetState().Y + Editor.Y * Project.Px[l].Y) / Project.TileSize;
-
-            //Этот блок под вопросом, надо как-то переделать
+            //Узнаём, свободна ли клавиатура
             if (Keyboard.GetState().GetPressedKeys().Length == 0) KeyHold = false;
-            if ((Mouse.GetState().LeftButton == ButtonState.Pressed | Mouse.GetState().RightButton == ButtonState.Pressed) & Project.FileName == "")
-            {
-                System.Windows.Forms.MessageBox.Show("Для начала откройте или создайте новую карту.", Program.Name);
-                form.ShowDialog();
-                KeyHold = true; //Для того, что бы не вызывать меню повторно когда нажат ESC для выхода из него
-                return;
-            }
-
             //Обрабатываем анимацию
             if (Animation.Enable) foreach (Animation anim in Project.Animations) anim.Action();
             //Обработка режимов редактирования
@@ -142,11 +122,9 @@ namespace SGen_Tiler
             {
                 //Проверка на тыканье мышкой
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-                {
                     for (int i = 0; i < t.Width; i++)
                         for (int j = 0; j < t.Height; j++)
                             Project.Put(l, cx + i, cy + j, t.M[i, j]);
-                }
                 //Движение карты клавишами
                 if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) & Keyboard.GetState().IsKeyDown(Keys.Right))
                     Editor.X += Project.TileSize;
@@ -165,11 +143,7 @@ namespace SGen_Tiler
                 if (Editor.Y < 0) Editor.Y = 0;
                 //Переход в режим выбора спрайтов
                 if (Mouse.GetState().RightButton != ButtonState.Pressed) RightClickHold = false;
-                if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold)
-                {
-                    RightClickHold = true;
-                    Mode = Modes.SelectTool;
-                }
+                if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold) { RightClickHold = true; Mode = Modes.SelectTool; }
                 //Переход в главное меню
                 if (Keyboard.GetState().IsKeyDown(Keys.Escape) & !KeyHold)
                 {
@@ -182,38 +156,43 @@ namespace SGen_Tiler
                 if (Keyboard.GetState().IsKeyDown(Keys.PageUp) & !KeyHold && Editor.Layer > 1)
                 {
                     Editor.Layer--;
-                    KeyHold = true;
-                    TimerTitles = 255;
                     TimerLayer = 16;
+                    PopUp();
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.PageDown) & !KeyHold && Editor.Layer < Project.Layers)
                 {
                     Editor.Layer++;
-                    KeyHold = true;
-                    TimerTitles = 255;
                     TimerLayer = 16;
+                    PopUp();
                 }
                 //Переключение видимости слоёв
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) & !KeyHold)
                 {
                     Editor.ShowOnlyCurrentLayer ^= true;
-                    KeyHold = true;
+                    if (!Editor.ShowOnlyCurrentLayer) PopUp("Отображаются все слои", 320);
+                    else PopUp("Отображается только текущий слой", 320);
                     TimerTitles = 255;
+                    KeyHold = true;
                 }
                 //Включение/выключение каркаса
                 if (Keyboard.GetState().IsKeyDown(Keys.Space) & !KeyHold)
                 {
                     if (EditMode == EditModes.Layers) EditMode = EditModes.Carcase; else EditMode = EditModes.Layers;
-                    KeyHold = true;
-                    TimerTitles = 255;
+                    PopUp();
                 }
-                //Включение/выключение показа кодов
-                if (Keyboard.GetState().IsKeyDown(Keys.C) & !KeyHold) { Editor.Codes ^= true; KeyHold = true; }
                 //Переключение в режим выбора штампа
-                if ((Keyboard.GetState().IsKeyDown(Keys.LeftControl) | Keyboard.GetState().IsKeyDown(Keys.RightControl)) & !KeyHold) Mode = Modes.SelectStamp;
+                if ((Keyboard.GetState().IsKeyDown(Keys.LeftControl) | Keyboard.GetState().IsKeyDown(Keys.RightControl)) & !KeyHold)
+                {
+                    Mode = Modes.SelectStamp;
+                    PopUp("Выберите штамп или сохраните текущий", 360);
+                }
                 //Переключение в режим тайлинга
                 if ((Keyboard.GetState().IsKeyDown(Keys.LeftShift) | Keyboard.GetState().IsKeyDown(Keys.RightShift)) & !KeyHold)
-                { Mode = Modes.Tiling; Select.Active = false; }
+                {
+                    Mode = Modes.Tiling;
+                    Select.Active = false;
+                    PopUp("Ражим тайлинга", 140);
+                }
                 //Вызов штампа
                 if (EditMode == EditModes.Layers)
                 {
@@ -221,18 +200,59 @@ namespace SGen_Tiler
                         SaveStamp(t);
                     else
                     {
-                        if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; t.CopyBy(Project.Stamps[1]); }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; t.CopyBy(Project.Stamps[2]); }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; t.CopyBy(Project.Stamps[3]); }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; t.CopyBy(Project.Stamps[4]); }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; t.CopyBy(Project.Stamps[5]); }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; t.CopyBy(Project.Stamps[6]); }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; t.CopyBy(Project.Stamps[7]); }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; t.CopyBy(Project.Stamps[8]); }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; t.CopyBy(Project.Stamps[9]); }
+                        bool load = false;
+                        if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; t.CopyBy(Project.Stamps[1]); load = true; }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; t.CopyBy(Project.Stamps[2]); load = true; }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; t.CopyBy(Project.Stamps[3]); load = true; }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; t.CopyBy(Project.Stamps[4]); load = true; }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; t.CopyBy(Project.Stamps[5]); load = true; }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; t.CopyBy(Project.Stamps[6]); load = true; }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; t.CopyBy(Project.Stamps[7]); load = true; }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; t.CopyBy(Project.Stamps[8]); load = true; }
                         if (Keyboard.GetState().IsKeyDown(Keys.D0)) { StampNum = 0; t.Reset(); }
+                        if (load)
+                            if (StampNum > 0) PopUp("Выбран штамп " + StampNum, 150);
+                            else PopUp("Инструмент сброшен", 200);
                     }
                 }
+                //Включение/выключение показа кодов
+                if (Keyboard.GetState().IsKeyDown(Keys.C) & !KeyHold)
+                {
+                    Editor.Codes ^= true; KeyHold = true;
+                    if (Editor.Codes) PopUp("Отображение кодов включено", 300);
+                    else PopUp("Отображение кодов выключено", 300);
+                }
+                //Включение/выключение анимации
+                if (Keyboard.GetState().IsKeyDown(Keys.A) & !KeyHold)
+                {
+                    Animation.Enable ^= true; KeyHold = true;
+                    if (Animation.Enable) PopUp("Анимация включена", 190);
+                    else PopUp("Анимация выключена", 190);
+                }
+                //Включение/выключение рандома
+                if (Keyboard.GetState().IsKeyDown(Keys.R) & !KeyHold)
+                {
+                    RandomTile.Enable ^= true; KeyHold = true;
+                    if (RandomTile.Enable) PopUp("Рандом включен", 160);
+                    else PopUp("Рандом выключен", 160);
+                }
+                //Включение/выключение автозаполнения
+                if (Keyboard.GetState().IsKeyDown(Keys.K) & !KeyHold)
+                {
+                    AutoRule.Enable ^= true; KeyHold = true;
+                    if (AutoRule.Enable) PopUp("Автозаполнение включено", 250);
+                    else PopUp("Автозаполнение выключено", 250);
+                }
+                //Быстрый доступ к слоям
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad0) & !KeyHold) { EditMode = EditModes.Carcase; PopUp(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad1) & !KeyHold) { EditMode = EditModes.Layers; Editor.Layer = 1; PopUp(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2) & !KeyHold & Project.Layers >= 2) { EditMode = EditModes.Layers; Editor.Layer = 2; PopUp(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad3) & !KeyHold & Project.Layers >= 3) { EditMode = EditModes.Layers; Editor.Layer = 3; PopUp(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad4) & !KeyHold & Project.Layers >= 4) { EditMode = EditModes.Layers; Editor.Layer = 4; PopUp(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad5) & !KeyHold & Project.Layers >= 5) { EditMode = EditModes.Layers; Editor.Layer = 5; PopUp(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad6) & !KeyHold & Project.Layers >= 6) { EditMode = EditModes.Layers; Editor.Layer = 6; PopUp(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad7) & !KeyHold & Project.Layers >= 7) { EditMode = EditModes.Layers; Editor.Layer = 7; PopUp(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8) & !KeyHold & Project.Layers >= 8) { EditMode = EditModes.Layers; Editor.Layer = 8; PopUp(); }
             }
             if (Mode == Modes.SelectTool) //Тут только для выбора большого инструмента
             {
@@ -317,15 +337,17 @@ namespace SGen_Tiler
         /// </summary>
         void SaveStamp(Tool t)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; Project.Stamps[1].CopyBy(t); }
-            if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; Project.Stamps[2].CopyBy(t); }
-            if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; Project.Stamps[3].CopyBy(t); }
-            if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; Project.Stamps[4].CopyBy(t); }
-            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; Project.Stamps[5].CopyBy(t); }
-            if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; Project.Stamps[6].CopyBy(t); }
-            if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; Project.Stamps[7].CopyBy(t); }
-            if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; Project.Stamps[8].CopyBy(t); }
-            if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; Project.Stamps[9].CopyBy(t); }
+            bool sav = false;
+            if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; Project.Stamps[1].CopyBy(t); sav = true; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; Project.Stamps[2].CopyBy(t); sav = true; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; Project.Stamps[3].CopyBy(t); sav = true; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; Project.Stamps[4].CopyBy(t); sav = true; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; Project.Stamps[5].CopyBy(t); sav = true; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; Project.Stamps[6].CopyBy(t); sav = true; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; Project.Stamps[7].CopyBy(t); sav = true; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; Project.Stamps[8].CopyBy(t); sav = true; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; Project.Stamps[9].CopyBy(t); sav = true; }
+            if (sav) PopUp("Штамп сохранен в ячейку " + StampNum, 240);
         }
 
         #endregion
@@ -384,9 +406,9 @@ namespace SGen_Tiler
                             spriteBatch.Draw(Checkbox, new Vector2(0, i * 20), new Rectangle(0, 20, 20, 20), Color.FromNonPremultiplied(255, 255, 255, al));
                         byte br = 92;
                         if (i + 1 == l & EditMode != EditModes.Carcase) br = 255;
-                        spriteBatch.Draw(Labels, new Vector2(20, i * 20), new Rectangle(0, i * 18, 60, 18), Color.FromNonPremultiplied(br, br, 255, al));
+                        spriteBatch.DrawString(Font,"Слой " + (i + 1),new Vector2(20,i*20), Color.FromNonPremultiplied(br, br, 255, al));
                     }
-                    TimerTitles -= 2;
+                    TimerTitles -= 4;
                 }
             }
             //Режим выбора инструментов
@@ -421,10 +443,7 @@ namespace SGen_Tiler
                     new Rectangle(0, 0, Select.Width * Project.TileSize, Select.Height * Project.TileSize),
                     col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                 spriteBatch.End();
-                //Табличка режима выделения
                 spriteBatch.Begin();
-                spriteBatch.Draw(WhitePixel, new Rectangle(Project.ScreenWidth / 2 - 120, 0, 240, 25), Color.FromNonPremultiplied(0, 0, 0, 192));
-                spriteBatch.Draw(LabelStamp, new Vector2(Project.ScreenWidth / 2 - 110, 0), Color.FromNonPremultiplied(92, 92, 255, 255));
                 Select.End(Mouse.GetState().X / Project.TileSize, Mouse.GetState().Y / Project.TileSize);
             }
             if (Mode == Modes.Tiling)
@@ -440,12 +459,11 @@ namespace SGen_Tiler
                     new Rectangle(0, 0, Select.Width * Project.TileSize, Select.Height * Project.TileSize),
                     col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                 spriteBatch.End();
-                //Табличка режима тайлинга
                 spriteBatch.Begin();
-                spriteBatch.Draw(WhitePixel, new Rectangle(Project.ScreenWidth / 2 - 105, 0, 200, 25), Color.FromNonPremultiplied(0, 0, 0, 192));
-                spriteBatch.Draw(LabelTiling, new Vector2(Project.ScreenWidth / 2 - 95, 0), Color.FromNonPremultiplied(92, 92, 255, 255));
                 Select.End(Mouse.GetState().X / Project.TileSize, Mouse.GetState().Y / Project.TileSize);
             }
+            //Поп-ап сообщение
+            DrawPopUp();
             //Мерцание курсора
             Cursorcolor += 8;
             if (Cursorcolor > 255) Cursorcolor = 0;
@@ -455,10 +473,48 @@ namespace SGen_Tiler
         #endregion
 
         #region Всякое разное
+
+        /// <summary>
+        /// Новое поп-ап сообщение сообщением об слое
+        /// </summary>
+        void PopUp()
+        {
+            if (EditMode == EditModes.Layers) PopUp("Выбран слой " + Editor.Layer, 130);
+            else PopUp("Выбран каркас ", 130);
+            TimerTitles = 255;
+            KeyHold = true;
+        }
+
+        /// <summary>
+        /// Новое поп-ап сообщение
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="width"></param>
+        void PopUp(string label, int width)
+        {
+            Label = label;
+            LabelSize = width;
+            TimerLabels = 255;
+        }
+
+        void DrawPopUp()
+        {
+            if (TimerLabels > 0)
+            {
+                int br = 255;
+                if (TimerLabels < 128) br = TimerLabels * 2;
+                spriteBatch.Draw(WhitePixel, new Rectangle(Project.ScreenWidth / 2 - LabelSize / 2 - 15, 0, LabelSize + 30, 25),
+                    Color.FromNonPremultiplied(0, 0, 0, br));
+                spriteBatch.DrawString(Font, Label, new Vector2(Project.ScreenWidth / 2 - LabelSize / 2, 0),
+                    Color.FromNonPremultiplied(92, 92, 255, br));
+                TimerLabels -= 4;
+            }
+        }
+
         /// <summary>
         /// Рисование слоёв
         /// </summary>
-        public void DrawLayers()
+        void DrawLayers()
         {
             //Сначала рисуем видимые слои текстурные
             for (int l = 1; l <= Project.Layers; l++)

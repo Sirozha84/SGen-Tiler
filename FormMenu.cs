@@ -12,7 +12,7 @@ namespace SGen_Tiler
     public partial class FormMenu : Form
     {
         const string FilterPNG = "Изображение(*.png)|*.png|Все файлы|*.*";
-        const string FilterMAP = "Карты(*.map)|*.map|Все файлы|*.*";
+        public const string FilterMAP = "Карты(*.map)|*.map|Все файлы|*.*";
         /// <summary>
         /// Пользователь ли меняет данные на форме или программа?
         /// Нужно для того что бы пересчёт делался только если именно пользователь меняет данные, а не программа
@@ -75,20 +75,8 @@ namespace SGen_Tiler
             checkBox_random.Checked = RandomTile.Enable;
             RefreshRandomList();
             //Имя файла
-            RefreshName();
+            Text = Project.Label();
             UserChange = true;
-        }
-
-        /// <summary>
-        /// Оновлени заголовка окна
-        /// </summary>
-        void RefreshName()
-        {
-            string star = "";
-            string name = "Новый";
-            if (!Project.Saved) star = "*";
-            if (Project.FileName != "") name = System.IO.Path.GetFileNameWithoutExtension(Project.FileName);
-            Text = name + star + " - " + Program.Name;
         }
 
         #region Работа с файлом
@@ -127,6 +115,13 @@ namespace SGen_Tiler
             Project.FileName = open.FileName;
             Project.Load();
             FormRefresh();
+        }
+
+        DialogResult Ask()
+        {
+            DialogResult rslt = DialogResult.No;
+            if (!Project.Saved) rslt = MessageBox.Show("Сохранить перед этим текущий проект?", Program.Name, MessageBoxButtons.YesNoCancel);
+            return rslt;
         }
 
         /// <summary>
@@ -335,6 +330,23 @@ namespace SGen_Tiler
                 Change();
             }
         }
+
+        /// <summary>
+        /// Пересборка каркаса
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_remakecarcase_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Этот процесс перерисует каркас с учётом введёных правил. Продолжить?", Program.Name, MessageBoxButtons.YesNo)
+                == DialogResult.No)
+                return;
+            for (int i = 0; i < Project.Width; i++)
+                for (int j = 0; j < Project.Height; j++)
+                    foreach (AutoRule rule in Project.AutoRules) if (rule.In(Project.M[AutoRule.Layer, i, j])) Project.M[0, i, j] = rule.Code;
+            Change();
+            MessageBox.Show("Каркас пересобран", Program.Name);
+        }
         #endregion
 
         #region Анимация
@@ -442,8 +454,8 @@ namespace SGen_Tiler
         {
             if (UserChange)
             {
-                Project.Change();
-                RefreshName();
+                Project.Saved = false;
+                Text = Project.Label();
             }
         }
     }

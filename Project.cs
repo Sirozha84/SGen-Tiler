@@ -380,7 +380,7 @@ namespace SGen_Tiler
             //Далее обрабатываем автозаполнение
             if (AutoRule.Enable & l == AutoRule.Layer & Px[l].X == 1 & Px[l].Y == 1)
                 foreach (AutoRule rule in AutoRules) if (rule.In(c)) M[0, x, y] = rule.Code;
-            Change();
+            Saved = false;
         }
 
         /// <summary>
@@ -397,11 +397,15 @@ namespace SGen_Tiler
         }
 
         /// <summary>
-        /// Указывает что в проекте произошло изменение
+        /// Заголовок для окна
         /// </summary>
-        public static void Change()
+        public static string Label()
         {
-            Saved = false;
+            string name = "Новая карта";
+            string star = "";
+            if (!Saved) star = "*";
+            if (FileName != "") name = Path.GetFileNameWithoutExtension(FileName);
+            return name + star + " - " + Program.Name;
         }
     }
 }

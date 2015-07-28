@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMenu));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBox_savetexture = new System.Windows.Forms.CheckBox();
             this.label_texture = new System.Windows.Forms.Label();
@@ -143,6 +144,7 @@
             this.button_open = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.button_saveas = new System.Windows.Forms.Button();
+            this.button_remakecarcase = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1083,7 +1085,7 @@
             // 
             this.button_Close.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_Close.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button_Close.Location = new System.Drawing.Point(409, 554);
+            this.button_Close.Location = new System.Drawing.Point(409, 417);
             this.button_Close.Name = "button_Close";
             this.button_Close.Size = new System.Drawing.Size(130, 25);
             this.button_Close.TabIndex = 4;
@@ -1094,7 +1096,7 @@
             // 
             this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(13, 560);
+            this.linkLabel1.Location = new System.Drawing.Point(13, 423);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(75, 13);
             this.linkLabel1.TabIndex = 3;
@@ -1116,7 +1118,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 59);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(527, 489);
+            this.tabControl1.Size = new System.Drawing.Size(527, 352);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -1128,7 +1130,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(519, 463);
+            this.tabPage1.Size = new System.Drawing.Size(519, 326);
             this.tabPage1.TabIndex = 1;
             this.tabPage1.Text = "Основные параметры";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1139,7 +1141,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(519, 463);
+            this.tabPage2.Size = new System.Drawing.Size(519, 456);
             this.tabPage2.TabIndex = 0;
             this.tabPage2.Text = "Параллакс";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1189,13 +1191,14 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.button_remakecarcase);
             this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Controls.Add(this.numericUpDown_avtoMain);
             this.tabPage3.Controls.Add(this.checkBox_avtoEnable);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(519, 463);
+            this.tabPage3.Size = new System.Drawing.Size(519, 326);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Автозаполнение";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1218,7 +1221,7 @@
             this.groupBox1.Controls.Add(this.label29);
             this.groupBox1.Location = new System.Drawing.Point(6, 29);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(507, 469);
+            this.groupBox1.Size = new System.Drawing.Size(507, 291);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Правила автозаполнения";
@@ -1264,7 +1267,7 @@
             this.listBox_avto.FormattingEnabled = true;
             this.listBox_avto.Location = new System.Drawing.Point(9, 73);
             this.listBox_avto.Name = "listBox_avto";
-            this.listBox_avto.Size = new System.Drawing.Size(411, 381);
+            this.listBox_avto.Size = new System.Drawing.Size(411, 199);
             this.listBox_avto.TabIndex = 8;
             // 
             // label12
@@ -1400,7 +1403,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(519, 463);
+            this.tabPage4.Size = new System.Drawing.Size(519, 456);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Анимация";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1425,7 +1428,7 @@
             this.groupBox7.Controls.Add(this.label37);
             this.groupBox7.Location = new System.Drawing.Point(6, 29);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(507, 469);
+            this.groupBox7.Size = new System.Drawing.Size(507, 421);
             this.groupBox7.TabIndex = 11;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Правила анимации";
@@ -1525,7 +1528,7 @@
             this.listBox_animation.FormattingEnabled = true;
             this.listBox_animation.Location = new System.Drawing.Point(9, 73);
             this.listBox_animation.Name = "listBox_animation";
-            this.listBox_animation.Size = new System.Drawing.Size(411, 381);
+            this.listBox_animation.Size = new System.Drawing.Size(411, 329);
             this.listBox_animation.TabIndex = 8;
             // 
             // label34
@@ -1612,7 +1615,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(519, 463);
+            this.tabPage5.Size = new System.Drawing.Size(519, 456);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Рандом";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1635,7 +1638,7 @@
             this.groupBox8.Controls.Add(this.label40);
             this.groupBox8.Location = new System.Drawing.Point(6, 29);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(507, 469);
+            this.groupBox8.Size = new System.Drawing.Size(507, 421);
             this.groupBox8.TabIndex = 13;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Правила случайного заполнения";
@@ -1712,7 +1715,7 @@
             this.listBox_random.FormattingEnabled = true;
             this.listBox_random.Location = new System.Drawing.Point(9, 73);
             this.listBox_random.Name = "listBox_random";
-            this.listBox_random.Size = new System.Drawing.Size(411, 381);
+            this.listBox_random.Size = new System.Drawing.Size(411, 329);
             this.listBox_random.TabIndex = 8;
             // 
             // label7
@@ -1786,9 +1789,9 @@
             this.checkBox_random.AutoSize = true;
             this.checkBox_random.Location = new System.Drawing.Point(6, 6);
             this.checkBox_random.Name = "checkBox_random";
-            this.checkBox_random.Size = new System.Drawing.Size(189, 17);
+            this.checkBox_random.Size = new System.Drawing.Size(236, 17);
             this.checkBox_random.TabIndex = 12;
-            this.checkBox_random.Text = "Использовать случайные блоки";
+            this.checkBox_random.Text = "Использовать рандом (случайные блоки)";
             this.checkBox_random.UseVisualStyleBackColor = true;
             this.checkBox_random.CheckedChanged += new System.EventHandler(this.checkBox_random_CheckedChanged);
             // 
@@ -1798,7 +1801,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(519, 463);
+            this.tabPage6.Size = new System.Drawing.Size(519, 456);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Справка";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1813,10 +1816,9 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(507, 492);
+            this.textBox1.Size = new System.Drawing.Size(507, 485);
             this.textBox1.TabIndex = 0;
-            this.textBox1.Text = "SGen Tiler\r\n\r\nГорячие клавиши:\r\n\r\nPgUp/PgDown - переключение между слоями\r\nПробел" +
-    " - вкл/выкл редактирование каркаса\r\nC - вкл/выкл отображение кодов";
+            this.textBox1.Text = resources.GetString("textBox1.Text");
             // 
             // button_new
             // 
@@ -1858,12 +1860,22 @@
             this.button_saveas.UseVisualStyleBackColor = true;
             this.button_saveas.Click += new System.EventHandler(this.button_saveas_Click);
             // 
+            // button_remakecarcase
+            // 
+            this.button_remakecarcase.Location = new System.Drawing.Point(313, 4);
+            this.button_remakecarcase.Name = "button_remakecarcase";
+            this.button_remakecarcase.Size = new System.Drawing.Size(161, 21);
+            this.button_remakecarcase.TabIndex = 12;
+            this.button_remakecarcase.Text = "Пересобрать каркас";
+            this.button_remakecarcase.UseVisualStyleBackColor = true;
+            this.button_remakecarcase.Click += new System.EventHandler(this.button_remakecarcase_Click);
+            // 
             // FormMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.button_Close;
-            this.ClientSize = new System.Drawing.Size(551, 591);
+            this.ClientSize = new System.Drawing.Size(551, 454);
             this.Controls.Add(this.button_saveas);
             this.Controls.Add(this.button_save);
             this.Controls.Add(this.button_open);
@@ -1874,7 +1886,7 @@
             this.Location = new System.Drawing.Point(50, 150);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(567, 39);
+            this.MinimumSize = new System.Drawing.Size(567, 493);
             this.Name = "FormMenu";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
@@ -2061,5 +2073,6 @@
         private System.Windows.Forms.Button button_open;
         private System.Windows.Forms.Button button_save;
         private System.Windows.Forms.Button button_saveas;
+        private System.Windows.Forms.Button button_remakecarcase;
     }
 }
