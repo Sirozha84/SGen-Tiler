@@ -43,6 +43,8 @@ namespace SGen_Tiler
             numericUpDown_tilesize.Value = Project.TileSize;
             numericUpDown_resx.Value = Project.ScreenWidth;
             numericUpDown_rexy.Value = Project.ScreenHeight;
+            numericUpDown_width.Maximum = Project.MaxWidth;
+            numericUpDown_height.Maximum = Project.MaxHeight;
             numericUpDown_width.Value = Project.Width;
             numericUpDown_height.Value = Project.Height;
             numericUpDown_layers.Value = Project.Layers;
@@ -305,18 +307,24 @@ namespace SGen_Tiler
 
         void RefreshRulesList()
         {
-            listBox_avto.Items.Clear();
+            listView_avto.Items.Clear();
             foreach (AutoRule rule in Project.AutoRules)
-                listBox_avto.Items.Add(rule.Code + " - от " + rule.From + " до " + rule.To);
+            {
+                ListViewItem item = new ListViewItem(rule.Code.ToString());
+                item.SubItems.Add(rule.From.ToString());
+                item.SubItems.Add(rule.To.ToString());
+                listView_avto.Items.Add(item);
+            }
         }
 
         private void button_avtoDel_Click(object sender, EventArgs e)
         {
-            if (listBox_avto.SelectedIndex == 0) MessageBox.Show("Первое правило удалить нельзя", Program.Name);
-            if (listBox_avto.SelectedIndex > 0)
+            if (listView_avto.SelectedIndices.Count == 0) return;
+            if (listView_avto.SelectedIndices[0] == 0) MessageBox.Show("Первое правило удалить нельзя", Program.Name);
+            if (listView_avto.SelectedIndices[0] > 0)
             {
-                Project.AutoRules.RemoveAt(listBox_avto.SelectedIndex);
-                listBox_avto.Items.RemoveAt(listBox_avto.SelectedIndex);
+                Project.AutoRules.RemoveAt(listView_avto.SelectedIndices[0]);
+                listView_avto.Items.RemoveAt(listView_avto.SelectedIndices[0]);
                 Change();
             }
         }
@@ -375,16 +383,23 @@ namespace SGen_Tiler
         /// </summary>
         void RefreshAnimationList()
         {
-            listBox_animation.Items.Clear();
+            listView_animation.Items.Clear();
             foreach (Animation anim in Project.Animations)
-                listBox_animation.Items.Add(anim.Code + " - Кадров: " + anim.Frames + ", Время: " + anim.Time + ", тип: " + anim.TypeString());
+            {
+                ListViewItem item = new ListViewItem(anim.Code.ToString());
+                item.SubItems.Add(anim.Frames.ToString());
+                item.SubItems.Add(anim.Time.ToString());
+                item.SubItems.Add(anim.TypeString());
+                listView_animation.Items.Add(item);
+            }
         }
 
         private void button_animation_del_Click(object sender, EventArgs e)
         {
-            if (listBox_animation.SelectedIndex >= 0)
+            if (listView_animation.SelectedIndices.Count == 0) return;
+            if (listView_animation.SelectedIndices[0] >= 0)
             {
-                Project.Animations.RemoveAt(listBox_animation.SelectedIndex);
+                Project.Animations.RemoveAt(listView_animation.SelectedIndices[0]);
                 RefreshAnimationList();
                 Change();
             }
@@ -395,7 +410,7 @@ namespace SGen_Tiler
             if (MessageBox.Show("Уверены что хотити этого?", Program.Name, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Project.Animations.Clear();
-                listBox_animation.Items.Clear();
+                listView_animation.Items.Clear();
                 Change();
             }
         }
@@ -415,9 +430,14 @@ namespace SGen_Tiler
         /// </summary>
         void RefreshRandomList()
         {
-            listBox_random.Items.Clear();
+            listView_random.Items.Clear();
             foreach (RandomTile rand in Project.Randoms)
-                listBox_random.Items.Add(rand.Code + " - Случайный тайл: " + rand.Tile + ", Вероятность: " + rand.Persent + "%");
+            {
+                ListViewItem item = new ListViewItem(rand.Code.ToString());
+                item.SubItems.Add(rand.Tile.ToString());
+                item.SubItems.Add(rand.Persent.ToString());
+                listView_random.Items.Add(item);
+            }
         }
 
         private void checkBox_random_CheckedChanged(object sender, EventArgs e)
@@ -426,11 +446,17 @@ namespace SGen_Tiler
             Change();
         }
 
+        /// <summary>
+        /// Удаление строки рандома
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button4_Click(object sender, EventArgs e)
         {
-            if (listBox_random.SelectedIndex >= 0)
+            if (listView_random.SelectedIndices.Count == 0) return;
+            if (listView_random.SelectedIndices[0] >= 0)
             {
-                Project.Randoms.RemoveAt(listBox_random.SelectedIndex);
+                Project.Randoms.RemoveAt(listView_random.SelectedIndices[0]);
                 RefreshRandomList();
                 Change();
             }
@@ -441,7 +467,7 @@ namespace SGen_Tiler
             if (MessageBox.Show("Уверены что хотити этого?", Program.Name, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Project.Randoms.Clear();
-                listBox_random.Items.Clear();
+                listView_random.Items.Clear();
                 Change();
             }
         }

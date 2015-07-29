@@ -407,5 +407,7 @@ namespace SGen_Tiler
             if (FileName != "") name = Path.GetFileNameWithoutExtension(FileName);
             return name + star + " - " + Program.Name;
         }
+
+        public static int ScaledSize { get { return (int)(TileSize * Editor.Scale); } }
     }
 }

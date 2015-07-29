@@ -19,6 +19,10 @@
         /// </summary>
         public static bool ShowOnlyCurrentLayer;
         /// <summary>
+        /// Масштаб
+        /// </summary>
+        public static float Scale;
+        /// <summary>
         /// Показывать ли коды тайлов
         /// </summary>
         public static bool Codes;
@@ -31,6 +35,7 @@
             Y = 0;
             Layer = 1;
             ShowOnlyCurrentLayer = false;
+            Scale = 1;
             Codes = false;
         }
     }

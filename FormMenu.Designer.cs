@@ -94,11 +94,15 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.button_remakecarcase = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.listView_avto = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.button_avtoClear = new System.Windows.Forms.Button();
             this.button_avtoDel = new System.Windows.Forms.Button();
             this.button_avtoAdd = new System.Windows.Forms.Button();
-            this.listBox_avto = new System.Windows.Forms.ListBox();
             this.label12 = new System.Windows.Forms.Label();
             this.numericUpDown_avtoCode = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown_avtoFrom = new System.Windows.Forms.NumericUpDown();
@@ -110,6 +114,11 @@
             this.checkBox_avtoEnable = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.listView_animation = new System.Windows.Forms.ListView();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.comboBox_animation_type = new System.Windows.Forms.ComboBox();
             this.label36 = new System.Windows.Forms.Label();
             this.numericUpDown_animation_time = new System.Windows.Forms.NumericUpDown();
@@ -117,7 +126,6 @@
             this.label38 = new System.Windows.Forms.Label();
             this.button_animation_del = new System.Windows.Forms.Button();
             this.button_animationadd = new System.Windows.Forms.Button();
-            this.listBox_animation = new System.Windows.Forms.ListBox();
             this.label34 = new System.Windows.Forms.Label();
             this.numericUpDown_animation_code = new System.Windows.Forms.NumericUpDown();
             this.label35 = new System.Windows.Forms.Label();
@@ -126,12 +134,15 @@
             this.checkBox_animation = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.listView_random = new System.Windows.Forms.ListView();
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.numericUpDown_rnd_persent = new System.Windows.Forms.NumericUpDown();
             this.button3 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            this.listBox_random = new System.Windows.Forms.ListBox();
             this.label7 = new System.Windows.Forms.Label();
             this.numericUpDown_rnd_code = new System.Windows.Forms.NumericUpDown();
             this.label39 = new System.Windows.Forms.Label();
@@ -144,7 +155,6 @@
             this.button_open = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.button_saveas = new System.Windows.Forms.Button();
-            this.button_remakecarcase = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1141,7 +1151,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(519, 456);
+            this.tabPage2.Size = new System.Drawing.Size(519, 326);
             this.tabPage2.TabIndex = 0;
             this.tabPage2.Text = "Параллакс";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1203,15 +1213,25 @@
             this.tabPage3.Text = "Автозаполнение";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // button_remakecarcase
+            // 
+            this.button_remakecarcase.Location = new System.Drawing.Point(313, 4);
+            this.button_remakecarcase.Name = "button_remakecarcase";
+            this.button_remakecarcase.Size = new System.Drawing.Size(161, 21);
+            this.button_remakecarcase.TabIndex = 12;
+            this.button_remakecarcase.Text = "Пересобрать каркас";
+            this.button_remakecarcase.UseVisualStyleBackColor = true;
+            this.button_remakecarcase.Click += new System.EventHandler(this.button_remakecarcase_Click);
+            // 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.listView_avto);
             this.groupBox1.Controls.Add(this.button_avtoClear);
             this.groupBox1.Controls.Add(this.button_avtoDel);
             this.groupBox1.Controls.Add(this.button_avtoAdd);
-            this.groupBox1.Controls.Add(this.listBox_avto);
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.numericUpDown_avtoCode);
             this.groupBox1.Controls.Add(this.numericUpDown_avtoFrom);
@@ -1226,10 +1246,38 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Правила автозаполнения";
             // 
+            // listView_avto
+            // 
+            this.listView_avto.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.listView_avto.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listView_avto.FullRowSelect = true;
+            this.listView_avto.Location = new System.Drawing.Point(6, 73);
+            this.listView_avto.MultiSelect = false;
+            this.listView_avto.Name = "listView_avto";
+            this.listView_avto.Size = new System.Drawing.Size(209, 212);
+            this.listView_avto.TabIndex = 12;
+            this.listView_avto.UseCompatibleStateImageBehavior = false;
+            this.listView_avto.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Код";
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "От";
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "До";
+            // 
             // button_avtoClear
             // 
-            this.button_avtoClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_avtoClear.Location = new System.Drawing.Point(426, 131);
+            this.button_avtoClear.Location = new System.Drawing.Point(221, 131);
             this.button_avtoClear.Name = "button_avtoClear";
             this.button_avtoClear.Size = new System.Drawing.Size(75, 23);
             this.button_avtoClear.TabIndex = 11;
@@ -1239,8 +1287,7 @@
             // 
             // button_avtoDel
             // 
-            this.button_avtoDel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_avtoDel.Location = new System.Drawing.Point(426, 102);
+            this.button_avtoDel.Location = new System.Drawing.Point(221, 102);
             this.button_avtoDel.Name = "button_avtoDel";
             this.button_avtoDel.Size = new System.Drawing.Size(75, 23);
             this.button_avtoDel.TabIndex = 10;
@@ -1250,25 +1297,13 @@
             // 
             // button_avtoAdd
             // 
-            this.button_avtoAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_avtoAdd.Location = new System.Drawing.Point(426, 73);
+            this.button_avtoAdd.Location = new System.Drawing.Point(221, 73);
             this.button_avtoAdd.Name = "button_avtoAdd";
             this.button_avtoAdd.Size = new System.Drawing.Size(75, 23);
             this.button_avtoAdd.TabIndex = 9;
             this.button_avtoAdd.Text = "Добавить";
             this.button_avtoAdd.UseVisualStyleBackColor = true;
             this.button_avtoAdd.Click += new System.EventHandler(this.button_avtoAdd_Click);
-            // 
-            // listBox_avto
-            // 
-            this.listBox_avto.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox_avto.FormattingEnabled = true;
-            this.listBox_avto.Location = new System.Drawing.Point(9, 73);
-            this.listBox_avto.Name = "listBox_avto";
-            this.listBox_avto.Size = new System.Drawing.Size(411, 199);
-            this.listBox_avto.TabIndex = 8;
             // 
             // label12
             // 
@@ -1403,7 +1438,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(519, 456);
+            this.tabPage4.Size = new System.Drawing.Size(519, 326);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Анимация";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1413,6 +1448,7 @@
             this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox7.Controls.Add(this.listView_animation);
             this.groupBox7.Controls.Add(this.comboBox_animation_type);
             this.groupBox7.Controls.Add(this.label36);
             this.groupBox7.Controls.Add(this.numericUpDown_animation_time);
@@ -1420,7 +1456,6 @@
             this.groupBox7.Controls.Add(this.label38);
             this.groupBox7.Controls.Add(this.button_animation_del);
             this.groupBox7.Controls.Add(this.button_animationadd);
-            this.groupBox7.Controls.Add(this.listBox_animation);
             this.groupBox7.Controls.Add(this.label34);
             this.groupBox7.Controls.Add(this.numericUpDown_animation_code);
             this.groupBox7.Controls.Add(this.label35);
@@ -1428,10 +1463,45 @@
             this.groupBox7.Controls.Add(this.label37);
             this.groupBox7.Location = new System.Drawing.Point(6, 29);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(507, 421);
+            this.groupBox7.Size = new System.Drawing.Size(507, 291);
             this.groupBox7.TabIndex = 11;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Правила анимации";
+            // 
+            // listView_animation
+            // 
+            this.listView_animation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.listView_animation.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader4,
+            this.columnHeader5,
+            this.columnHeader6,
+            this.columnHeader7});
+            this.listView_animation.FullRowSelect = true;
+            this.listView_animation.Location = new System.Drawing.Point(6, 73);
+            this.listView_animation.MultiSelect = false;
+            this.listView_animation.Name = "listView_animation";
+            this.listView_animation.Size = new System.Drawing.Size(332, 212);
+            this.listView_animation.TabIndex = 16;
+            this.listView_animation.UseCompatibleStateImageBehavior = false;
+            this.listView_animation.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Код";
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Кадров";
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Время";
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Тип анимации";
+            this.columnHeader7.Width = 121;
             // 
             // comboBox_animation_type
             // 
@@ -1480,8 +1550,7 @@
             // 
             // button_animation_clear
             // 
-            this.button_animation_clear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_animation_clear.Location = new System.Drawing.Point(426, 131);
+            this.button_animation_clear.Location = new System.Drawing.Point(344, 131);
             this.button_animation_clear.Name = "button_animation_clear";
             this.button_animation_clear.Size = new System.Drawing.Size(75, 23);
             this.button_animation_clear.TabIndex = 11;
@@ -1500,8 +1569,7 @@
             // 
             // button_animation_del
             // 
-            this.button_animation_del.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_animation_del.Location = new System.Drawing.Point(426, 102);
+            this.button_animation_del.Location = new System.Drawing.Point(344, 102);
             this.button_animation_del.Name = "button_animation_del";
             this.button_animation_del.Size = new System.Drawing.Size(75, 23);
             this.button_animation_del.TabIndex = 10;
@@ -1511,25 +1579,13 @@
             // 
             // button_animationadd
             // 
-            this.button_animationadd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_animationadd.Location = new System.Drawing.Point(426, 73);
+            this.button_animationadd.Location = new System.Drawing.Point(344, 73);
             this.button_animationadd.Name = "button_animationadd";
             this.button_animationadd.Size = new System.Drawing.Size(75, 23);
             this.button_animationadd.TabIndex = 9;
             this.button_animationadd.Text = "Добавить";
             this.button_animationadd.UseVisualStyleBackColor = true;
             this.button_animationadd.Click += new System.EventHandler(this.button_animationadd_Click);
-            // 
-            // listBox_animation
-            // 
-            this.listBox_animation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox_animation.FormattingEnabled = true;
-            this.listBox_animation.Location = new System.Drawing.Point(9, 73);
-            this.listBox_animation.Name = "listBox_animation";
-            this.listBox_animation.Size = new System.Drawing.Size(411, 329);
-            this.listBox_animation.TabIndex = 8;
             // 
             // label34
             // 
@@ -1615,7 +1671,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(519, 456);
+            this.tabPage5.Size = new System.Drawing.Size(519, 326);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Рандом";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1625,12 +1681,12 @@
             this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox8.Controls.Add(this.listView_random);
             this.groupBox8.Controls.Add(this.numericUpDown_rnd_persent);
             this.groupBox8.Controls.Add(this.button3);
             this.groupBox8.Controls.Add(this.label6);
             this.groupBox8.Controls.Add(this.button4);
             this.groupBox8.Controls.Add(this.button5);
-            this.groupBox8.Controls.Add(this.listBox_random);
             this.groupBox8.Controls.Add(this.label7);
             this.groupBox8.Controls.Add(this.numericUpDown_rnd_code);
             this.groupBox8.Controls.Add(this.label39);
@@ -1638,14 +1694,43 @@
             this.groupBox8.Controls.Add(this.label40);
             this.groupBox8.Location = new System.Drawing.Point(6, 29);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(507, 421);
+            this.groupBox8.Size = new System.Drawing.Size(507, 291);
             this.groupBox8.TabIndex = 13;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Правила случайного заполнения";
             // 
+            // listView_random
+            // 
+            this.listView_random.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.listView_random.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader8,
+            this.columnHeader9,
+            this.columnHeader10});
+            this.listView_random.FullRowSelect = true;
+            this.listView_random.Location = new System.Drawing.Point(6, 73);
+            this.listView_random.MultiSelect = false;
+            this.listView_random.Name = "listView_random";
+            this.listView_random.Size = new System.Drawing.Size(209, 212);
+            this.listView_random.TabIndex = 17;
+            this.listView_random.UseCompatibleStateImageBehavior = false;
+            this.listView_random.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Код";
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "Тайл";
+            // 
+            // columnHeader10
+            // 
+            this.columnHeader10.Text = "Процент";
+            // 
             // numericUpDown_rnd_persent
             // 
-            this.numericUpDown_rnd_persent.Location = new System.Drawing.Point(394, 47);
+            this.numericUpDown_rnd_persent.Location = new System.Drawing.Point(395, 47);
             this.numericUpDown_rnd_persent.Maximum = new decimal(new int[] {
             99,
             0,
@@ -1667,8 +1752,7 @@
             // 
             // button3
             // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(426, 131);
+            this.button3.Location = new System.Drawing.Point(221, 131);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 11;
@@ -1681,14 +1765,13 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(272, 49);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(116, 13);
+            this.label6.Size = new System.Drawing.Size(117, 13);
             this.label6.TabIndex = 13;
-            this.label6.Text = "Процент случайности";
+            this.label6.Text = "Процент вероятности";
             // 
             // button4
             // 
-            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button4.Location = new System.Drawing.Point(426, 102);
+            this.button4.Location = new System.Drawing.Point(221, 102);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 10;
@@ -1698,25 +1781,13 @@
             // 
             // button5
             // 
-            this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button5.Location = new System.Drawing.Point(426, 73);
+            this.button5.Location = new System.Drawing.Point(221, 73);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 9;
             this.button5.Text = "Добавить";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // listBox_random
-            // 
-            this.listBox_random.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox_random.FormattingEnabled = true;
-            this.listBox_random.Location = new System.Drawing.Point(9, 73);
-            this.listBox_random.Name = "listBox_random";
-            this.listBox_random.Size = new System.Drawing.Size(411, 329);
-            this.listBox_random.TabIndex = 8;
             // 
             // label7
             // 
@@ -1801,7 +1872,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(519, 456);
+            this.tabPage6.Size = new System.Drawing.Size(519, 326);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Справка";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1859,16 +1930,6 @@
             this.button_saveas.Text = "Сохранить как...";
             this.button_saveas.UseVisualStyleBackColor = true;
             this.button_saveas.Click += new System.EventHandler(this.button_saveas_Click);
-            // 
-            // button_remakecarcase
-            // 
-            this.button_remakecarcase.Location = new System.Drawing.Point(313, 4);
-            this.button_remakecarcase.Name = "button_remakecarcase";
-            this.button_remakecarcase.Size = new System.Drawing.Size(161, 21);
-            this.button_remakecarcase.TabIndex = 12;
-            this.button_remakecarcase.Text = "Пересобрать каркас";
-            this.button_remakecarcase.UseVisualStyleBackColor = true;
-            this.button_remakecarcase.Click += new System.EventHandler(this.button_remakecarcase_Click);
             // 
             // FormMenu
             // 
@@ -2034,13 +2095,11 @@
         private System.Windows.Forms.Button button_avtoClear;
         private System.Windows.Forms.Button button_avtoDel;
         private System.Windows.Forms.Button button_avtoAdd;
-        private System.Windows.Forms.ListBox listBox_avto;
         private System.Windows.Forms.CheckBox checkBox_animation;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Button button_animation_clear;
         private System.Windows.Forms.Button button_animation_del;
         private System.Windows.Forms.Button button_animationadd;
-        private System.Windows.Forms.ListBox listBox_animation;
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.NumericUpDown numericUpDown_animation_code;
         private System.Windows.Forms.Label label35;
@@ -2056,7 +2115,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.ListBox listBox_random;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown numericUpDown_rnd_code;
         private System.Windows.Forms.Label label39;
@@ -2074,5 +2132,18 @@
         private System.Windows.Forms.Button button_save;
         private System.Windows.Forms.Button button_saveas;
         private System.Windows.Forms.Button button_remakecarcase;
+        private System.Windows.Forms.ListView listView_avto;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ListView listView_animation;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.ListView listView_random;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.ColumnHeader columnHeader10;
     }
 }

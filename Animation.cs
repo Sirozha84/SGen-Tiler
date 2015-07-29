@@ -68,8 +68,8 @@ namespace SGen_Tiler
         /// <returns>Строка с названием</returns>
         public string TypeString()
         {
-            if (Type == Types.FW) return "Прамая анимация";
-            if (Type == Types.FWBF) return "Прамая/обратная анимация";
+            if (Type == Types.FW) return "Прамая";
+            if (Type == Types.FWBF) return "Прамая/обратная";
             if (Type == Types.RND) return "Случайные кадры";
             return "Случайные кадры все";
         }

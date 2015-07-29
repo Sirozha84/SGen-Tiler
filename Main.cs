@@ -27,7 +27,7 @@ namespace SGen_Tiler
         EditModes EditMode = EditModes.Layers;
         Tool ToolL = new Tool();    //Инструмент для слоёв
         Tool ToolC = new Tool();    //Инструмент для каркаса
-        int TimerTitles = 255; //Таймер на отображение титров
+        int TimerLayers = 255; //Таймер на отображение титров
         int TimerLabels = 0;   //Таймер для подписей
         string Label;
         int LabelSize;
@@ -111,12 +111,21 @@ namespace SGen_Tiler
             int l = Editor.Layer;
             if (EditMode == EditModes.Carcase) { t = ToolC; l = 0; }
             //Вычисляем какая ячейка находится под мышкой
-            int cx = (int)(Mouse.GetState().X + Editor.X * Project.Px[l].X) / Project.TileSize;
-            int cy = (int)(Mouse.GetState().Y + Editor.Y * Project.Px[l].Y) / Project.TileSize;
+            int cx = (int)(Mouse.GetState().X + Editor.X * Project.Px[l].X) / Project.ScaledSize;
+            int cy = (int)(Mouse.GetState().Y + Editor.Y * Project.Px[l].Y) / Project.ScaledSize;
             //Узнаём, свободна ли клавиатура
             if (Keyboard.GetState().GetPressedKeys().Length == 0) KeyHold = false;
             //Обрабатываем анимацию
             if (Animation.Enable) foreach (Animation anim in Project.Animations) anim.Action();
+            //Переход в главное меню
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) & !KeyHold)
+            {
+                KeyHold = true;
+                Actived = false;
+                TimerLayers = 0;
+                try { form.ShowDialog(); Actived = true; }
+                catch { }
+            }
             //Обработка режимов редактирования
             if (Mode == Modes.Edit)
             {
@@ -126,31 +135,28 @@ namespace SGen_Tiler
                         for (int j = 0; j < t.Height; j++)
                             Project.Put(l, cx + i, cy + j, t.M[i, j]);
                 //Движение карты клавишами
-                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) & Keyboard.GetState().IsKeyDown(Keys.Right))
-                    Editor.X += Project.TileSize;
-                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) & Keyboard.GetState().IsKeyDown(Keys.Left))
-                    Editor.X -= Project.TileSize;
-                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) & Keyboard.GetState().IsKeyDown(Keys.Down))
-                    Editor.Y += Project.TileSize;
-                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) & Keyboard.GetState().IsKeyDown(Keys.Up))
-                    Editor.Y -= Project.TileSize;
+                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
+                    Keyboard.GetState().IsKeyDown(Keys.Right)) Editor.X += 20;
+                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
+                    Keyboard.GetState().IsKeyDown(Keys.Left)) Editor.X -= 20;
+                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
+                    Keyboard.GetState().IsKeyDown(Keys.Down)) Editor.Y += 20;
+                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
+                    Keyboard.GetState().IsKeyDown(Keys.Up)) Editor.Y -= 20;
                 //Корректируем позицию камеры на карте
-                if (Editor.X > Project.Width * Project.TileSize - Project.ScreenWidth)
-                    Editor.X = Project.Width * Project.TileSize - Project.ScreenWidth;
+                if (Editor.X > Project.Width * Project.ScaledSize - Project.ScreenWidth)
+                    Editor.X = Project.Width * Project.ScaledSize - Project.ScreenWidth;
                 if (Editor.X < 0) Editor.X = 0;
-                if (Editor.Y > Project.Height * Project.TileSize - Project.ScreenHeight)
-                    Editor.Y = Project.Height * Project.TileSize - Project.ScreenHeight;
+                if (Editor.Y > Project.Height * Project.ScaledSize - Project.ScreenHeight)
+                    Editor.Y = Project.Height * Project.ScaledSize - Project.ScreenHeight;
                 if (Editor.Y < 0) Editor.Y = 0;
                 //Переход в режим выбора спрайтов
                 if (Mouse.GetState().RightButton != ButtonState.Pressed) RightClickHold = false;
-                if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold) { RightClickHold = true; Mode = Modes.SelectTool; }
-                //Переход в главное меню
-                if (Keyboard.GetState().IsKeyDown(Keys.Escape) & !KeyHold)
+                if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold)
                 {
-                    KeyHold = true;
-                    Actived = false;
-                    try { form.ShowDialog(); Actived = true; }
-                    catch { }
+                    TimerLayers = 0;
+                    RightClickHold = true;
+                    Mode = Modes.SelectTool;
                 }
                 //Переключение слоёв
                 if (Keyboard.GetState().IsKeyDown(Keys.PageUp) & !KeyHold && Editor.Layer > 1)
@@ -171,7 +177,7 @@ namespace SGen_Tiler
                     Editor.ShowOnlyCurrentLayer ^= true;
                     if (!Editor.ShowOnlyCurrentLayer) PopUp("Отображаются все слои", 320);
                     else PopUp("Отображается только текущий слой", 320);
-                    TimerTitles = 255;
+                    TimerLayers = 255;
                     KeyHold = true;
                 }
                 //Включение/выключение каркаса
@@ -191,7 +197,7 @@ namespace SGen_Tiler
                 {
                     Mode = Modes.Tiling;
                     Select.Active = false;
-                    PopUp("Ражим тайлинга", 140);
+                    PopUp("Режим тайлинга", 140);
                 }
                 //Вызов штампа
                 if (EditMode == EditModes.Layers)
@@ -253,6 +259,15 @@ namespace SGen_Tiler
                 if (Keyboard.GetState().IsKeyDown(Keys.NumPad6) & !KeyHold & Project.Layers >= 6) { EditMode = EditModes.Layers; Editor.Layer = 6; PopUp(); }
                 if (Keyboard.GetState().IsKeyDown(Keys.NumPad7) & !KeyHold & Project.Layers >= 7) { EditMode = EditModes.Layers; Editor.Layer = 7; PopUp(); }
                 if (Keyboard.GetState().IsKeyDown(Keys.NumPad8) & !KeyHold & Project.Layers >= 8) { EditMode = EditModes.Layers; Editor.Layer = 8; PopUp(); }
+                //Изменением масштаба
+                float oldscale = Editor.Scale;
+                Editor.Scale -= (float)(Wheel - Mouse.GetState().ScrollWheelValue)/1200;
+                if (oldscale != Editor.Scale)
+                {
+                    if (Editor.Scale < 0.1f) Editor.Scale = 0.1f;
+                    if (Editor.Scale > 2) Editor.Scale = 2;
+                    PopUp("Масштаб " + (Editor.Scale).ToString("0%"), 130);
+                }
             }
             if (Mode == Modes.SelectTool) //Тут только для выбора большого инструмента
             {
@@ -378,25 +393,25 @@ namespace SGen_Tiler
             {
                 DrawLayers();
                 //Курсор
-                int s = Project.TileSize;
+                int s = Project.ScaledSize;
                 float kx = Editor.X * Project.Px[l].X;
                 float ky = Editor.Y * Project.Px[l].Y;
                 int x = (int)(Mouse.GetState().X + kx) / s * s - (int)(kx);
                 int y = (int)(Mouse.GetState().Y + ky) / s * s - (int)(ky);
-                spriteBatch.Draw(WhitePixel, new Rectangle(x, y, t.Width * Project.TileSize, t.Height * Project.TileSize),
+                spriteBatch.Draw(WhitePixel, new Rectangle(x, y, t.Width * s, t.Height * s),
                     new Rectangle(0, 0, 1, 1), col);
                 //Прозрачно рисуем инструмент на курсоре (подумаю ещё, надо ли это)
                 for (int i = 0; i < t.Width; i++)
                     for (int j = 0; j < t.Height; j++)
-                        spriteBatch.Draw(tex, new Vector2(x + i * Project.TileSize, y + j * Project.TileSize),
+                        spriteBatch.Draw(tex, new Rectangle(x + i * s, y + j * s, s, s),
                             SpriteByNum(tex, t.M[i, j], false), Color.FromNonPremultiplied(255, 255, 255, al));
                 //Код штампа, если используется
                 if (StampNum > 0) DrawSmallNum(x, y, StampNum, Color.White);
                 //Табличка слоёв
-                if (TimerTitles > 1)
+                if (TimerLayers > 1)
                 {
                     al = 255;
-                    if (TimerTitles < 128) al = (byte)(TimerTitles * 2); //Это даёт красивый эффект, затухание происходит не линейно, а с паузой. Круть :-)
+                    if (TimerLayers < 128) al = (byte)(TimerLayers * 2); //Это даёт красивый эффект, затухание происходит не линейно, а с паузой. Круть :-)
                     spriteBatch.Draw(WhitePixel, new Rectangle(0, 0, 90, 20 * Project.Layers + 10), Color.FromNonPremultiplied(0, 0, 0, (int)(al*0.75f)));
                     for (int i = 0; i < Project.Layers; i++)
                     {
@@ -408,7 +423,7 @@ namespace SGen_Tiler
                         if (i + 1 == l & EditMode != EditModes.Carcase) br = 255;
                         spriteBatch.DrawString(Font,"Слой " + (i + 1),new Vector2(20,i*20), Color.FromNonPremultiplied(br, br, 255, al));
                     }
-                    TimerTitles -= 4;
+                    TimerLayers -= 4;
                 }
             }
             //Режим выбора инструментов
@@ -435,16 +450,16 @@ namespace SGen_Tiler
                 DrawLayers();
                 spriteBatch.End();
                 //Курсор
-                float kx = Select.Left * Project.TileSize - Editor.X * Project.Px[l].X;
-                float ky = Select.Top * Project.TileSize - Editor.Y * Project.Px[l].Y;
+                float kx = Select.Left * Project.ScaledSize - Editor.X * Project.Px[l].X;
+                float ky = Select.Top * Project.ScaledSize - Editor.Y * Project.Px[l].Y;
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
                     DepthStencilState.Default, RasterizerState.CullNone);
                 spriteBatch.Draw(Cursor, new Vector2(kx, ky),
-                    new Rectangle(0, 0, Select.Width * Project.TileSize, Select.Height * Project.TileSize),
+                    new Rectangle(0, 0, Select.Width * Project.ScaledSize, Select.Height * Project.ScaledSize),
                     col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                 spriteBatch.End();
                 spriteBatch.Begin();
-                Select.End(Mouse.GetState().X / Project.TileSize, Mouse.GetState().Y / Project.TileSize);
+                Select.End(Mouse.GetState().X / Project.ScaledSize, Mouse.GetState().Y / Project.ScaledSize);
             }
             if (Mode == Modes.Tiling)
             {
@@ -481,7 +496,7 @@ namespace SGen_Tiler
         {
             if (EditMode == EditModes.Layers) PopUp("Выбран слой " + Editor.Layer, 130);
             else PopUp("Выбран каркас ", 130);
-            TimerTitles = 255;
+            TimerLayers = 255;
             KeyHold = true;
         }
 
@@ -516,6 +531,7 @@ namespace SGen_Tiler
         /// </summary>
         void DrawLayers()
         {
+            int s = Project.ScaledSize;
             //Сначала рисуем видимые слои текстурные
             for (int l = 1; l <= Project.Layers; l++)
                 if (!Editor.ShowOnlyCurrentLayer | (Editor.ShowOnlyCurrentLayer & l == Editor.Layer))
@@ -529,18 +545,18 @@ namespace SGen_Tiler
                     //Вывод слоя
                     int kamx = (int)(Editor.X * Project.Px[l].X); //Вычисление камеры для конкретного слоя с учётом коэффициентов смещения
                     int kamy = (int)(Editor.Y * Project.Px[l].Y);
-                    int leftTile = kamx / Project.TileSize;
-                    int topTile = kamy / Project.TileSize;
-                    int rightTile = leftTile + Project.ScreenWidth / Project.TileSize;
-                    int bottomTile = topTile + Project.ScreenHeight / Project.TileSize;
+                    int leftTile = kamx / Project.ScaledSize;
+                    int topTile = kamy / Project.ScaledSize;
+                    int rightTile = leftTile + Project.ScreenWidth / s + 1;
+                    int bottomTile = topTile + Project.ScreenHeight / s + 1;
                     for (int i = leftTile; i <= rightTile; i++)
                         for (int j = topTile; j <= topTile + bottomTile; j++)
                         {
-                            int x = i * Project.TileSize - kamx;
-                            int y = j * Project.TileSize - kamy;
-                            if (Project.M[l, i, j] > 0)
+                            int x = i * s - kamx;
+                            int y = j * s - kamy;
+                            if (i < Project.MaxWidth & j < Project.MaxHeight && Project.M[l, i, j] > 0)
                             {
-                                spriteBatch.Draw(WALL, new Vector2(x, y), SpriteByNum(WALL, Project.M[l, i, j], true), col);
+                                spriteBatch.Draw(WALL, new Rectangle(x, y, s, s), SpriteByNum(WALL, Project.M[l, i, j], true), col);
                                 if (l == Editor.Layer & EditMode == EditModes.Layers & Editor.Codes) DrawSmallNum(x, y, Project.M[l, i, j], col);
                             }
                         }
@@ -548,16 +564,16 @@ namespace SGen_Tiler
             //Затем рисуем, если видно каркасный слой
             if (EditMode == EditModes.Carcase)
             {
-                int leftTile = Editor.X / Project.TileSize;
-                int topTile = Editor.Y / Project.TileSize;
-                int rightTile = leftTile + Project.ScreenWidth / Project.TileSize;
-                int bottomTile = topTile + Project.ScreenHeight / Project.TileSize;
+                int leftTile = Editor.X / s;
+                int topTile = Editor.Y / s;
+                int rightTile = leftTile + Project.ScreenWidth / s + 1;
+                int bottomTile = topTile + Project.ScreenHeight / s + 1;
                 for (int i = leftTile; i <= rightTile; i++)
                     for (int j = topTile; j <= bottomTile; j++)
                     {
-                        int x = i * Project.TileSize - Editor.X;
-                        int y = j * Project.TileSize - Editor.Y;
-                        spriteBatch.Draw(Karkas, new Vector2(x, y), SpriteByNum(Karkas, Project.M[0, i, j], false), Color.White);
+                        int x = i * Project.ScaledSize - Editor.X;
+                        int y = j * Project.ScaledSize - Editor.Y;
+                        spriteBatch.Draw(Karkas, new Rectangle(x, y, s, s), SpriteByNum(Karkas, Project.M[0, i, j], false), Color.White);
                         if (EditMode == EditModes.Carcase & Editor.Codes) DrawSmallNum(x, y, Project.M[0, i, j], Color.White);
                     }
             }
