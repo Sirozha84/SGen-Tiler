@@ -143,13 +143,6 @@ namespace SGen_Tiler
                     Keyboard.GetState().IsKeyDown(Keys.Down)) Editor.Y += 20;
                 if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
                     Keyboard.GetState().IsKeyDown(Keys.Up)) Editor.Y -= 20;
-                //Корректируем позицию камеры на карте
-                if (Editor.X > Project.Width * Project.ScaledSize - Project.ScreenWidth)
-                    Editor.X = Project.Width * Project.ScaledSize - Project.ScreenWidth;
-                if (Editor.X < 0) Editor.X = 0;
-                if (Editor.Y > Project.Height * Project.ScaledSize - Project.ScreenHeight)
-                    Editor.Y = Project.Height * Project.ScaledSize - Project.ScreenHeight;
-                if (Editor.Y < 0) Editor.Y = 0;
                 //Переход в режим выбора спрайтов
                 if (Mouse.GetState().RightButton != ButtonState.Pressed) RightClickHold = false;
                 if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold)
@@ -261,13 +254,28 @@ namespace SGen_Tiler
                 if (Keyboard.GetState().IsKeyDown(Keys.NumPad8) & !KeyHold & Project.Layers >= 8) { EditMode = EditModes.Layers; Editor.Layer = 8; PopUp(); }
                 //Изменением масштаба
                 float oldscale = Editor.Scale;
+                float x = (Mouse.GetState().X + Editor.X) / Project.ScaledSize;
+                float y = (Mouse.GetState().Y + Editor.Y) / Project.ScaledSize;
                 Editor.Scale -= (float)(Wheel - Mouse.GetState().ScrollWheelValue)/1200;
+                if (Editor.Scale < 0.1f) Editor.Scale = 0.1f;
+                if (Editor.Scale > 2) Editor.Scale = 2;
                 if (oldscale != Editor.Scale)
                 {
-                    if (Editor.Scale < 0.1f) Editor.Scale = 0.1f;
-                    if (Editor.Scale > 2) Editor.Scale = 2;
                     PopUp("Масштаб " + (Editor.Scale).ToString("0%"), 130);
+                    //PopUp("Масштаб " + (Editor.Scale).ToString("0%     ") + x.ToString(), 300);
+                    Editor.X = (int)x * Project.ScaledSize - Mouse.GetState().X;
+                    Editor.Y = (int)y * Project.ScaledSize - Mouse.GetState().Y;
                 }
+                PopUp("Масштаб " + (Editor.Scale).ToString("0%     ") + x.ToString(), 300);
+
+
+                //Корректируем позицию камеры на карте
+                if (Editor.X > Project.Width * Project.ScaledSize - Project.ScreenWidth)
+                    Editor.X = Project.Width * Project.ScaledSize - Project.ScreenWidth;
+                if (Editor.X < 0) Editor.X = 0;
+                if (Editor.Y > Project.Height * Project.ScaledSize - Project.ScreenHeight)
+                    Editor.Y = Project.Height * Project.ScaledSize - Project.ScreenHeight;
+                if (Editor.Y < 0) Editor.Y = 0;
             }
             if (Mode == Modes.SelectTool) //Тут только для выбора большого инструмента
             {
@@ -387,20 +395,19 @@ namespace SGen_Tiler
                 tex = Karkas;
                 col = Color.FromNonPremultiplied(128, 128, 128, al);
             }
+            int s = Project.ScaledSize;
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             if (Mode == Modes.Edit)
             {
                 DrawLayers();
                 //Курсор
-                int s = Project.ScaledSize;
                 float kx = Editor.X * Project.Px[l].X;
                 float ky = Editor.Y * Project.Px[l].Y;
                 int x = (int)(Mouse.GetState().X + kx) / s * s - (int)(kx);
                 int y = (int)(Mouse.GetState().Y + ky) / s * s - (int)(ky);
-                spriteBatch.Draw(WhitePixel, new Rectangle(x, y, t.Width * s, t.Height * s),
-                    new Rectangle(0, 0, 1, 1), col);
-                //Прозрачно рисуем инструмент на курсоре (подумаю ещё, надо ли это)
+                spriteBatch.Draw(WhitePixel, new Rectangle(x, y, t.Width * s, t.Height * s), new Rectangle(0, 0, 1, 1), col);
+                //Прозрачно рисуем инструмент на курсоре
                 for (int i = 0; i < t.Width; i++)
                     for (int j = 0; j < t.Height; j++)
                         spriteBatch.Draw(tex, new Rectangle(x + i * s, y + j * s, s, s),
@@ -412,7 +419,7 @@ namespace SGen_Tiler
                 {
                     al = 255;
                     if (TimerLayers < 128) al = (byte)(TimerLayers * 2); //Это даёт красивый эффект, затухание происходит не линейно, а с паузой. Круть :-)
-                    spriteBatch.Draw(WhitePixel, new Rectangle(0, 0, 90, 20 * Project.Layers + 10), Color.FromNonPremultiplied(0, 0, 0, (int)(al*0.75f)));
+                    spriteBatch.Draw(WhitePixel, new Rectangle(0, 0, 90, 20 * Project.Layers + 10), Color.FromNonPremultiplied(0, 0, 0, al / 2));
                     for (int i = 0; i < Project.Layers; i++)
                     {
                         if (!Editor.ShowOnlyCurrentLayer | i + 1 == l)
@@ -425,6 +432,12 @@ namespace SGen_Tiler
                     }
                     TimerLayers -= 4;
                 }
+                //Подписываем координаты курсора
+                spriteBatch.Draw(WhitePixel, new Rectangle(0, Project.ScreenHeight - 25, 150, 25), Color.FromNonPremultiplied(0, 0, 0, 128));
+                spriteBatch.DrawString(Font, l.ToString("0 x ") +
+                    ((int)(Mouse.GetState().X + kx) / s).ToString("0 x ") +
+                    ((int)(Mouse.GetState().Y + ky) / s).ToString(),
+                    new Vector2(0, Project.ScreenHeight-20), Color.White);
             }
             //Режим выбора инструментов
             if (Mode == Modes.SelectTool)
@@ -450,32 +463,32 @@ namespace SGen_Tiler
                 DrawLayers();
                 spriteBatch.End();
                 //Курсор
-                float kx = Select.Left * Project.ScaledSize - Editor.X * Project.Px[l].X;
-                float ky = Select.Top * Project.ScaledSize - Editor.Y * Project.Px[l].Y;
+                float kx = Select.Left * s - Editor.X * Project.Px[l].X;
+                float ky = Select.Top * s - Editor.Y * Project.Px[l].Y;
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
                     DepthStencilState.Default, RasterizerState.CullNone);
                 spriteBatch.Draw(Cursor, new Vector2(kx, ky),
-                    new Rectangle(0, 0, Select.Width * Project.ScaledSize, Select.Height * Project.ScaledSize),
+                    new Rectangle(0, 0, Select.Width * s, Select.Height * s),
                     col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                 spriteBatch.End();
                 spriteBatch.Begin();
-                Select.End(Mouse.GetState().X / Project.ScaledSize, Mouse.GetState().Y / Project.ScaledSize);
+                Select.End(Mouse.GetState().X / s, Mouse.GetState().Y / s);
             }
             if (Mode == Modes.Tiling)
             {
                 DrawLayers();
                 spriteBatch.End();
                 //Курсор
-                float kx = Select.Left * Project.TileSize - Editor.X * Project.Px[l].X;
-                float ky = Select.Top * Project.TileSize - Editor.Y * Project.Px[l].Y;
+                float kx = Select.Left * s - Editor.X * Project.Px[l].X;
+                float ky = Select.Top * s - Editor.Y * Project.Px[l].Y;
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
                     DepthStencilState.Default, RasterizerState.CullNone);
                 spriteBatch.Draw(Tiling, new Vector2(kx, ky),
-                    new Rectangle(0, 0, Select.Width * Project.TileSize, Select.Height * Project.TileSize),
+                    new Rectangle(0, 0, Select.Width * s, Select.Height * s),
                     col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                 spriteBatch.End();
                 spriteBatch.Begin();
-                Select.End(Mouse.GetState().X / Project.TileSize, Mouse.GetState().Y / Project.TileSize);
+                Select.End(Mouse.GetState().X / s, Mouse.GetState().Y / s);
             }
             //Поп-ап сообщение
             DrawPopUp();
@@ -519,9 +532,9 @@ namespace SGen_Tiler
                 int br = 255;
                 if (TimerLabels < 128) br = TimerLabels * 2;
                 spriteBatch.Draw(WhitePixel, new Rectangle(Project.ScreenWidth / 2 - LabelSize / 2 - 15, 0, LabelSize + 30, 25),
-                    Color.FromNonPremultiplied(0, 0, 0, br));
+                    Color.FromNonPremultiplied(0, 0, 0, br/2));
                 spriteBatch.DrawString(Font, Label, new Vector2(Project.ScreenWidth / 2 - LabelSize / 2, 0),
-                    Color.FromNonPremultiplied(92, 92, 255, br));
+                    Color.FromNonPremultiplied(255, 255, 255, br));
                 TimerLabels -= 4;
             }
         }
@@ -545,12 +558,12 @@ namespace SGen_Tiler
                     //Вывод слоя
                     int kamx = (int)(Editor.X * Project.Px[l].X); //Вычисление камеры для конкретного слоя с учётом коэффициентов смещения
                     int kamy = (int)(Editor.Y * Project.Px[l].Y);
-                    int leftTile = kamx / Project.ScaledSize;
+                    int leftTile = kamx / Project.ScaledSize ;
                     int topTile = kamy / Project.ScaledSize;
                     int rightTile = leftTile + Project.ScreenWidth / s + 1;
                     int bottomTile = topTile + Project.ScreenHeight / s + 1;
                     for (int i = leftTile; i <= rightTile; i++)
-                        for (int j = topTile; j <= topTile + bottomTile; j++)
+                        for (int j = topTile; j <= bottomTile; j++)
                         {
                             int x = i * s - kamx;
                             int y = j * s - kamy;
@@ -573,7 +586,8 @@ namespace SGen_Tiler
                     {
                         int x = i * Project.ScaledSize - Editor.X;
                         int y = j * Project.ScaledSize - Editor.Y;
-                        spriteBatch.Draw(Karkas, new Rectangle(x, y, s, s), SpriteByNum(Karkas, Project.M[0, i, j], false), Color.White);
+                        if (i < Project.MaxWidth & j < Project.MaxHeight)
+                            spriteBatch.Draw(Karkas, new Rectangle(x, y, s, s), SpriteByNum(Karkas, Project.M[0, i, j], false), Color.White);
                         if (EditMode == EditModes.Carcase & Editor.Codes) DrawSmallNum(x, y, Project.M[0, i, j], Color.White);
                     }
             }
