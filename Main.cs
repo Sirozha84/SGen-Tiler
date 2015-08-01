@@ -208,6 +208,7 @@ namespace SGen_Tiler
                         if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; t.CopyBy(Project.Stamps[6]); load = true; }
                         if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; t.CopyBy(Project.Stamps[7]); load = true; }
                         if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; t.CopyBy(Project.Stamps[8]); load = true; }
+                        if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; t.CopyBy(Project.Stamps[9]); load = true; }
                         if (Keyboard.GetState().IsKeyDown(Keys.D0)) { StampNum = 0; t.Reset(); }
                         if (load)
                             if (StampNum > 0) PopUp("Выбран штамп " + StampNum, 150);
@@ -262,12 +263,9 @@ namespace SGen_Tiler
                 if (oldscale != Editor.Scale)
                 {
                     PopUp("Масштаб " + (Editor.Scale).ToString("0%"), 130);
-                    //PopUp("Масштаб " + (Editor.Scale).ToString("0%     ") + x.ToString(), 300);
                     Editor.X = (int)x * Project.ScaledSize - Mouse.GetState().X;
                     Editor.Y = (int)y * Project.ScaledSize - Mouse.GetState().Y;
                 }
-                PopUp("Масштаб " + (Editor.Scale).ToString("0%     ") + x.ToString(), 300);
-
 
                 //Корректируем позицию камеры на карте
                 if (Editor.X > Project.Width * Project.ScaledSize - Project.ScreenWidth)
