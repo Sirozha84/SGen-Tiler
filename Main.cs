@@ -150,15 +150,22 @@ namespace SGen_Tiler
                     cxold = cx;
                     cyold = cy;
                 }
+                int inc = 20;
+                if (ControlKey) inc = 100;
                 //Движение карты клавишами
                 if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
-                    Keyboard.GetState().IsKeyDown(Keys.Right)) Editor.X += 20;
+                    Keyboard.GetState().IsKeyDown(Keys.Right)) Editor.X += inc;
                 if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
-                    Keyboard.GetState().IsKeyDown(Keys.Left)) Editor.X -= 20;
+                    Keyboard.GetState().IsKeyDown(Keys.Left)) Editor.X -= inc;
                 if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
-                    Keyboard.GetState().IsKeyDown(Keys.Down)) Editor.Y += 20;
+                    Keyboard.GetState().IsKeyDown(Keys.Down)) Editor.Y += inc;
                 if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
-                    Keyboard.GetState().IsKeyDown(Keys.Up)) Editor.Y -= 20;
+                    Keyboard.GetState().IsKeyDown(Keys.Up)) Editor.Y -= inc;
+                //Движение карты мышкой
+                if (Mouse.GetState().Position.X < 3 & Mouse.GetState().Position.X > -20) Editor.X -= 10;
+                if (Mouse.GetState().Position.Y < 3 & Mouse.GetState().Position.Y > -20) Editor.Y -= 10;
+                if (Mouse.GetState().Position.X > Project.ScreenWidth - 3 & Mouse.GetState().Position.X < Project.ScreenWidth + 20) Editor.X += 10;
+                if (Mouse.GetState().Position.Y > Project.ScreenHeight - 3 & Mouse.GetState().Position.Y < Project.ScreenHeight + 20) Editor.Y += 10;
                 //Переход в режим выбора спрайтов
                 if (Mouse.GetState().RightButton != ButtonState.Pressed) RightClickHold = false;
                 if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold)
@@ -256,14 +263,22 @@ namespace SGen_Tiler
                 }
                 //Быстрый доступ к слоям
                 if (Keyboard.GetState().IsKeyDown(Keys.NumPad0) & !KeyHold) { EditMode = EditModes.Carcase; PopUp(); }
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad1) & !KeyHold) { EditMode = EditModes.Layers; Editor.Layer = 1; PopUp(); }
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2) & !KeyHold & Project.Layers >= 2) { EditMode = EditModes.Layers; Editor.Layer = 2; PopUp(); }
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad3) & !KeyHold & Project.Layers >= 3) { EditMode = EditModes.Layers; Editor.Layer = 3; PopUp(); }
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad4) & !KeyHold & Project.Layers >= 4) { EditMode = EditModes.Layers; Editor.Layer = 4; PopUp(); }
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad5) & !KeyHold & Project.Layers >= 5) { EditMode = EditModes.Layers; Editor.Layer = 5; PopUp(); }
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad6) & !KeyHold & Project.Layers >= 6) { EditMode = EditModes.Layers; Editor.Layer = 6; PopUp(); }
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad7) & !KeyHold & Project.Layers >= 7) { EditMode = EditModes.Layers; Editor.Layer = 7; PopUp(); }
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8) & !KeyHold & Project.Layers >= 8) { EditMode = EditModes.Layers; Editor.Layer = 8; PopUp(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad1) & !KeyHold)
+                { EditMode = EditModes.Layers; Editor.Layer = 1; PopUp(); TimerLayer = 16; }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2) & !KeyHold & Project.Layers >= 2)
+                { EditMode = EditModes.Layers; Editor.Layer = 2; PopUp(); TimerLayer = 16; }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad3) & !KeyHold & Project.Layers >= 3)
+                { EditMode = EditModes.Layers; Editor.Layer = 3; PopUp(); TimerLayer = 16; }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad4) & !KeyHold & Project.Layers >= 4)
+                { EditMode = EditModes.Layers; Editor.Layer = 4; PopUp(); TimerLayer = 16; }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad5) & !KeyHold & Project.Layers >= 5)
+                { EditMode = EditModes.Layers; Editor.Layer = 5; PopUp(); TimerLayer = 16; }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad6) & !KeyHold & Project.Layers >= 6)
+                { EditMode = EditModes.Layers; Editor.Layer = 6; PopUp(); TimerLayer = 16; }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad7) & !KeyHold & Project.Layers >= 7)
+                { EditMode = EditModes.Layers; Editor.Layer = 7; PopUp(); TimerLayer = 16; }
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8) & !KeyHold & Project.Layers >= 8)
+                { EditMode = EditModes.Layers; Editor.Layer = 8; PopUp(); TimerLayer = 16; }
                 //Изменением масштаба
                 float oldscale = Editor.Scale;
                 float x = (Mouse.GetState().X + Editor.X) / Project.ScaledSize;
@@ -442,12 +457,7 @@ namespace SGen_Tiler
                     }
                     TimerLayers -= 4;
                 }
-                //Подписываем координаты курсора
-                spriteBatch.Draw(WhitePixel, new Rectangle(0, Project.ScreenHeight - 25, 150, 25), Color.FromNonPremultiplied(0, 0, 0, 128));
-                spriteBatch.DrawString(Font, l.ToString("0 x ") +
-                    ((int)(Mouse.GetState().X + kx) / s).ToString("0 x ") +
-                    ((int)(Mouse.GetState().Y + ky) / s).ToString(),
-                    new Vector2(0, Project.ScreenHeight-20), Color.White);
+                InfoPanel(l, (int)(Mouse.GetState().X + kx) / s, (int)(Mouse.GetState().Y + ky) / s);
             }
             //Режим выбора инструментов
             if (Mode == Modes.SelectTool)
@@ -482,7 +492,7 @@ namespace SGen_Tiler
                     col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                 spriteBatch.End();
                 spriteBatch.Begin();
-                Select.End(Mouse.GetState().X / s, Mouse.GetState().Y / s);
+                InfoPanel(l, Select.Left, Select.Top, Select.Width, Select.Height);
             }
             if (Mode == Modes.Tiling)
             {
@@ -499,6 +509,7 @@ namespace SGen_Tiler
                 spriteBatch.End();
                 spriteBatch.Begin();
                 Select.End(Mouse.GetState().X / s, Mouse.GetState().Y / s);
+                InfoPanel(l, Select.Left, Select.Top, Select.Width, Select.Height);
             }
             //Поп-ап сообщение
             DrawPopUp();
@@ -511,6 +522,27 @@ namespace SGen_Tiler
         #endregion
 
         #region Всякое разное
+        /// <summary>
+        /// Панель состояния
+        /// </summary>
+        void InfoPanel(int l, int x, int y, int xx, int yy)
+        {
+            spriteBatch.Draw(WhitePixel, new Rectangle(0, Project.ScreenHeight - 25, 300, 25), Color.FromNonPremultiplied(0, 0, 0, 128));
+            spriteBatch.DrawString(Font, l.ToString("0 x ") + x.ToString("0 x ") + y.ToString(),
+                new Vector2(0, Project.ScreenHeight - 20), Color.White);
+            spriteBatch.DrawString(Font, "Область: " + xx.ToString("0 x ") + yy.ToString(),
+                new Vector2(150, Project.ScreenHeight - 20), Color.White);
+        }
+
+        /// <summary>
+        /// Панель состояния
+        /// </summary>
+        void InfoPanel(int l, int x, int y)
+        {
+            spriteBatch.Draw(WhitePixel, new Rectangle(0, Project.ScreenHeight - 25, 150, 25), Color.FromNonPremultiplied(0, 0, 0, 128));
+            spriteBatch.DrawString(Font, l.ToString("0 x ") + x.ToString("0 x ") +y.ToString(),
+                new Vector2(0, Project.ScreenHeight - 20), Color.White);
+        }
 
         /// <summary>
         /// Новое поп-ап сообщение сообщением об слое

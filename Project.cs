@@ -177,7 +177,7 @@ namespace SGen_Tiler
             try
             {
                 NewMap();
-                BinaryReader file = new BinaryReader(new FileStream(Project.FileName, FileMode.Open));
+                BinaryReader file = new BinaryReader(new FileStream(FileName, FileMode.Open));
 
                 if (file.ReadString() != Program.Name) throw new Exception("Файл не поддерживается.");  //Читаем маркер о формате
                 int count;
@@ -220,41 +220,41 @@ namespace SGen_Tiler
             //Сделаем отсутствие дополнительного файла не критичным
             try
             {
-                BinaryReader file = new BinaryReader(new FileStream(Extra(), FileMode.Open));
+                BinaryReader file2 = new BinaryReader(new FileStream(Extra(), FileMode.Open));
                 //Правила автозаполнения каркаса
-                if (file.ReadString() != "AutoRules") throw new Exception(); //Маркер правил автозаполнения
-                AutoRule.Layer = file.ReadByte();
-                int count = file.ReadInt32();
+                if (file2.ReadString() != "AutoRules") throw new Exception(); //Маркер правил автозаполнения
+                AutoRule.Layer = file2.ReadByte();
+                int count = file2.ReadInt32();
                 AutoRules.Clear();
-                for (int i = 0; i < count; i++) AutoRules.Add(new AutoRule(file.ReadUInt16(), file.ReadUInt16(), file.ReadUInt16()));
+                for (int i = 0; i < count; i++) AutoRules.Add(new AutoRule(file2.ReadUInt16(), file2.ReadUInt16(), file2.ReadUInt16()));
                 //Параметры рандома
-                if (file.ReadString() != "Random") throw new Exception();
-                count = file.ReadInt32();
-                for (int i = 0; i < count; i++) Randoms.Add(new RandomTile(file.ReadUInt16(), file.ReadUInt16(), file.ReadByte()));
+                if (file2.ReadString() != "Random") throw new Exception();
+                count = file2.ReadInt32();
+                for (int i = 0; i < count; i++) Randoms.Add(new RandomTile(file2.ReadUInt16(), file2.ReadUInt16(), file2.ReadByte()));
                 //Прикреплённые файлы (если есть)
-                if (file.ReadString() != "Attach") throw new Exception();
-                string ft = file.ReadString();
+                if (file2.ReadString() != "Attach") throw new Exception();
+                string ft = file2.ReadString();
                 AttachTexture = ft != "";
                 if (AttachTexture) Config.FileTexture = ft;
-                ft = file.ReadString();
+                ft = file2.ReadString();
                 AttachCarcase = ft != "";
                 if (AttachCarcase) Config.FileKarkas = ft;
                 //Штампы
-                if (file.ReadString() != "Stamps") throw new Exception();
+                if (file2.ReadString() != "Stamps") throw new Exception();
                 for (int s = 0; s < 10; s++)
                 {
-                    Stamps[s].Width = file.ReadByte();
-                    Stamps[s].Height = file.ReadByte();
+                    Stamps[s].Width = file2.ReadByte();
+                    Stamps[s].Height = file2.ReadByte();
                     for (int i = 0; i < Stamps[s].Width; i++)
                         for (int j = 0; j < Stamps[s].Height; j++)
-                            Stamps[s].M[i, j] = file.ReadUInt16();
+                            Stamps[s].M[i, j] = file2.ReadUInt16();
                 }
-                if (file.ReadString() != "Options") throw new Exception();
-                Editor.Codes = file.ReadBoolean();
-                AutoRule.Enable = file.ReadBoolean();
-                Animation.Enable = file.ReadBoolean();
-                RandomTile.Enable = file.ReadBoolean();
-                file.Close();
+                if (file2.ReadString() != "Options") throw new Exception();
+                Editor.Codes = file2.ReadBoolean();
+                AutoRule.Enable = file2.ReadBoolean();
+                Animation.Enable = file2.ReadBoolean();
+                RandomTile.Enable = file2.ReadBoolean();
+                file2.Close();
                 Saved = true;
             }
             catch { }
@@ -280,14 +280,51 @@ namespace SGen_Tiler
                     file.Write("Layer" + l.ToString()); //Ставим маркер в файле для удобной визуализации
                     for (short j = 0; j < Height; j++)
                     {
-                        if (!FreeString(l, j))
+                        short i = 0;
+                        bool Noli = true; //Считаем ноли?
+                        int Nols = 0;
+                        short FirstTile = 0;
+                        short LastTile = 0;
+                        while (i < Width)
                         {
-                            file.Write(j);  //Ставим номер строки
-                            int FirstTile = 0; while (M[l, FirstTile, j] == 0 & FirstTile + 1 < Width) FirstTile++;
-                            int LastTile = Width - 1; while (M[l, LastTile, j] == 0 & LastTile > 0) LastTile--;
-                            file.Write((short)FirstTile);
-                            file.Write((short)LastTile);
-                            for (int i = FirstTile; i <= LastTile; i++) file.Write(M[l, i, j]);
+                            bool rec = false;
+                            if (Noli)   //Поиск начала данных
+                            {
+                                if (M[l, i, j] > 0)
+                                {
+                                    FirstTile = i;
+                                    Noli = false;
+                                    Nols = 0;
+                                }
+                            }
+                            else      //Поиск пустот
+                            {
+                                if (M[l, i, j] > 0)
+                                {
+                                    Nols = 0;
+                                    LastTile = i;
+                                }
+                                else        //Нашли ноль, считаем их, и если их больше 3-х, завершаем строчку
+                                {
+                                    Nols++;
+                                    if (Nols > 3)
+                                    {
+                                        LastTile = (short)(i - 4);
+                                        Noli = true;
+                                        rec = true;
+                                    }
+                                }
+                            }
+                            if (!Noli & i == Width - 1) { rec = true; LastTile = i; }
+                            if (rec)
+                            {
+                                file.Write(j);
+                                file.Write(FirstTile);
+                                file.Write(LastTile);
+                                for (int ii = FirstTile; ii <= LastTile; ii++) file.Write(M[l, ii, j]);
+                                //System.Windows.Forms.MessageBox.Show(l.ToString("Слой 0, ") + j.ToString("Строка 0   -   ") + FirstTile.ToString() + " - " + LastTile.ToString());
+                            }
+                            i++;
                         }
                     }
                     file.Write((UInt16)0xFFFF);
@@ -357,20 +394,6 @@ namespace SGen_Tiler
         static string Extra()
         {
             return Path.GetDirectoryName(FileName) + "\\" + Path.GetFileNameWithoutExtension(FileName) + ".settings";
-        }
-
-        /// <summary>
-        /// Проверка на пустоту строки
-        /// </summary>
-        /// <param name="l">Номер слоя</param>
-        /// <param name="n">номер строки</param>
-        /// <returns></returns>
-        static bool FreeString(int l, int n)
-        {
-            bool free = true;
-            for (int i = 0; i < Width; i++)
-                if (M[l, i, n] > 0) free = false;
-            return free;
         }
 
         /// <summary>
