@@ -34,10 +34,14 @@ namespace SGen_Tiler
         byte TimerLayer = 0;    //Таймер на подсветку слоя
         int Wheel = 0;  //Последняя позиция колеса мышки (для вычисления инкремента)
         bool RightClickHold = false;    //Держится ли до сих пор правая кнопка (чтобы корректно менять режим)
-        bool KeyHold = true;    //В релизе сделать false, чтобы окно настроек не появлялось сразу же, хотя надо ещё подумать как удобней
+        bool KeyHold;   //Зажата ли какая-нибудь клавиша
+        bool ZHold;     //Зажат ли Z
+        bool YHold;     //Зажат ли Y
         public bool Actived = true; //Так мы будем узнавать акнивно ли главное окно или нет, раз уш так получилось, то будем извращаться :-(
         FormMenu form = new FormMenu();
         byte StampNum = 0;  //Номер штампа, если 0 - значит не выбран
+        int cxold;  //Старые кординаты
+        int cyold;
 
         #region Инициализация
         public Main(string[] arg)
@@ -113,8 +117,15 @@ namespace SGen_Tiler
             //Вычисляем какая ячейка находится под мышкой
             int cx = (int)(Mouse.GetState().X + Editor.X * Project.Px[l].X) / Project.ScaledSize;
             int cy = (int)(Mouse.GetState().Y + Editor.Y * Project.Px[l].Y) / Project.ScaledSize;
-            //Узнаём, свободна ли клавиатура
+            bool ItsOldCell = cx == cxold & cy == cyold;
+            //Узнаём, свободна ли клавиатура, нажат ли какой-нибудь Alt, Ctrl Или Shift
+            bool AltKey = Keyboard.GetState().IsKeyDown(Keys.LeftAlt) | Keyboard.GetState().IsKeyDown(Keys.RightAlt);
+            bool ControlKey = Keyboard.GetState().IsKeyDown(Keys.LeftControl) | Keyboard.GetState().IsKeyDown(Keys.RightControl);
+            bool ShiftKey = Keyboard.GetState().IsKeyDown(Keys.LeftShift) | Keyboard.GetState().IsKeyDown(Keys.RightShift);
             if (Keyboard.GetState().GetPressedKeys().Length == 0) KeyHold = false;
+            if (Keyboard.GetState().IsKeyUp(Keys.Z)) ZHold = false;
+            if (Keyboard.GetState().IsKeyUp(Keys.Y)) YHold = false;
+
             //Обрабатываем анимацию
             if (Animation.Enable) foreach (Animation anim in Project.Animations) anim.Action();
             //Переход в главное меню
@@ -130,10 +141,15 @@ namespace SGen_Tiler
             if (Mode == Modes.Edit)
             {
                 //Проверка на тыканье мышкой
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed & !ItsOldCell)
+                {
                     for (int i = 0; i < t.Width; i++)
                         for (int j = 0; j < t.Height; j++)
                             Project.Put(l, cx + i, cy + j, t.M[i, j]);
+                    Hystory.AddRecord();
+                    cxold = cx;
+                    cyold = cy;
+                }
                 //Движение карты клавишами
                 if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
                     Keyboard.GetState().IsKeyDown(Keys.Right)) Editor.X += 20;
@@ -180,40 +196,35 @@ namespace SGen_Tiler
                     PopUp();
                 }
                 //Переключение в режим выбора штампа
-                if ((Keyboard.GetState().IsKeyDown(Keys.LeftControl) | Keyboard.GetState().IsKeyDown(Keys.RightControl)) & !KeyHold)
+                if (AltKey & !KeyHold)
                 {
                     Mode = Modes.SelectStamp;
                     PopUp("Выберите штамп или сохраните текущий", 360);
                 }
                 //Переключение в режим тайлинга
-                if ((Keyboard.GetState().IsKeyDown(Keys.LeftShift) | Keyboard.GetState().IsKeyDown(Keys.RightShift)) & !KeyHold)
+                if (ShiftKey & !KeyHold)
                 {
                     Mode = Modes.Tiling;
                     Select.Active = false;
                     PopUp("Режим тайлинга", 140);
                 }
                 //Вызов штампа
-                if (EditMode == EditModes.Layers)
+                if (!ControlKey & EditMode == EditModes.Layers)
                 {
-                    if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) | Keyboard.GetState().IsKeyDown(Keys.RightControl))
-                        SaveStamp(t);
-                    else
-                    {
-                        bool load = false;
-                        if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; t.CopyBy(Project.Stamps[1]); load = true; }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; t.CopyBy(Project.Stamps[2]); load = true; }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; t.CopyBy(Project.Stamps[3]); load = true; }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; t.CopyBy(Project.Stamps[4]); load = true; }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; t.CopyBy(Project.Stamps[5]); load = true; }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; t.CopyBy(Project.Stamps[6]); load = true; }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; t.CopyBy(Project.Stamps[7]); load = true; }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; t.CopyBy(Project.Stamps[8]); load = true; }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; t.CopyBy(Project.Stamps[9]); load = true; }
-                        if (Keyboard.GetState().IsKeyDown(Keys.D0)) { StampNum = 0; t.Reset(); }
-                        if (load)
-                            if (StampNum > 0) PopUp("Выбран штамп " + StampNum, 150);
-                            else PopUp("Инструмент сброшен", 200);
-                    }
+                    bool load = false;
+                    if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; t.CopyBy(Project.Stamps[1]); load = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; t.CopyBy(Project.Stamps[2]); load = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; t.CopyBy(Project.Stamps[3]); load = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; t.CopyBy(Project.Stamps[4]); load = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; t.CopyBy(Project.Stamps[5]); load = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; t.CopyBy(Project.Stamps[6]); load = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; t.CopyBy(Project.Stamps[7]); load = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; t.CopyBy(Project.Stamps[8]); load = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; t.CopyBy(Project.Stamps[9]); load = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D0)) { StampNum = 0; t.Reset(); }
+                    if (load)
+                        if (StampNum > 0) PopUp("Выбран штамп " + StampNum, 150);
+                        else PopUp("Инструмент сброшен", 200);
                 }
                 //Включение/выключение показа кодов
                 if (Keyboard.GetState().IsKeyDown(Keys.C) & !KeyHold)
@@ -257,7 +268,7 @@ namespace SGen_Tiler
                 float oldscale = Editor.Scale;
                 float x = (Mouse.GetState().X + Editor.X) / Project.ScaledSize;
                 float y = (Mouse.GetState().Y + Editor.Y) / Project.ScaledSize;
-                Editor.Scale -= (float)(Wheel - Mouse.GetState().ScrollWheelValue)/1200;
+                Editor.Scale -= (float)(Wheel - Mouse.GetState().ScrollWheelValue) / 1200;
                 if (Editor.Scale < 0.1f) Editor.Scale = 0.1f;
                 if (Editor.Scale > 2) Editor.Scale = 2;
                 if (oldscale != Editor.Scale)
@@ -274,7 +285,27 @@ namespace SGen_Tiler
                 if (Editor.Y > Project.Height * Project.ScaledSize - Project.ScreenHeight)
                     Editor.Y = Project.Height * Project.ScaledSize - Project.ScreenHeight;
                 if (Editor.Y < 0) Editor.Y = 0;
+
+                //Сохранение штампа
+                if (ControlKey)
+                {
+                    bool sav = false;
+                    if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; Project.Stamps[1].CopyBy(t); sav = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; Project.Stamps[2].CopyBy(t); sav = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; Project.Stamps[3].CopyBy(t); sav = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; Project.Stamps[4].CopyBy(t); sav = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; Project.Stamps[5].CopyBy(t); sav = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; Project.Stamps[6].CopyBy(t); sav = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; Project.Stamps[7].CopyBy(t); sav = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; Project.Stamps[8].CopyBy(t); sav = true; }
+                    if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; Project.Stamps[9].CopyBy(t); sav = true; }
+                    if (sav) PopUp("Штамп сохранен в ячейку " + StampNum, 240);
+                }
+                //Правка
+                if (ControlKey & Keyboard.GetState().IsKeyDown(Keys.Z) & !ZHold) { Hystory.Undo(); ZHold = true; }
+                if (ControlKey & Keyboard.GetState().IsKeyDown(Keys.Y) & !YHold) { Hystory.Redo(); YHold = true; } 
             }
+            //Режим выбора инструмента
             if (Mode == Modes.SelectTool) //Тут только для выбора большого инструмента
             {
                 Select.End(Tool.Xcalc(Mouse.GetState().X), Mouse.GetState().Y / Project.TileSize);
@@ -302,10 +333,11 @@ namespace SGen_Tiler
                 if (t.Scroll > Rows - (Project.ScreenHeight / Project.TileSize)) t.Scroll = Rows - (Project.ScreenHeight / Project.TileSize);
                 if (t.Scroll < 0) t.Scroll = 0;
             }
+            //Режим выбора штампа
             if (Mode == Modes.SelectStamp)
             {
                 Select.End(cx, cy);
-                if (!Keyboard.GetState().IsKeyDown(Keys.LeftControl) & !Keyboard.GetState().IsKeyDown(Keys.RightControl)) Mode = Modes.Edit;
+                if (!AltKey) Mode = Modes.Edit;
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed & !Select.Active) Select.Start(cx, cy);
                 if (Mouse.GetState().LeftButton != ButtonState.Pressed & Select.Active)
                 {
@@ -321,9 +353,8 @@ namespace SGen_Tiler
                     KeyHold = true;
                     StampNum = 0;
                 }
-                //Сохранение штампа
-                if (EditMode == EditModes.Layers) SaveStamp(t);
             }
+            //Режим тайлинга
             if (Mode == Modes.Tiling)
             {
                 Select.End(cx, cy);
@@ -346,31 +377,12 @@ namespace SGen_Tiler
                     }
                     Select.Active = false;
                     KeyHold = true;
+                    Hystory.AddRecord();
                 }
             }
-
             base.Update(gameTime);
             Wheel = Mouse.GetState().ScrollWheelValue; //Делаем это независимо от режима, а то получается что прокрутка работает даже при другом режиме
         }
-
-        /// <summary>
-        /// Сохранение штампа
-        /// </summary>
-        void SaveStamp(Tool t)
-        {
-            bool sav = false;
-            if (Keyboard.GetState().IsKeyDown(Keys.D1)) { StampNum = 1; Project.Stamps[1].CopyBy(t); sav = true; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D2)) { StampNum = 2; Project.Stamps[2].CopyBy(t); sav = true; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D3)) { StampNum = 3; Project.Stamps[3].CopyBy(t); sav = true; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D4)) { StampNum = 4; Project.Stamps[4].CopyBy(t); sav = true; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { StampNum = 5; Project.Stamps[5].CopyBy(t); sav = true; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D6)) { StampNum = 6; Project.Stamps[6].CopyBy(t); sav = true; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D7)) { StampNum = 7; Project.Stamps[7].CopyBy(t); sav = true; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D8)) { StampNum = 8; Project.Stamps[8].CopyBy(t); sav = true; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D9)) { StampNum = 9; Project.Stamps[9].CopyBy(t); sav = true; }
-            if (sav) PopUp("Штамп сохранен в ячейку " + StampNum, 240);
-        }
-
         #endregion
 
         #region draw

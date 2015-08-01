@@ -116,6 +116,7 @@ namespace SGen_Tiler
             AutoRulesClear();
             RandomClear();
             StampesClear();
+            Hystory.Clear();
             Saved = true;
         }
 
@@ -209,19 +210,29 @@ namespace SGen_Tiler
                 for (int i = 0; i < count; i++)
                     Animations.Add(new Animation(file.ReadUInt16(), file.ReadByte(), file.ReadByte(), (Animation.Types)file.ReadByte()));
                 file.Close();
-                file = new BinaryReader (new FileStream(Project.FileName + " extra", FileMode.Open));
+            }
+            catch (Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show("Произошла ошибка при открытии файла.\n" + e.Message, Program.Name);
+                NewMap();
+                FileName = "";
+            }
+            //Сделаем отсутствие дополнительного файла не критичным
+            try
+            {
+                BinaryReader file = new BinaryReader(new FileStream(Extra(), FileMode.Open));
                 //Правила автозаполнения каркаса
-                if (file.ReadString() != "AutoRules") throw new Exception(ErrorFileIntegrity); //Маркер правил автозаполнения
+                if (file.ReadString() != "AutoRules") throw new Exception(); //Маркер правил автозаполнения
                 AutoRule.Layer = file.ReadByte();
-                count = file.ReadInt32();
+                int count = file.ReadInt32();
                 AutoRules.Clear();
                 for (int i = 0; i < count; i++) AutoRules.Add(new AutoRule(file.ReadUInt16(), file.ReadUInt16(), file.ReadUInt16()));
                 //Параметры рандома
-                if (file.ReadString() != "Random") throw new Exception(ErrorFileIntegrity);
+                if (file.ReadString() != "Random") throw new Exception();
                 count = file.ReadInt32();
                 for (int i = 0; i < count; i++) Randoms.Add(new RandomTile(file.ReadUInt16(), file.ReadUInt16(), file.ReadByte()));
                 //Прикреплённые файлы (если есть)
-                if (file.ReadString() != "Attach") throw new Exception(ErrorFileIntegrity);
+                if (file.ReadString() != "Attach") throw new Exception();
                 string ft = file.ReadString();
                 AttachTexture = ft != "";
                 if (AttachTexture) Config.FileTexture = ft;
@@ -229,7 +240,7 @@ namespace SGen_Tiler
                 AttachCarcase = ft != "";
                 if (AttachCarcase) Config.FileKarkas = ft;
                 //Штампы
-                if (file.ReadString() != "Stamps") throw new Exception(ErrorFileIntegrity);
+                if (file.ReadString() != "Stamps") throw new Exception();
                 for (int s = 0; s < 10; s++)
                 {
                     Stamps[s].Width = file.ReadByte();
@@ -238,7 +249,7 @@ namespace SGen_Tiler
                         for (int j = 0; j < Stamps[s].Height; j++)
                             Stamps[s].M[i, j] = file.ReadUInt16();
                 }
-                if (file.ReadString() != "Options") throw new Exception(ErrorFileIntegrity);
+                if (file.ReadString() != "Options") throw new Exception();
                 Editor.Codes = file.ReadBoolean();
                 AutoRule.Enable = file.ReadBoolean();
                 Animation.Enable = file.ReadBoolean();
@@ -246,12 +257,7 @@ namespace SGen_Tiler
                 file.Close();
                 Saved = true;
             }
-            catch (Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show("Произошла ошибка при открытии файла.\n" + e.Message, Program.Name);
-                NewMap();
-                FileName = "";
-            }
+            catch { }
         }
 
         /// <summary>
@@ -262,7 +268,6 @@ namespace SGen_Tiler
             try
             {
                 BinaryWriter file = new BinaryWriter(new FileStream(FileName, FileMode.Create));
-                //BinaryWriter file = new BinaryWriter(new FileStream(@"c:\Users\sg\Dropbox\Проекты\tets.map", FileMode.Create));
                 file.Write(Program.Name);
                 file.Write((short)TileSize);
                 file.Write((short)ScreenWidth);
@@ -300,7 +305,7 @@ namespace SGen_Tiler
                 }
                 file.Close();
                 //Сохраняем дополнительные данные в отдельный файл
-                file = new BinaryWriter(new FileStream(FileName+" extra", FileMode.Create));
+                file = new BinaryWriter(new FileStream(Extra(), FileMode.Create));
                 file.Write("AutoRules");
                 file.Write((byte)AutoRule.Layer);
                 file.Write(AutoRules.Count);
@@ -346,6 +351,15 @@ namespace SGen_Tiler
         }
 
         /// <summary>
+        /// Файлик для настроек карты
+        /// </summary>
+        /// <returns></returns>
+        static string Extra()
+        {
+            return Path.GetDirectoryName(FileName) + "\\" + Path.GetFileNameWithoutExtension(FileName) + ".settings";
+        }
+
+        /// <summary>
         /// Проверка на пустоту строки
         /// </summary>
         /// <param name="l">Номер слоя</param>
@@ -375,11 +389,19 @@ namespace SGen_Tiler
             if (rnds.Count > 0)
                 foreach (RandomTile rnd in rnds)
                     if (RND.Next(100) > rnd.Persent) c = rnd.Tile;
+            //Запоминаем что было в этой ячейке
+            Hystory.AddRecord(l, x, y, M[l, x, y], c);
             //"Путим" ячейку
             M[l, x, y] = c;
             //Далее обрабатываем автозаполнение
             if (AutoRule.Enable & l == AutoRule.Layer & Px[l].X == 1 & Px[l].Y == 1)
-                foreach (AutoRule rule in AutoRules) if (rule.In(c)) M[0, x, y] = rule.Code;
+                foreach (AutoRule rule in AutoRules)
+                    if (rule.In(c))
+                    {
+                        //Запоминаем что было в этой ячейке
+                        Hystory.AddRecord(0, x, y, M[0, x, y], rule.Code);
+                        M[0, x, y] = rule.Code;
+                    }
             Saved = false;
         }
 
