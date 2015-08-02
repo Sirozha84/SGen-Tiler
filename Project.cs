@@ -187,7 +187,7 @@ namespace SGen_Tiler
                 Layers = file.ReadByte();
                 Width = file.ReadInt16();
                 Height = file.ReadInt16();
-                for (byte l = 0; l < Layers; l++)
+                for (byte l = 0; l <= Layers; l++)
                 {
                     if (file.ReadString() != "Layer" + l.ToString()) throw new Exception("Слой " + l.ToString() + " не обнаружен."); //Маркер слоя
                     bool OK = true;
@@ -275,7 +275,7 @@ namespace SGen_Tiler
                 file.Write(Layers);
                 file.Write((short)Width);
                 file.Write((short)Height);
-                for (int l = 0; l < Layers; l++)
+                for (int l = 0; l <= Layers; l++)
                 {
                     file.Write("Layer" + l.ToString()); //Ставим маркер в файле для удобной визуализации
                     for (short j = 0; j < Height; j++)

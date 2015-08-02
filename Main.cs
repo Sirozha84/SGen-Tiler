@@ -10,6 +10,7 @@ namespace SGen_Tiler
     /// </summary>
     public class Main : Game
     {
+        const int LabelsSize = 22;
         enum Modes { Edit, SelectTool, SelectStamp, Tiling }
         enum EditModes { Layers, Carcase }
         GraphicsDeviceManager graphics;
@@ -40,8 +41,6 @@ namespace SGen_Tiler
         public bool Actived = true; //Так мы будем узнавать акнивно ли главное окно или нет, раз уш так получилось, то будем извращаться :-(
         FormMenu form = new FormMenu();
         byte StampNum = 0;  //Номер штампа, если 0 - значит не выбран
-        int cxold;  //Старые кординаты
-        int cyold;
 
         #region Инициализация
         public Main(string[] arg)
@@ -117,7 +116,6 @@ namespace SGen_Tiler
             //Вычисляем какая ячейка находится под мышкой
             int cx = (int)(Mouse.GetState().X + Editor.X * Project.Px[l].X) / Project.ScaledSize;
             int cy = (int)(Mouse.GetState().Y + Editor.Y * Project.Px[l].Y) / Project.ScaledSize;
-            bool ItsOldCell = cx == cxold & cy == cyold;
             //Узнаём, свободна ли клавиатура, нажат ли какой-нибудь Alt, Ctrl Или Shift
             bool AltKey = Keyboard.GetState().IsKeyDown(Keys.LeftAlt) | Keyboard.GetState().IsKeyDown(Keys.RightAlt);
             bool ControlKey = Keyboard.GetState().IsKeyDown(Keys.LeftControl) | Keyboard.GetState().IsKeyDown(Keys.RightControl);
@@ -125,6 +123,9 @@ namespace SGen_Tiler
             if (Keyboard.GetState().GetPressedKeys().Length == 0) KeyHold = false;
             if (Keyboard.GetState().IsKeyUp(Keys.Z)) ZHold = false;
             if (Keyboard.GetState().IsKeyUp(Keys.Y)) YHold = false;
+
+            //Полный экран пока не буду делать, возникает какая-то проблема с мышкой. То ли косяк Monogame, толи чё....
+            //if (AltKey & Keyboard.GetState().IsKeyDown(Keys.Enter)) graphics.ToggleFullScreen();
 
             //Обрабатываем анимацию
             if (Animation.Enable) foreach (Animation anim in Project.Animations) anim.Action();
@@ -141,14 +142,12 @@ namespace SGen_Tiler
             if (Mode == Modes.Edit)
             {
                 //Проверка на тыканье мышкой
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed & !ItsOldCell)
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
                     for (int i = 0; i < t.Width; i++)
                         for (int j = 0; j < t.Height; j++)
                             Project.Put(l, cx + i, cy + j, t.M[i, j]);
                     Hystory.AddRecord();
-                    cxold = cx;
-                    cyold = cy;
                 }
                 int inc = 20;
                 if (ControlKey) inc = 100;
@@ -162,17 +161,26 @@ namespace SGen_Tiler
                 if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
                     Keyboard.GetState().IsKeyDown(Keys.Up)) Editor.Y -= inc;
                 //Движение карты мышкой
-                if (Mouse.GetState().Position.X < 3 & Mouse.GetState().Position.X > -20) Editor.X -= 10;
-                if (Mouse.GetState().Position.Y < 3 & Mouse.GetState().Position.Y > -20) Editor.Y -= 10;
-                if (Mouse.GetState().Position.X > Project.ScreenWidth - 3 & Mouse.GetState().Position.X < Project.ScreenWidth + 20) Editor.X += 10;
-                if (Mouse.GetState().Position.Y > Project.ScreenHeight - 3 & Mouse.GetState().Position.Y < Project.ScreenHeight + 20) Editor.Y += 10;
-                //Переход в режим выбора спрайтов
+                if (Mouse.GetState().Position.X < 3 & Mouse.GetState().Position.X > -20 &
+                    Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
+                    Editor.X -= 10;
+                if (Mouse.GetState().Position.Y < 3 & Mouse.GetState().Position.Y > -20 &
+                    Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
+                    Editor.Y -= 10;
+                if (Mouse.GetState().Position.X > Project.ScreenWidth - 3 & Mouse.GetState().Position.X < Project.ScreenWidth + 20 &
+                    Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
+                    Editor.X += 10;
+                if (Mouse.GetState().Position.Y > Project.ScreenHeight - 3 & Mouse.GetState().Position.Y < Project.ScreenHeight + 20 &
+                    Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
+                    Editor.Y += 10;
+                //Переход в режим выбора инструмента
                 if (Mouse.GetState().RightButton != ButtonState.Pressed) RightClickHold = false;
                 if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold)
                 {
                     TimerLayers = 0;
                     RightClickHold = true;
                     Mode = Modes.SelectTool;
+                    TimerLabels = 0;
                 }
                 //Переключение слоёв
                 if (Keyboard.GetState().IsKeyDown(Keys.PageUp) & !KeyHold && Editor.Layer > 1)
@@ -207,6 +215,7 @@ namespace SGen_Tiler
                 {
                     Mode = Modes.SelectStamp;
                     PopUp("Выберите штамп или сохраните текущий", 360);
+                    TimerLayers = 0;
                 }
                 //Переключение в режим тайлинга
                 if (ShiftKey & !KeyHold)
@@ -214,6 +223,7 @@ namespace SGen_Tiler
                     Mode = Modes.Tiling;
                     Select.Active = false;
                     PopUp("Режим тайлинга", 140);
+                    TimerLayers = 0;
                 }
                 //Вызов штампа
                 if (!ControlKey & EditMode == EditModes.Layers)
@@ -283,16 +293,15 @@ namespace SGen_Tiler
                 float oldscale = Editor.Scale;
                 float x = (Mouse.GetState().X + Editor.X) / Project.ScaledSize;
                 float y = (Mouse.GetState().Y + Editor.Y) / Project.ScaledSize;
-                Editor.Scale -= (float)(Wheel - Mouse.GetState().ScrollWheelValue) / 1200;
-                if (Editor.Scale < 0.1f) Editor.Scale = 0.1f;
-                if (Editor.Scale > 2) Editor.Scale = 2;
+                if ((Wheel - Mouse.GetState().ScrollWheelValue > 0 | Keyboard.GetState().IsKeyDown(Keys.Subtract)) && Editor.Scale>0.1f) Editor.Scale -= 0.1f;
+                if ((Wheel - Mouse.GetState().ScrollWheelValue < 0 | Keyboard.GetState().IsKeyDown(Keys.Add)) && Editor.Scale<2) Editor.Scale += 0.1f;
+                if (Keyboard.GetState().IsKeyDown(Keys.Multiply)) Editor.Scale = 1;
                 if (oldscale != Editor.Scale)
                 {
                     PopUp("Масштаб " + (Editor.Scale).ToString("0%"), 130);
                     Editor.X = (int)x * Project.ScaledSize - Mouse.GetState().X;
                     Editor.Y = (int)y * Project.ScaledSize - Mouse.GetState().Y;
                 }
-
                 //Корректируем позицию камеры на карте
                 if (Editor.X > Project.Width * Project.ScaledSize - Project.ScreenWidth)
                     Editor.X = Project.Width * Project.ScaledSize - Project.ScreenWidth;
@@ -300,7 +309,6 @@ namespace SGen_Tiler
                 if (Editor.Y > Project.Height * Project.ScaledSize - Project.ScreenHeight)
                     Editor.Y = Project.Height * Project.ScaledSize - Project.ScreenHeight;
                 if (Editor.Y < 0) Editor.Y = 0;
-
                 //Сохранение штампа
                 if (ControlKey)
                 {
@@ -527,7 +535,7 @@ namespace SGen_Tiler
         /// </summary>
         void InfoPanel(int l, int x, int y, int xx, int yy)
         {
-            spriteBatch.Draw(WhitePixel, new Rectangle(0, Project.ScreenHeight - 25, 300, 25), Color.FromNonPremultiplied(0, 0, 0, 128));
+            spriteBatch.Draw(WhitePixel, new Rectangle(0, Project.ScreenHeight - LabelsSize, 300, LabelsSize), Color.FromNonPremultiplied(0, 0, 0, 128));
             spriteBatch.DrawString(Font, l.ToString("0 x ") + x.ToString("0 x ") + y.ToString(),
                 new Vector2(0, Project.ScreenHeight - 20), Color.White);
             spriteBatch.DrawString(Font, "Область: " + xx.ToString("0 x ") + yy.ToString(),
@@ -539,7 +547,7 @@ namespace SGen_Tiler
         /// </summary>
         void InfoPanel(int l, int x, int y)
         {
-            spriteBatch.Draw(WhitePixel, new Rectangle(0, Project.ScreenHeight - 25, 150, 25), Color.FromNonPremultiplied(0, 0, 0, 128));
+            spriteBatch.Draw(WhitePixel, new Rectangle(0, Project.ScreenHeight - LabelsSize, 150, LabelsSize), Color.FromNonPremultiplied(0, 0, 0, 128));
             spriteBatch.DrawString(Font, l.ToString("0 x ") + x.ToString("0 x ") +y.ToString(),
                 new Vector2(0, Project.ScreenHeight - 20), Color.White);
         }
@@ -573,7 +581,7 @@ namespace SGen_Tiler
             {
                 int br = 255;
                 if (TimerLabels < 128) br = TimerLabels * 2;
-                spriteBatch.Draw(WhitePixel, new Rectangle(Project.ScreenWidth / 2 - LabelSize / 2 - 15, 0, LabelSize + 30, 25),
+                spriteBatch.Draw(WhitePixel, new Rectangle(Project.ScreenWidth / 2 - LabelSize / 2 - 15, 0, LabelSize + 30, LabelsSize),
                     Color.FromNonPremultiplied(0, 0, 0, br/2));
                 spriteBatch.DrawString(Font, Label, new Vector2(Project.ScreenWidth / 2 - LabelSize / 2, 0),
                     Color.FromNonPremultiplied(255, 255, 255, br));

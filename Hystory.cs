@@ -15,6 +15,8 @@ namespace SGen_Tiler
         /// </summary>
         public static void AddRecord()
         {
+            //Не добавляем ключ, если последний уже ключ (значит записей не добавилось)
+            if (List.Count > 0 && List[List.Count - 1].Key) return;
             ChangeString r = new ChangeString();
             r.Key = true;
             List.Add(r);
@@ -31,6 +33,8 @@ namespace SGen_Tiler
         /// <param name="became"></param>
         public static void AddRecord(int layer, int x, int y, ushort was, ushort became)
         {
+            //Не добавляем запись, если изменений нет
+            if (was == became) return;
             //Здесь надо сделать очистку всего что правей Position, если такое имеется
             if (Position < List.Count - 1)
                 List.RemoveRange(Position + 1, List.Count - Position - 1);

@@ -30,7 +30,11 @@ namespace SGen_Tiler
                 FileKarkas = file.ReadString();
                 file.Close();
             }
-            catch { }
+            catch
+            {
+                System.Windows.Forms.MessageBox.Show("Похоже, программа запущена в первый раз.\n" +
+                    "Нажмите Esc, что бы вызвать главное меню, в котором выберите файлы текстур и карту или создайте новую.", Program.Name);
+            }
         }
 
         /// <summary>
