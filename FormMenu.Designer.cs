@@ -30,11 +30,9 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMenu));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBox_savetexture = new System.Windows.Forms.CheckBox();
             this.label_texture = new System.Windows.Forms.Label();
             this.button_tiletexture = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.checkBox_savekarkas = new System.Windows.Forms.CheckBox();
             this.label_karkas = new System.Windows.Forms.Label();
             this.button_carcasetexture = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -155,8 +153,11 @@
             this.button_open = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.button_saveas = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.button_fronttexture = new System.Windows.Forms.Button();
+            this.button_backtexture = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_rexy)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_resx)).BeginInit();
@@ -208,41 +209,35 @@
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.checkBox_savetexture);
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.label33);
+            this.groupBox2.Controls.Add(this.button_fronttexture);
+            this.groupBox2.Controls.Add(this.button_backtexture);
+            this.groupBox2.Controls.Add(this.label_karkas);
             this.groupBox2.Controls.Add(this.label_texture);
+            this.groupBox2.Controls.Add(this.button_carcasetexture);
             this.groupBox2.Controls.Add(this.button_tiletexture);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(507, 77);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Текстура для тайлов";
-            // 
-            // checkBox_savetexture
-            // 
-            this.checkBox_savetexture.AutoSize = true;
-            this.checkBox_savetexture.Location = new System.Drawing.Point(145, 47);
-            this.checkBox_savetexture.Name = "checkBox_savetexture";
-            this.checkBox_savetexture.Size = new System.Drawing.Size(148, 17);
-            this.checkBox_savetexture.TabIndex = 2;
-            this.checkBox_savetexture.Text = "Привязать к этой карте";
-            this.checkBox_savetexture.UseVisualStyleBackColor = true;
-            this.checkBox_savetexture.CheckedChanged += new System.EventHandler(this.checkBox_savetexture_CheckedChanged);
+            this.groupBox2.Text = "Текстуры";
             // 
             // label_texture
             // 
             this.label_texture.AutoSize = true;
-            this.label_texture.Location = new System.Drawing.Point(6, 21);
+            this.label_texture.Location = new System.Drawing.Point(10, 21);
             this.label_texture.Name = "label_texture";
-            this.label_texture.Size = new System.Drawing.Size(36, 13);
+            this.label_texture.Size = new System.Drawing.Size(40, 13);
             this.label_texture.TabIndex = 1;
-            this.label_texture.Text = "Файл";
+            this.label_texture.Text = "Тайлы";
             // 
             // button_tiletexture
             // 
-            this.button_tiletexture.Location = new System.Drawing.Point(9, 42);
+            this.button_tiletexture.Location = new System.Drawing.Point(61, 15);
             this.button_tiletexture.Name = "button_tiletexture";
-            this.button_tiletexture.Size = new System.Drawing.Size(130, 25);
+            this.button_tiletexture.Size = new System.Drawing.Size(158, 25);
             this.button_tiletexture.TabIndex = 0;
             this.button_tiletexture.Text = "Выбрать";
             this.button_tiletexture.UseVisualStyleBackColor = true;
@@ -252,9 +247,6 @@
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.checkBox_savekarkas);
-            this.groupBox3.Controls.Add(this.label_karkas);
-            this.groupBox3.Controls.Add(this.button_carcasetexture);
             this.groupBox3.Location = new System.Drawing.Point(6, 89);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(507, 77);
@@ -262,31 +254,20 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Текстура для каркаса";
             // 
-            // checkBox_savekarkas
-            // 
-            this.checkBox_savekarkas.AutoSize = true;
-            this.checkBox_savekarkas.Location = new System.Drawing.Point(145, 47);
-            this.checkBox_savekarkas.Name = "checkBox_savekarkas";
-            this.checkBox_savekarkas.Size = new System.Drawing.Size(148, 17);
-            this.checkBox_savekarkas.TabIndex = 3;
-            this.checkBox_savekarkas.Text = "Привязать к этой карте";
-            this.checkBox_savekarkas.UseVisualStyleBackColor = true;
-            this.checkBox_savekarkas.CheckedChanged += new System.EventHandler(this.checkBox_savekarkas_CheckedChanged);
-            // 
             // label_karkas
             // 
             this.label_karkas.AutoSize = true;
-            this.label_karkas.Location = new System.Drawing.Point(6, 21);
+            this.label_karkas.Location = new System.Drawing.Point(10, 52);
             this.label_karkas.Name = "label_karkas";
-            this.label_karkas.Size = new System.Drawing.Size(36, 13);
+            this.label_karkas.Size = new System.Drawing.Size(44, 13);
             this.label_karkas.TabIndex = 2;
-            this.label_karkas.Text = "Файл";
+            this.label_karkas.Text = "Каркас";
             // 
             // button_carcasetexture
             // 
-            this.button_carcasetexture.Location = new System.Drawing.Point(9, 42);
+            this.button_carcasetexture.Location = new System.Drawing.Point(61, 46);
             this.button_carcasetexture.Name = "button_carcasetexture";
-            this.button_carcasetexture.Size = new System.Drawing.Size(130, 25);
+            this.button_carcasetexture.Size = new System.Drawing.Size(158, 25);
             this.button_carcasetexture.TabIndex = 0;
             this.button_carcasetexture.Text = "Выбрать";
             this.button_carcasetexture.UseVisualStyleBackColor = true;
@@ -1932,6 +1913,44 @@
             this.button_saveas.UseVisualStyleBackColor = true;
             this.button_saveas.Click += new System.EventHandler(this.button_saveas_Click);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(257, 52);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 13);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Передний фон";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(257, 21);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(67, 13);
+            this.label33.TabIndex = 5;
+            this.label33.Text = "Задний фон";
+            // 
+            // button_fronttexture
+            // 
+            this.button_fronttexture.Location = new System.Drawing.Point(343, 46);
+            this.button_fronttexture.Name = "button_fronttexture";
+            this.button_fronttexture.Size = new System.Drawing.Size(158, 25);
+            this.button_fronttexture.TabIndex = 3;
+            this.button_fronttexture.Text = "Выбрать";
+            this.button_fronttexture.UseVisualStyleBackColor = true;
+            this.button_fronttexture.Click += new System.EventHandler(this.button_fronttexture_Click);
+            // 
+            // button_backtexture
+            // 
+            this.button_backtexture.Location = new System.Drawing.Point(343, 15);
+            this.button_backtexture.Name = "button_backtexture";
+            this.button_backtexture.Size = new System.Drawing.Size(158, 25);
+            this.button_backtexture.TabIndex = 4;
+            this.button_backtexture.Text = "Выбрать";
+            this.button_backtexture.UseVisualStyleBackColor = true;
+            this.button_backtexture.Click += new System.EventHandler(this.button2_Click_1);
+            // 
             // FormMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1957,8 +1976,6 @@
             this.Load += new System.EventHandler(this.FormMenu_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_rexy)).EndInit();
@@ -2123,9 +2140,7 @@
         private System.Windows.Forms.Label label40;
         private System.Windows.Forms.CheckBox checkBox_random;
         private System.Windows.Forms.TabPage tabPage6;
-        private System.Windows.Forms.CheckBox checkBox_savetexture;
         private System.Windows.Forms.Label label_texture;
-        private System.Windows.Forms.CheckBox checkBox_savekarkas;
         private System.Windows.Forms.Label label_karkas;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button_new;
@@ -2146,5 +2161,9 @@
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.ColumnHeader columnHeader9;
         private System.Windows.Forms.ColumnHeader columnHeader10;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Button button_fronttexture;
+        private System.Windows.Forms.Button button_backtexture;
     }
 }

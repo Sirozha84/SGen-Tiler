@@ -36,10 +36,10 @@ namespace SGen_Tiler
         {
             UserChange = false;
             //Основные параметры
-            label_texture.Text = Config.FileTexture;
-            label_karkas.Text = Config.FileKarkas;
-            checkBox_savetexture.Checked = Project.AttachTexture;
-            checkBox_savekarkas.Checked = Project.AttachCarcase;
+            button_tiletexture.Text = Project.FileTexture;
+            button_carcasetexture.Text = Project.FileKarkas;
+            button_backtexture.Text = Project.FileBackground;
+            button_fronttexture.Text = Project.FileFront;
             numericUpDown_tilesize.Value = Project.TileSize;
             numericUpDown_resx.Value = Project.ScreenWidth;
             numericUpDown_rexy.Value = Project.ScreenHeight;
@@ -162,40 +162,50 @@ namespace SGen_Tiler
 
         #region Основные параметры
 
-        //Выбор файлов текстур и галочки
+        //Выбор файлов текстур
         private void button_tiletexture_Click(object sender, EventArgs e)
         {
-            OpenFileDialog load = new OpenFileDialog();
-            load.Filter = FilterPNG;
-            if (load.ShowDialog() == DialogResult.Cancel) return;
-            Config.FileTexture = load.FileName;
-            label_texture.Text = Config.FileTexture;
+            TextureSelect(ref Project.FileTexture);
+            button_tiletexture.Text = System.IO.Path.GetFileName(Project.FileTexture);
             Program.game.InitialTextures();
-            numericUpDown1_ValueChanged(null, null);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+            TextureSelect(ref Project.FileKarkas);
+            button_carcasetexture.Text = System.IO.Path.GetFileName(Project.FileKarkas);
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            TextureSelect(ref Project.FileBackground);
+            button_backtexture.Text = System.IO.Path.GetFileName(Project.FileBackground);
+        }
+
+        private void button_fronttexture_Click(object sender, EventArgs e)
+        {
+            TextureSelect(ref Project.FileFront);
+            button_fronttexture.Text = System.IO.Path.GetFileName(Project.FileFront);
+        }
+
+        /// <summary>
+        /// Выыбор файла текстуры
+        /// </summary>
+        /// <param name="file"></param>
+        void TextureSelect(ref string file)
+        {
             OpenFileDialog load = new OpenFileDialog();
             load.Filter = FilterPNG;
             if (load.ShowDialog() == DialogResult.Cancel) return;
-            Config.FileKarkas = load.FileName;
-            label_karkas.Text = Config.FileKarkas;
+            file = load.FileName;
             Program.game.InitialTextures();
         }
 
-        private void checkBox_savetexture_CheckedChanged(object sender, EventArgs e)
-        {
-            Project.AttachTexture = checkBox_savetexture.Checked;
-            Change();
-        }
-
-        private void checkBox_savekarkas_CheckedChanged(object sender, EventArgs e)
-        {
-            Project.AttachCarcase = checkBox_savekarkas.Checked;
-            Change();
-        }
-        //Настройки размеров
+        /// <summary>
+        /// Настройки размеров
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             Project.TileSize = (int)numericUpDown_tilesize.Value;

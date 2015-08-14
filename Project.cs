@@ -27,14 +27,6 @@ namespace SGen_Tiler
         /// </summary>
         public const int MaxHeight = 5000;
         /// <summary>
-        /// Прикреплять ли текстуру к карте
-        /// </summary>
-        public static bool AttachTexture;
-        /// <summary>
-        /// Прикреплять ли каркас к карте
-        /// </summary>
-        public static bool AttachCarcase;
-        /// <summary>
         /// Сохранён ли проект (при изменении вызывать Project.Change();)
         /// </summary>
         public static bool Saved;
@@ -70,6 +62,22 @@ namespace SGen_Tiler
         /// Смещение слоёв
         /// </summary>
         public static Parallax[] Px;
+        /// <summary>
+        /// Текстура тайлов
+        /// </summary>
+        public static string FileTexture = "";
+        /// <summary>
+        /// Текстура каркаса
+        /// </summary>
+        public static string FileKarkas = "";
+        /// <summary>
+        /// Текстура задника
+        /// </summary>
+        public static string FileBackground = "";
+        /// <summary>
+        /// Текстура передника
+        /// </summary>
+        public static string FileFront = "";
         /// <summary>
         /// Список анимаций
         /// </summary>
@@ -196,20 +204,93 @@ namespace SGen_Tiler
                         int j = file.ReadUInt16();
                         if (j != 0xFFFF)
                         {
-                            int FirstTile = file.ReadInt16();
-                            int LastTile = file.ReadInt16();
-                            for (int i = FirstTile; i <= LastTile; i++) M[l, i, j] = file.ReadUInt16();         
+                            //Битность
+                            byte bpt = file.ReadByte();
+                            if (bpt == 1)
+                            {
+                                //Однобайтовая версия
+                                byte p = 0;
+                                for (int i = 0; i < Width; i++)
+                                {
+                                    byte n = file.ReadByte();
+                                    if (n != 0xFF)
+                                    {
+                                        p = n;
+                                        M[l, i, j] = p;
+                                    }
+                                    else
+                                    {
+                                        int c = file.ReadUInt16();
+                                        i--;
+                                        for (int s = 1; s < c; s++) M[l, i + s, j] = p;
+                                        i += c - 1;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //Двухбайтовая версия
+                                ushort p = 0;
+                                for (int i = 0; i < Width; i++)
+                                {
+                                    ushort n = file.ReadUInt16();
+                                    if (n != 0xFFFF)
+                                    {
+                                        p = n;
+                                        M[l, i, j] = p;
+                                    }
+                                    else
+                                    {
+                                        i--;
+                                        int c = file.ReadUInt16();
+                                        for (int s = 1; s < c; s++) M[l, i + s, j] = p;
+                                        i += c - 1;
+                                    }
+                                }
+                            }
                         }
                         else OK = false;
                     } while (OK);
                     Px[l] = new Parallax(file.ReadSingle(), file.ReadSingle());
                 }
+                //Текстуры
+                if (file.ReadString() != "Textures") throw new Exception();
+                FileBackground = file.ReadString();
+                FileTexture = file.ReadString();
+                FileFront = file.ReadString();
+                FileKarkas = file.ReadString();
                 //Правила анимации
                 if (file.ReadString() != "Animation") throw new Exception(ErrorFileIntegrity); //Маркер параметров анимации
                 count = file.ReadInt32();
                 for (int i = 0; i < count; i++)
                     Animations.Add(new Animation(file.ReadUInt16(), file.ReadByte(), file.ReadByte(), (Animation.Types)file.ReadByte()));
+                //Правила автозаполнения каркаса
+                if (file.ReadString() != "AutoRules") throw new Exception(); //Маркер правил автозаполнения
+                AutoRule.Layer = file.ReadByte();
+                AutoRules.Clear();
+                count = file.ReadInt32();
+                for (int i = 0; i < count; i++) AutoRules.Add(new AutoRule(file.ReadUInt16(), file.ReadUInt16(), file.ReadUInt16()));
+                //Параметры рандома
+                if (file.ReadString() != "Random") throw new Exception();
+                count = file.ReadInt32();
+                for (int i = 0; i < count; i++) Randoms.Add(new RandomTile(file.ReadUInt16(), file.ReadUInt16(), file.ReadByte()));
+                //Штампы
+                if (file.ReadString() != "Stamps") throw new Exception();
+                for (int s = 0; s < 10; s++)
+                {
+                    Stamps[s].Width = file.ReadByte();
+                    Stamps[s].Height = file.ReadByte();
+                    for (int i = 0; i < Stamps[s].Width; i++)
+                        for (int j = 0; j < Stamps[s].Height; j++)
+                            Stamps[s].M[i, j] = file.ReadUInt16();
+                }
+                if (file.ReadString() != "Options") throw new Exception();
+                Editor.Codes = file.ReadBoolean();
+                AutoRule.Enable = file.ReadBoolean();
+                Animation.Enable = file.ReadBoolean();
+                RandomTile.Enable = file.ReadBoolean();
                 file.Close();
+                Saved = true;
             }
             catch (Exception e)
             {
@@ -217,47 +298,6 @@ namespace SGen_Tiler
                 NewMap();
                 FileName = "";
             }
-            //Сделаем отсутствие дополнительного файла не критичным
-            try
-            {
-                BinaryReader file2 = new BinaryReader(new FileStream(Extra(), FileMode.Open));
-                //Правила автозаполнения каркаса
-                if (file2.ReadString() != "AutoRules") throw new Exception(); //Маркер правил автозаполнения
-                AutoRule.Layer = file2.ReadByte();
-                int count = file2.ReadInt32();
-                AutoRules.Clear();
-                for (int i = 0; i < count; i++) AutoRules.Add(new AutoRule(file2.ReadUInt16(), file2.ReadUInt16(), file2.ReadUInt16()));
-                //Параметры рандома
-                if (file2.ReadString() != "Random") throw new Exception();
-                count = file2.ReadInt32();
-                for (int i = 0; i < count; i++) Randoms.Add(new RandomTile(file2.ReadUInt16(), file2.ReadUInt16(), file2.ReadByte()));
-                //Прикреплённые файлы (если есть)
-                if (file2.ReadString() != "Attach") throw new Exception();
-                string ft = file2.ReadString();
-                AttachTexture = ft != "";
-                if (AttachTexture) Config.FileTexture = ft;
-                ft = file2.ReadString();
-                AttachCarcase = ft != "";
-                if (AttachCarcase) Config.FileKarkas = ft;
-                //Штампы
-                if (file2.ReadString() != "Stamps") throw new Exception();
-                for (int s = 0; s < 10; s++)
-                {
-                    Stamps[s].Width = file2.ReadByte();
-                    Stamps[s].Height = file2.ReadByte();
-                    for (int i = 0; i < Stamps[s].Width; i++)
-                        for (int j = 0; j < Stamps[s].Height; j++)
-                            Stamps[s].M[i, j] = file2.ReadUInt16();
-                }
-                if (file2.ReadString() != "Options") throw new Exception();
-                Editor.Codes = file2.ReadBoolean();
-                AutoRule.Enable = file2.ReadBoolean();
-                Animation.Enable = file2.ReadBoolean();
-                RandomTile.Enable = file2.ReadBoolean();
-                file2.Close();
-                Saved = true;
-            }
-            catch { }
         }
 
         /// <summary>
@@ -280,57 +320,65 @@ namespace SGen_Tiler
                     file.Write("Layer" + l.ToString()); //Ставим маркер в файле для удобной визуализации
                     for (short j = 0; j < Height; j++)
                     {
-                        short i = 0;
-                        bool Noli = true; //Считаем ноли?
-                        int Nols = 0;
-                        short FirstTile = 0;
-                        short LastTile = 0;
-                        while (i < Width)
+                        //Проверяем какой максимум у строки
+                        int max = 0;
+                        for (int i = 0; i < Width; i++)
+                            if (M[l, i, j] > max)
+                                max = M[l, i, j];
+                        //И, если строка содержит что-то больше ноля - значит она не пустая, пишем строку
+                        if (max > 0)
                         {
-                            bool rec = false;
-                            if (Noli)   //Поиск начала данных
+                            //Пишем номер строки
+                            file.Write(j);
+                            //Задаём битность для строки
+                            byte bpt = 2;
+                            if (max < 255) bpt = 1;
+                            file.Write(bpt);
+                            if (bpt == 1)
                             {
-                                if (M[l, i, j] > 0)
+                                //Однобайтная версия
+                                for (int i = 0; i < Width; i++)
                                 {
-                                    FirstTile = i;
-                                    Noli = false;
-                                    Nols = 0;
-                                }
-                            }
-                            else      //Поиск пустот
-                            {
-                                if (M[l, i, j] > 0)
-                                {
-                                    Nols = 0;
-                                    LastTile = i;
-                                }
-                                else        //Нашли ноль, считаем их, и если их больше 3-х, завершаем строчку
-                                {
-                                    Nols++;
-                                    if (Nols > 3)
+                                    byte n = (byte)M[l, i, j];
+                                    ushort s = 1;
+                                    file.Write(n);
+                                    while (i + s < Width && M[l, i + s, j] == n) s++;
+                                    if (s > 4)
                                     {
-                                        LastTile = (short)(i - 4);
-                                        Noli = true;
-                                        rec = true;
+                                        file.Write((byte)0xFF);
+                                        file.Write(s);
+                                        i += s - 1;
                                     }
                                 }
                             }
-                            if (!Noli & i == Width - 1) { rec = true; LastTile = i; }
-                            if (rec)
+                            else
                             {
-                                file.Write(j);
-                                file.Write(FirstTile);
-                                file.Write(LastTile);
-                                for (int ii = FirstTile; ii <= LastTile; ii++) file.Write(M[l, ii, j]);
-                                //System.Windows.Forms.MessageBox.Show(l.ToString("Слой 0, ") + j.ToString("Строка 0   -   ") + FirstTile.ToString() + " - " + LastTile.ToString());
+                                //Двухбайтная версия
+                                for (int i = 0; i < Width; i++)
+                                {
+                                    ushort n = M[l, i, j];
+                                    ushort s = 1;
+                                    file.Write(n);
+                                    while (i + s < Width && M[l, i + s, j] == n) s++;
+                                    if (s > 3)
+                                    {
+                                        file.Write((ushort)0xFFFF);
+                                        file.Write(s);
+                                        i += s - 1;
+                                    }
+                                }
                             }
-                            i++;
                         }
                     }
                     file.Write((UInt16)0xFFFF);
                     file.Write(Px[l].X);
                     file.Write(Px[l].Y);
                 }
+                file.Write("Textures");
+                file.Write(FileBackground);
+                file.Write(FileTexture);
+                file.Write(FileFront);
+                file.Write(FileKarkas);
                 file.Write("Animation");
                 file.Write(Animations.Count);
                 foreach (Animation anim in Animations)
@@ -340,9 +388,6 @@ namespace SGen_Tiler
                     file.Write(anim.Time);
                     file.Write((byte)anim.Type);
                 }
-                file.Close();
-                //Сохраняем дополнительные данные в отдельный файл
-                file = new BinaryWriter(new FileStream(Extra(), FileMode.Create));
                 file.Write("AutoRules");
                 file.Write((byte)AutoRule.Layer);
                 file.Write(AutoRules.Count);
@@ -360,9 +405,6 @@ namespace SGen_Tiler
                     file.Write(rand.Tile);
                     file.Write(rand.Persent);
                 }
-                file.Write("Attach");
-                if (AttachTexture) file.Write(Config.FileTexture); else file.Write("");
-                if (AttachCarcase) file.Write(Config.FileKarkas); else file.Write("");
                 file.Write("Stamps");
                 for (int s = 0; s < 10; s++)
                 {
@@ -385,15 +427,6 @@ namespace SGen_Tiler
                 System.Windows.Forms.MessageBox.Show("Произошла ошибка при записи файла. Файл не сохранён.", Program.Name);
                 FileName = "";
             }
-        }
-
-        /// <summary>
-        /// Файлик для настроек карты
-        /// </summary>
-        /// <returns></returns>
-        static string Extra()
-        {
-            return Path.GetDirectoryName(FileName) + "\\" + Path.GetFileNameWithoutExtension(FileName) + ".settings";
         }
 
         /// <summary>

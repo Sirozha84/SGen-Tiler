@@ -22,6 +22,8 @@ namespace SGen_Tiler
         Texture2D SmallDigits;
         Texture2D WALL;
         Texture2D Karkas;
+        Texture2D Background;
+        Texture2D Front;
         Texture2D Tiling;
         SpriteFont Font;
         Modes Mode = Modes.Edit;
@@ -595,8 +597,12 @@ namespace SGen_Tiler
         void DrawLayers()
         {
             int s = Project.ScaledSize;
-            //Сначала рисуем видимые слои текстурные
+            //Рисуем задник
+            if (!Editor.ShowOnlyCurrentLayer && Background != null)
+                spriteBatch.Draw(Background, new Vector2(0, 0), Color.White);
+            //Рисуем видимые слои текстурные
             for (int l = 1; l <= Project.Layers; l++)
+            {
                 if (!Editor.ShowOnlyCurrentLayer | (Editor.ShowOnlyCurrentLayer & l == Editor.Layer))
                 {
                     Color col = Color.White;
@@ -608,11 +614,12 @@ namespace SGen_Tiler
                     //Вывод слоя
                     int kamx = (int)(Editor.X * Project.Px[l].X); //Вычисление камеры для конкретного слоя с учётом коэффициентов смещения
                     int kamy = (int)(Editor.Y * Project.Px[l].Y);
-                    int leftTile = kamx / Project.ScaledSize ;
+                    int leftTile = kamx / Project.ScaledSize;
                     int topTile = kamy / Project.ScaledSize;
                     int rightTile = leftTile + Project.ScreenWidth / s + 1;
                     int bottomTile = topTile + Project.ScreenHeight / s + 1;
                     for (int i = leftTile; i <= rightTile; i++)
+                    {
                         for (int j = topTile; j <= bottomTile; j++)
                         {
                             int x = i * s - kamx;
@@ -623,7 +630,12 @@ namespace SGen_Tiler
                                 if (l == Editor.Layer & EditMode == EditModes.Layers & Editor.Codes) DrawSmallNum(x, y, Project.M[l, i, j], col);
                             }
                         }
+                    }
                 }
+            }
+            //Рисуем передник
+            if (!Editor.ShowOnlyCurrentLayer && Background != null)
+                spriteBatch.Draw(Front, new Vector2(0, 0), Color.White);
             //Затем рисуем, если видно каркасный слой
             if (EditMode == EditModes.Carcase)
             {
@@ -681,30 +693,40 @@ namespace SGen_Tiler
         /// </summary>
         public void InitialTextures()
         {
-            //Загружаем текстуру
+            string patch = System.IO.Path.GetDirectoryName(Project.FileName) + "\\";
+
+            //Тайлы
             try
             {
-                System.IO.FileStream file = new System.IO.FileStream(Config.FileTexture, System.IO.FileMode.Open);
+                System.IO.FileStream file = new System.IO.FileStream(patch + Project.FileTexture, System.IO.FileMode.Open);
                 WALL = Texture2D.FromStream(GraphicsDevice, file);
                 file.Dispose(); //Освобождаем файл вручную, ибо иначе его больше нельзя будет выбрать в этом сеансе (тупо, чё сказать...)
             }
-            catch
-            {
-                //Загрузка обернулась фэйлом, создаём пустую текстуру
-                WALL = new Texture2D(GraphicsDevice, 640, 480); //Над размерами надо ещё подумать
-            }
-            //Загружаем графику
+            catch { WALL = new Texture2D(GraphicsDevice, 640, 480); }
+            //Каркас
             try
             {
-                System.IO.FileStream file = new System.IO.FileStream(Config.FileKarkas, System.IO.FileMode.Open);
+                System.IO.FileStream file = new System.IO.FileStream(patch + Project.FileKarkas, System.IO.FileMode.Open);
                 Karkas = Texture2D.FromStream(GraphicsDevice, file);
                 file.Dispose(); //Освобождаем файл вручную, ибо иначе его больше нельзя будет выбрать в этом сеансе (тупо, чё сказать...)
             }
-            catch
+            catch { Karkas = new Texture2D(GraphicsDevice, 640, 480); }
+            //Задник
+            try
             {
-                //Загрузка обернулась фэйлом, создаём пустую текстуру
-                Karkas = new Texture2D(GraphicsDevice, 640, 480); //Над размерами надо ещё подумать
+                System.IO.FileStream file = new System.IO.FileStream(patch + Project.FileBackground, System.IO.FileMode.Open);
+                Background = Texture2D.FromStream(GraphicsDevice, file);
+                file.Dispose(); //Освобождаем файл вручную, ибо иначе его больше нельзя будет выбрать в этом сеансе (тупо, чё сказать...)
             }
+            catch { }
+            //Передник
+            try
+            {
+                System.IO.FileStream file = new System.IO.FileStream(patch + Project.FileFront, System.IO.FileMode.Open);
+                Front = Texture2D.FromStream(GraphicsDevice, file);
+                file.Dispose(); //Освобождаем файл вручную, ибо иначе его больше нельзя будет выбрать в этом сеансе (тупо, чё сказать...)
+            }
+            catch { }
         }
 
         /// <summary>

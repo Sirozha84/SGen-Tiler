@@ -11,14 +11,6 @@ namespace SGen_Tiler
         static string OpFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SG\\SGen Tiler";
         static string OpFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SG\\SGen Tiler\\Config.bin";
         /// <summary>
-        /// Файл с текстурой
-        /// </summary>
-        public static string FileTexture = "";
-        /// <summary>
-        /// Файл с каркасом
-        /// </summary>
-        public static string FileKarkas = "";
-        /// <summary>
         /// Инициализация параметров
         /// </summary>
         public static void Load()
@@ -26,8 +18,7 @@ namespace SGen_Tiler
             try
             {
                 BinaryReader file = new BinaryReader(new FileStream(OpFile, FileMode.Open));
-                FileTexture = file.ReadString();
-                FileKarkas = file.ReadString();
+                file.ReadString();
                 file.Close();
             }
             catch
@@ -46,8 +37,7 @@ namespace SGen_Tiler
             {
                 Directory.CreateDirectory(OpFolder);
                 BinaryWriter file = new BinaryWriter(new FileStream(OpFile, FileMode.Create));
-                file.Write(FileTexture);
-                file.Write(FileKarkas);
+                file.Write("NotFirstStart");
                 file.Close();
             }
             catch { }
