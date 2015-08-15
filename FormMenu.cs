@@ -339,6 +339,11 @@ namespace SGen_Tiler
             }
         }
 
+        /// <summary>
+        /// Очистка правил автозаполнения
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_avtoClear_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Уверены что хотити этого?", Program.Name, MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -364,6 +369,20 @@ namespace SGen_Tiler
                     foreach (AutoRule rule in Project.AutoRules) if (rule.In(Project.M[AutoRule.Layer, i, j])) Project.M[0, i, j] = rule.Code;
             Change();
             MessageBox.Show("Каркас пересобран", Program.Name);
+        }
+
+        /// <summary>
+        /// Заполнение полей автозаполнения из выбранного правила
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listView_avto_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listView_avto.SelectedIndices.Count == 0) return;
+            if (listView_avto.SelectedIndices[0] == 0) return;
+            numericUpDown_avtoCode.Value = Project.AutoRules[listView_avto.SelectedIndices[0]].Code;
+            numericUpDown_avtoFrom.Value = Project.AutoRules[listView_avto.SelectedIndices[0]].From;
+            numericUpDown_avtoTo.Value = Project.AutoRules[listView_avto.SelectedIndices[0]].To;
         }
         #endregion
 
@@ -415,6 +434,11 @@ namespace SGen_Tiler
             }
         }
 
+        /// <summary>
+        /// Очистка правил анимации
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_animation_clear_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Уверены что хотити этого?", Program.Name, MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -423,6 +447,20 @@ namespace SGen_Tiler
                 listView_animation.Items.Clear();
                 Change();
             }
+        }
+
+        /// <summary>
+        /// Заполнение полей анимации из правила
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listView_animation_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listView_animation.SelectedIndices.Count == 0) return;
+            numericUpDown_animation_code.Value = Project.Animations[listView_animation.SelectedIndices[0]].Code;
+            numericUpDown_animation_frames.Value = Project.Animations[listView_animation.SelectedIndices[0]].Frames;
+            numericUpDown_animation_time.Value = Project.Animations[listView_animation.SelectedIndices[0]].Time;
+            comboBox_animation_type.SelectedIndex = (int)Project.Animations[listView_animation.SelectedIndices[0]].Type;
         }
         #endregion
 
@@ -472,6 +510,11 @@ namespace SGen_Tiler
             }
         }
 
+        /// <summary>
+        /// Очистка правил рандома
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button3_Click_1(object sender, EventArgs e)
         {
             if (MessageBox.Show("Уверены что хотити этого?", Program.Name, MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -480,6 +523,19 @@ namespace SGen_Tiler
                 listView_random.Items.Clear();
                 Change();
             }
+        }
+
+        /// <summary>
+        /// Заполнение полей рандома из правила
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listView_random_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listView_random.SelectedIndices.Count == 0) return;
+            numericUpDown_rnd_code.Value = Project.Randoms[listView_random.SelectedIndices[0]].Code;
+            numericUpDown_rnd_rdntile.Value = Project.Randoms[listView_random.SelectedIndices[0]].Tile;
+            numericUpDown_rnd_persent.Value = Project.Randoms[listView_random.SelectedIndices[0]].Persent;
         }
         #endregion
 
