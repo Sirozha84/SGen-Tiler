@@ -15,6 +15,10 @@ namespace SGen_Tiler
         /// </summary>
         public static string FileName = "";
         /// <summary>
+        /// Имя файла для шаблона
+        /// </summary>
+        public static string FileNameTemplate = "";
+        /// <summary>
         /// Максимальное количество слоёв
         /// </summary>
         public const int MaxLayers = 8;
@@ -295,7 +299,7 @@ namespace SGen_Tiler
             catch (Exception e)
             {
                 System.Windows.Forms.MessageBox.Show("Произошла ошибка при открытии файла.\n" + e.Message, Program.Name);
-                NewMap();
+                //NewMap();
                 FileName = "";
             }
         }
@@ -303,11 +307,13 @@ namespace SGen_Tiler
         /// <summary>
         /// Сохранение проекта
         /// </summary>
-        public static void Save()
+        public static void Save(bool Template)
         {
             try
             {
-                BinaryWriter file = new BinaryWriter(new FileStream(FileName, FileMode.Create));
+                string name = FileName;
+                if (Template) name = FileNameTemplate;
+                BinaryWriter file = new BinaryWriter(new FileStream(name, FileMode.Create));
                 file.Write(Program.Name);
                 file.Write((short)TileSize);
                 file.Write((short)ScreenWidth);
@@ -318,59 +324,62 @@ namespace SGen_Tiler
                 for (int l = 0; l <= Layers; l++)
                 {
                     file.Write("Layer" + l.ToString()); //Ставим маркер в файле для удобной визуализации
-                    for (short j = 0; j < Height; j++)
+                    if (!Template)
                     {
-                        //Проверяем какой максимум у строки
-                        int max = 0;
-                        for (int i = 0; i < Width; i++)
-                            if (M[l, i, j] > max)
-                                max = M[l, i, j];
-                        //И, если строка содержит что-то больше ноля - значит она не пустая, пишем строку
-                        if (max > 0)
+                        for (short j = 0; j < Height; j++)
                         {
-                            //Пишем номер строки
-                            file.Write(j);
-                            //Задаём битность для строки
-                            byte bpt = 2;
-                            if (max < 255) bpt = 1;
-                            file.Write(bpt);
-                            if (bpt == 1)
+                            //Проверяем какой максимум у строки
+                            int max = 0;
+                            for (int i = 0; i < Width; i++)
+                                if (M[l, i, j] > max)
+                                    max = M[l, i, j];
+                            //И, если строка содержит что-то больше ноля - значит она не пустая, пишем строку
+                            if (max > 0)
                             {
-                                //Однобайтная версия
-                                for (int i = 0; i < Width; i++)
+                                //Пишем номер строки
+                                file.Write(j);
+                                //Задаём битность для строки
+                                byte bpt = 2;
+                                if (max < 255) bpt = 1;
+                                file.Write(bpt);
+                                if (bpt == 1)
                                 {
-                                    byte n = (byte)M[l, i, j];
-                                    ushort s = 1;
-                                    file.Write(n);
-                                    while (i + s < Width && M[l, i + s, j] == n) s++;
-                                    if (s > 4)
+                                    //Однобайтная версия
+                                    for (int i = 0; i < Width; i++)
                                     {
-                                        file.Write((byte)0xFF);
-                                        file.Write(s);
-                                        i += s - 1;
+                                        byte n = (byte)M[l, i, j];
+                                        ushort s = 1;
+                                        file.Write(n);
+                                        while (i + s < Width && M[l, i + s, j] == n) s++;
+                                        if (s > 4)
+                                        {
+                                            file.Write((byte)0xFF);
+                                            file.Write(s);
+                                            i += s - 1;
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                //Двухбайтная версия
-                                for (int i = 0; i < Width; i++)
+                                else
                                 {
-                                    ushort n = M[l, i, j];
-                                    ushort s = 1;
-                                    file.Write(n);
-                                    while (i + s < Width && M[l, i + s, j] == n) s++;
-                                    if (s > 3)
+                                    //Двухбайтная версия
+                                    for (int i = 0; i < Width; i++)
                                     {
-                                        file.Write((ushort)0xFFFF);
-                                        file.Write(s);
-                                        i += s - 1;
+                                        ushort n = M[l, i, j];
+                                        ushort s = 1;
+                                        file.Write(n);
+                                        while (i + s < Width && M[l, i + s, j] == n) s++;
+                                        if (s > 3)
+                                        {
+                                            file.Write((ushort)0xFFFF);
+                                            file.Write(s);
+                                            i += s - 1;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    file.Write((UInt16)0xFFFF);
+                    file.Write((ushort)0xFFFF);
                     file.Write(Px[l].X);
                     file.Write(Px[l].Y);
                 }
@@ -420,7 +429,7 @@ namespace SGen_Tiler
                 file.Write(Animation.Enable);
                 file.Write(RandomTile.Enable);
                 file.Close();
-                Saved = true;
+                if (!Template) Saved = true;
             }
             catch
             {

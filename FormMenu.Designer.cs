@@ -30,11 +30,15 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMenu));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.button_fronttexture = new System.Windows.Forms.Button();
+            this.button_backtexture = new System.Windows.Forms.Button();
+            this.label_karkas = new System.Windows.Forms.Label();
             this.label_texture = new System.Windows.Forms.Label();
+            this.button_carcasetexture = new System.Windows.Forms.Button();
             this.button_tiletexture = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label_karkas = new System.Windows.Forms.Label();
-            this.button_carcasetexture = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -153,11 +157,10 @@
             this.button_open = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.button_saveas = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.button_fronttexture = new System.Windows.Forms.Button();
-            this.button_backtexture = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label41 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_rexy)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_resx)).BeginInit();
@@ -224,6 +227,53 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Текстуры";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(257, 52);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 13);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Передний фон";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(257, 21);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(67, 13);
+            this.label33.TabIndex = 5;
+            this.label33.Text = "Задний фон";
+            // 
+            // button_fronttexture
+            // 
+            this.button_fronttexture.Location = new System.Drawing.Point(343, 46);
+            this.button_fronttexture.Name = "button_fronttexture";
+            this.button_fronttexture.Size = new System.Drawing.Size(158, 25);
+            this.button_fronttexture.TabIndex = 3;
+            this.button_fronttexture.Text = "Выбрать";
+            this.button_fronttexture.UseVisualStyleBackColor = true;
+            this.button_fronttexture.Click += new System.EventHandler(this.button_fronttexture_Click);
+            // 
+            // button_backtexture
+            // 
+            this.button_backtexture.Location = new System.Drawing.Point(343, 15);
+            this.button_backtexture.Name = "button_backtexture";
+            this.button_backtexture.Size = new System.Drawing.Size(158, 25);
+            this.button_backtexture.TabIndex = 4;
+            this.button_backtexture.Text = "Выбрать";
+            this.button_backtexture.UseVisualStyleBackColor = true;
+            this.button_backtexture.Click += new System.EventHandler(this.button2_Click_1);
+            // 
+            // label_karkas
+            // 
+            this.label_karkas.AutoSize = true;
+            this.label_karkas.Location = new System.Drawing.Point(10, 52);
+            this.label_karkas.Name = "label_karkas";
+            this.label_karkas.Size = new System.Drawing.Size(44, 13);
+            this.label_karkas.TabIndex = 2;
+            this.label_karkas.Text = "Каркас";
+            // 
             // label_texture
             // 
             this.label_texture.AutoSize = true;
@@ -232,6 +282,16 @@
             this.label_texture.Size = new System.Drawing.Size(40, 13);
             this.label_texture.TabIndex = 1;
             this.label_texture.Text = "Тайлы";
+            // 
+            // button_carcasetexture
+            // 
+            this.button_carcasetexture.Location = new System.Drawing.Point(61, 46);
+            this.button_carcasetexture.Name = "button_carcasetexture";
+            this.button_carcasetexture.Size = new System.Drawing.Size(158, 25);
+            this.button_carcasetexture.TabIndex = 0;
+            this.button_carcasetexture.Text = "Выбрать";
+            this.button_carcasetexture.UseVisualStyleBackColor = true;
+            this.button_carcasetexture.Click += new System.EventHandler(this.button3_Click);
             // 
             // button_tiletexture
             // 
@@ -247,31 +307,14 @@
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.label41);
+            this.groupBox3.Controls.Add(this.button1);
             this.groupBox3.Location = new System.Drawing.Point(6, 89);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(507, 77);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Текстура для каркаса";
-            // 
-            // label_karkas
-            // 
-            this.label_karkas.AutoSize = true;
-            this.label_karkas.Location = new System.Drawing.Point(10, 52);
-            this.label_karkas.Name = "label_karkas";
-            this.label_karkas.Size = new System.Drawing.Size(44, 13);
-            this.label_karkas.TabIndex = 2;
-            this.label_karkas.Text = "Каркас";
-            // 
-            // button_carcasetexture
-            // 
-            this.button_carcasetexture.Location = new System.Drawing.Point(61, 46);
-            this.button_carcasetexture.Name = "button_carcasetexture";
-            this.button_carcasetexture.Size = new System.Drawing.Size(158, 25);
-            this.button_carcasetexture.TabIndex = 0;
-            this.button_carcasetexture.Text = "Выбрать";
-            this.button_carcasetexture.UseVisualStyleBackColor = true;
-            this.button_carcasetexture.Click += new System.EventHandler(this.button3_Click);
+            this.groupBox3.Text = "Шаблон";
             // 
             // groupBox4
             // 
@@ -1243,6 +1286,7 @@
             this.listView_avto.TabIndex = 12;
             this.listView_avto.UseCompatibleStateImageBehavior = false;
             this.listView_avto.View = System.Windows.Forms.View.Details;
+            this.listView_avto.SelectedIndexChanged += new System.EventHandler(this.listView_avto_SelectedIndexChanged);
             // 
             // columnHeader1
             // 
@@ -1466,6 +1510,7 @@
             this.listView_animation.TabIndex = 16;
             this.listView_animation.UseCompatibleStateImageBehavior = false;
             this.listView_animation.View = System.Windows.Forms.View.Details;
+            this.listView_animation.SelectedIndexChanged += new System.EventHandler(this.listView_animation_SelectedIndexChanged);
             // 
             // columnHeader4
             // 
@@ -1696,6 +1741,7 @@
             this.listView_random.TabIndex = 17;
             this.listView_random.UseCompatibleStateImageBehavior = false;
             this.listView_random.View = System.Windows.Forms.View.Details;
+            this.listView_random.SelectedIndexChanged += new System.EventHandler(this.listView_random_SelectedIndexChanged);
             // 
             // columnHeader8
             // 
@@ -1913,43 +1959,23 @@
             this.button_saveas.UseVisualStyleBackColor = true;
             this.button_saveas.Click += new System.EventHandler(this.button_saveas_Click);
             // 
-            // label5
+            // button1
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(257, 52);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(80, 13);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "Передний фон";
+            this.button1.Location = new System.Drawing.Point(6, 19);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(122, 41);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Сохранить эту карту как шаблон";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // label33
+            // label41
             // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(257, 21);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(67, 13);
-            this.label33.TabIndex = 5;
-            this.label33.Text = "Задний фон";
-            // 
-            // button_fronttexture
-            // 
-            this.button_fronttexture.Location = new System.Drawing.Point(343, 46);
-            this.button_fronttexture.Name = "button_fronttexture";
-            this.button_fronttexture.Size = new System.Drawing.Size(158, 25);
-            this.button_fronttexture.TabIndex = 3;
-            this.button_fronttexture.Text = "Выбрать";
-            this.button_fronttexture.UseVisualStyleBackColor = true;
-            this.button_fronttexture.Click += new System.EventHandler(this.button_fronttexture_Click);
-            // 
-            // button_backtexture
-            // 
-            this.button_backtexture.Location = new System.Drawing.Point(343, 15);
-            this.button_backtexture.Name = "button_backtexture";
-            this.button_backtexture.Size = new System.Drawing.Size(158, 25);
-            this.button_backtexture.TabIndex = 4;
-            this.button_backtexture.Text = "Выбрать";
-            this.button_backtexture.UseVisualStyleBackColor = true;
-            this.button_backtexture.Click += new System.EventHandler(this.button2_Click_1);
+            this.label41.Location = new System.Drawing.Point(135, 19);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(247, 41);
+            this.label41.TabIndex = 1;
+            this.label41.Text = "При этом сохраняются все параметры, правила и штампы в новый пустой файл";
             // 
             // FormMenu
             // 
@@ -1976,6 +2002,7 @@
             this.Load += new System.EventHandler(this.FormMenu_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_rexy)).EndInit();
@@ -2165,5 +2192,7 @@
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.Button button_fronttexture;
         private System.Windows.Forms.Button button_backtexture;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Button button1;
     }
 }

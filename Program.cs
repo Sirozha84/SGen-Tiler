@@ -33,7 +33,7 @@ namespace SGen_Tiler
                     if (save.ShowDialog() == DialogResult.Cancel) return;
                     Project.FileName = save.FileName;
                 }
-                Project.Save();
+                Project.Save(false);
             }
         }
     }

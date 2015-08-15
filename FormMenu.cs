@@ -154,9 +154,23 @@ namespace SGen_Tiler
                 if (save.ShowDialog() == DialogResult.Cancel) return false;
                 Project.FileName = save.FileName;
             }
-            Project.Save();
+            Project.Save(false);
             FormRefresh();
             return true;
+        }
+
+        /// <summary>
+        /// Сохранение шаблона
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = FilterMAP;
+            if (save.ShowDialog() == DialogResult.Cancel) return;
+            Project.FileNameTemplate = save.FileName;
+            Project.Save(true);
         }
         #endregion
 
@@ -240,12 +254,6 @@ namespace SGen_Tiler
         {
             Project.Height = (int)numericUpDown_height.Value;
             Change();
-        }
-
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            Project.Save();
         }
 
         private void numericUpDown8_ValueChanged(object sender, EventArgs e) { Project.Px[1].X = (float)numericUpDown_shiftx1.Value; Change(); }
