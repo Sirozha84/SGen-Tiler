@@ -98,7 +98,10 @@ namespace SGen_Tiler
         /// Инструменты для быстрого доступа
         /// </summary>
         public static Tool[] Stamps = new Tool[10];
-
+        /// <summary>
+        /// Тип Бэкграунда для инструментов
+        /// </summary>
+        public static byte ToolBackground = 0;
         /// <summary>
         /// Создание новой дефолтной карты
         /// </summary>
@@ -124,11 +127,16 @@ namespace SGen_Tiler
             Px[7] = new Parallax(1);
             Px[8] = new Parallax(1.2f);
             Editor.Reset();
+            Editor.Codes = false;
             AnimationClear();
+            Animation.Enable = true;
             AutoRulesClear();
+            AutoRule.Enable = true;
             RandomClear();
+            RandomTile.Enable = true;
             StampesClear();
             Hystory.Clear();
+            ToolBackground = 0;
             Saved = true;
         }
 
@@ -293,6 +301,7 @@ namespace SGen_Tiler
                 AutoRule.Enable = file.ReadBoolean();
                 Animation.Enable = file.ReadBoolean();
                 RandomTile.Enable = file.ReadBoolean();
+                ToolBackground = file.ReadByte();
                 file.Close();
                 Saved = true;
             }
@@ -428,6 +437,7 @@ namespace SGen_Tiler
                 file.Write(AutoRule.Enable);
                 file.Write(Animation.Enable);
                 file.Write(RandomTile.Enable);
+                file.Write(ToolBackground);
                 file.Close();
                 if (!Template) Saved = true;
             }

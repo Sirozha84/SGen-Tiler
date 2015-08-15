@@ -44,13 +44,13 @@ namespace SGen_Tiler
         public bool Actived = true; //Так мы будем узнавать акнивно ли главное окно или нет, раз уш так получилось, то будем извращаться :-(
         FormMenu form = new FormMenu();
         byte StampNum = 0;  //Номер штампа, если 0 - значит не выбран
-
+        byte ScrollSlowDown = 0;    //Замедлитель для скролла инструментов
         #region Инициализация
         public Main(string[] arg)
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = false;
+            IsMouseVisible = true;
             Window.Title = Program.Name;
             Config.Load();
             Project.NewMap();
@@ -80,7 +80,6 @@ namespace SGen_Tiler
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             WhitePixel = new Texture2D(GraphicsDevice, 1, 1);
             Color[] color = { new Color(255, 255, 255, 255) };
@@ -100,7 +99,7 @@ namespace SGen_Tiler
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            IsMouseVisible = true;
         }
         #endregion
 
@@ -137,16 +136,23 @@ namespace SGen_Tiler
             if (Keyboard.GetState().GetPressedKeys().Length == 0) KeyHold = false;
             if (Keyboard.GetState().IsKeyUp(Keys.Z)) ZHold = false;
             if (Keyboard.GetState().IsKeyUp(Keys.Y)) YHold = false;
-
-            //Полный экран пока не буду делать, возникает какая-то проблема с мышкой. То ли косяк Monogame, толи чё....
-            if (AltKey & Keyboard.GetState().IsKeyDown(Keys.Enter)) graphics.ToggleFullScreen();
-
+            //Переключение в полный экран и обратно
+            if (AltKey & Keyboard.GetState().IsKeyDown(Keys.Enter))
+            {
+                graphics.ToggleFullScreen();
+                IsMouseVisible = !graphics.IsFullScreen;
+                if (graphics.IsFullScreen) Mouse.SetPosition(Project.ScreenWidth / 2, Project.ScreenHeight / 2);
+            }
             //Обрабатываем анимацию
             if (Animation.Enable) foreach (Animation anim in Project.Animations) anim.Action();
             //Переход в главное меню
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) & !KeyHold)
             {
-                if (graphics.IsFullScreen) graphics.ToggleFullScreen();
+                if (graphics.IsFullScreen)
+                {
+                    graphics.ToggleFullScreen();
+                    IsMouseVisible = true;
+                }
                 KeyHold = true;
                 Actived = false;
                 TimerLayers = 0;
@@ -177,16 +183,16 @@ namespace SGen_Tiler
                 //Движение карты мышкой
                 if (Mouse.GetState().Position.X < 3 & Mouse.GetState().Position.X > -20 &
                     Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
-                    Editor.X -= inc;
+                    Editor.X -= inc / 2;
                 if (Mouse.GetState().Position.Y < 3 & Mouse.GetState().Position.Y > -20 &
                     Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
-                    Editor.Y -= inc;
+                    Editor.Y -= inc / 2;
                 if (Mouse.GetState().Position.X > Project.ScreenWidth - 3 & Mouse.GetState().Position.X < Project.ScreenWidth + 20 &
                     Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
-                    Editor.X += inc;
+                    Editor.X += inc / 2;
                 if (Mouse.GetState().Position.Y > Project.ScreenHeight - 3 & Mouse.GetState().Position.Y < Project.ScreenHeight + 20 &
                     Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
-                    Editor.Y += inc;
+                    Editor.Y += inc / 2;
                 //Переход в режим выбора инструмента
                 if (Mouse.GetState().RightButton != ButtonState.Pressed) RightClickHold = false;
                 if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold)
@@ -228,7 +234,7 @@ namespace SGen_Tiler
                 if (AltKey & !KeyHold)
                 {
                     Mode = Modes.SelectStamp;
-                    PopUp("Выберите штамп или сохраните текущий", 360);
+                    PopUp("Выберите область для создания штампа", 360);
                     TimerLayers = 0;
                 }
                 //Переключение в режим тайлинга
@@ -364,11 +370,41 @@ namespace SGen_Tiler
                     StampNum = 0;
                 }
                 //Прокрутка
-                t.Scroll += (Wheel - Mouse.GetState().ScrollWheelValue) / 120;
+                t.Scroll += (Wheel - Mouse.GetState().ScrollWheelValue) / 40;
+                if (Mouse.GetState().Position.Y < 3 & Mouse.GetState().Position.Y > -20 &
+                    Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
+                {
+                    ScrollSlowDown++;
+                    if (ScrollSlowDown > 5)
+                    {
+                        t.Scroll--;
+                        ScrollSlowDown = 0;
+                    }
+                }
+                if (Mouse.GetState().Position.Y > Project.ScreenHeight - 3 & Mouse.GetState().Position.Y < Project.ScreenHeight + 20 &
+                    Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
+                {
+                    ScrollSlowDown++;
+                    if (ScrollSlowDown > 5)
+                    {
+                        t.Scroll++;
+                        ScrollSlowDown = 0;
+                    }
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Up)) t.Scroll--;
+                if (Keyboard.GetState().IsKeyDown(Keys.Down)) t.Scroll++;
                 //Скорректируем, если надо курсор
                 int Rows = SpritesCount() / (Project.ScreenWidth / Project.TileSize);
                 if (t.Scroll > Rows - (Project.ScreenHeight / Project.TileSize)) t.Scroll = Rows - (Project.ScreenHeight / Project.TileSize);
                 if (t.Scroll < 0) t.Scroll = 0;
+                //Смена фона
+                if (Keyboard.GetState().IsKeyDown(Keys.Space) & !KeyHold)
+                {
+                    KeyHold = true;
+                    Project.ToolBackground++;
+                    if (Project.ToolBackground > 2) Project.ToolBackground = 0;
+                    Project.Saved = false;
+                }
             }
             //Режим выбора штампа
             if (Mode == Modes.SelectStamp)
@@ -484,6 +520,8 @@ namespace SGen_Tiler
             //Режим выбора инструментов
             if (Mode == Modes.SelectTool)
             {
+                if (Project.ToolBackground == 1) GraphicsDevice.Clear(Color.FromNonPremultiplied(0, 30, 50, 255));
+                if (Project.ToolBackground == 2) spriteBatch.Draw(Background, new Vector2(0, 0), Color.White);
                 //Рисуем сетку инструментов
                 int n = t.Scroll * (Project.ScreenWidth / Project.TileSize);
                 for (int j = 0; j < Project.ScreenHeight / Project.TileSize; j++)
@@ -536,7 +574,7 @@ namespace SGen_Tiler
             //Поп-ап сообщение
             DrawPopUp();
             //Указатель
-            spriteBatch.Draw(Cursor, Mouse.GetState().Position.ToVector2(), Color.White);
+            if (graphics.IsFullScreen) spriteBatch.Draw(Cursor, Mouse.GetState().Position.ToVector2(), Color.White);
             //Мерцание курсора
             Cursorcolor += 8;
             if (Cursorcolor > 255) Cursorcolor = 0;
