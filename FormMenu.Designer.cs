@@ -39,6 +39,8 @@
             this.button_carcasetexture = new System.Windows.Forms.Button();
             this.button_tiletexture = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -157,8 +159,6 @@
             this.button_open = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.button_saveas = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label41 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -315,6 +315,24 @@
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Шаблон";
+            // 
+            // label41
+            // 
+            this.label41.Location = new System.Drawing.Point(168, 19);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(164, 41);
+            this.label41.TabIndex = 1;
+            this.label41.Text = "При этом сохраняются все параметры, правила и штампы в новый пустой файл";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(6, 19);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(156, 41);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Сохранить как шаблон";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // groupBox4
             // 
@@ -1958,24 +1976,6 @@
             this.button_saveas.Text = "Сохранить как...";
             this.button_saveas.UseVisualStyleBackColor = true;
             this.button_saveas.Click += new System.EventHandler(this.button_saveas_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(6, 19);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(122, 41);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Сохранить эту карту как шаблон";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // label41
-            // 
-            this.label41.Location = new System.Drawing.Point(135, 19);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(247, 41);
-            this.label41.TabIndex = 1;
-            this.label41.Text = "При этом сохраняются все параметры, правила и штампы в новый пустой файл";
             // 
             // FormMenu
             // 

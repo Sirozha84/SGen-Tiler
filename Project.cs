@@ -299,7 +299,7 @@ namespace SGen_Tiler
             catch (Exception e)
             {
                 System.Windows.Forms.MessageBox.Show("Произошла ошибка при открытии файла.\n" + e.Message, Program.Name);
-                //NewMap();
+                NewMap();
                 FileName = "";
             }
         }

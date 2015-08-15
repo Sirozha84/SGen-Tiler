@@ -19,6 +19,7 @@ namespace SGen_Tiler
         int Cursorcolor = 0;    //И его цвет
         Texture2D Checkbox;
         Texture2D Cursor;
+        Texture2D Stamp;
         Texture2D SmallDigits;
         Texture2D WALL;
         Texture2D Karkas;
@@ -49,7 +50,7 @@ namespace SGen_Tiler
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
             Window.Title = Program.Name;
             Config.Load();
             Project.NewMap();
@@ -83,9 +84,10 @@ namespace SGen_Tiler
             spriteBatch = new SpriteBatch(GraphicsDevice);
             WhitePixel = new Texture2D(GraphicsDevice, 1, 1);
             Color[] color = { new Color(255, 255, 255, 255) };
-            WhitePixel.SetData<Color>(color);
-            SmallDigits = Content.Load<Texture2D>("SmallDigits");
+            WhitePixel.SetData(color);
             Cursor = Content.Load<Texture2D>("Cursor");
+            SmallDigits = Content.Load<Texture2D>("SmallDigits");
+            Stamp = Content.Load<Texture2D>("Stamp");
             Tiling = Content.Load<Texture2D>("Tiling");
             Checkbox = Content.Load<Texture2D>("Checkbox");
             Font = Content.Load<SpriteFont>("Font");
@@ -115,6 +117,16 @@ namespace SGen_Tiler
             Tool t = ToolL;
             int l = Editor.Layer;
             if (EditMode == EditModes.Carcase) { t = ToolC; l = 0; }
+            //Возвращаем мышку в полном экране, если она убежала за границу видимого
+            if (graphics.IsFullScreen)
+            {
+                int x = Mouse.GetState().X;
+                int y = Mouse.GetState().Y;
+                bool ch = false;
+                if (x >= Project.ScreenWidth) { x = Project.ScreenWidth - 1; ch = true; }
+                if (y >= Project.ScreenHeight) { y = Project.ScreenHeight - 1; ch = true; }
+                if (ch) Mouse.SetPosition(x, y);
+            }
             //Вычисляем какая ячейка находится под мышкой
             int cx = (int)(Mouse.GetState().X + Editor.X * Project.Px[l].X) / Project.ScaledSize;
             int cy = (int)(Mouse.GetState().Y + Editor.Y * Project.Px[l].Y) / Project.ScaledSize;
@@ -127,18 +139,18 @@ namespace SGen_Tiler
             if (Keyboard.GetState().IsKeyUp(Keys.Y)) YHold = false;
 
             //Полный экран пока не буду делать, возникает какая-то проблема с мышкой. То ли косяк Monogame, толи чё....
-            //if (AltKey & Keyboard.GetState().IsKeyDown(Keys.Enter)) graphics.ToggleFullScreen();
+            if (AltKey & Keyboard.GetState().IsKeyDown(Keys.Enter)) graphics.ToggleFullScreen();
 
             //Обрабатываем анимацию
             if (Animation.Enable) foreach (Animation anim in Project.Animations) anim.Action();
             //Переход в главное меню
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) & !KeyHold)
             {
+                if (graphics.IsFullScreen) graphics.ToggleFullScreen();
                 KeyHold = true;
                 Actived = false;
                 TimerLayers = 0;
-                try { form.ShowDialog(); Actived = true; }
-                catch { }
+                form.ShowDialog(); Actived = true;
             }
             //Обработка режимов редактирования
             if (Mode == Modes.Edit)
@@ -151,8 +163,8 @@ namespace SGen_Tiler
                             Project.Put(l, cx + i, cy + j, t.M[i, j]);
                     Hystory.AddRecord();
                 }
-                int inc = 20;
-                if (ControlKey) inc = 100;
+                int inc = 16;
+                if (ControlKey) inc = 128;
                 //Движение карты клавишами
                 if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
                     Keyboard.GetState().IsKeyDown(Keys.Right)) Editor.X += inc;
@@ -165,16 +177,16 @@ namespace SGen_Tiler
                 //Движение карты мышкой
                 if (Mouse.GetState().Position.X < 3 & Mouse.GetState().Position.X > -20 &
                     Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
-                    Editor.X -= 10;
+                    Editor.X -= inc;
                 if (Mouse.GetState().Position.Y < 3 & Mouse.GetState().Position.Y > -20 &
-                    Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
-                    Editor.Y -= 10;
-                if (Mouse.GetState().Position.X > Project.ScreenWidth - 3 & Mouse.GetState().Position.X < Project.ScreenWidth + 20 &
                     Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
-                    Editor.X += 10;
+                    Editor.Y -= inc;
+                if (Mouse.GetState().Position.X > Project.ScreenWidth - 3 & Mouse.GetState().Position.X < Project.ScreenWidth + 20 &
+                    Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
+                    Editor.X += inc;
                 if (Mouse.GetState().Position.Y > Project.ScreenHeight - 3 & Mouse.GetState().Position.Y < Project.ScreenHeight + 20 &
                     Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
-                    Editor.Y += 10;
+                    Editor.Y += inc;
                 //Переход в режим выбора инструмента
                 if (Mouse.GetState().RightButton != ButtonState.Pressed) RightClickHold = false;
                 if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold)
@@ -497,7 +509,7 @@ namespace SGen_Tiler
                 float ky = Select.Top * s - Editor.Y * Project.Px[l].Y;
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
                     DepthStencilState.Default, RasterizerState.CullNone);
-                spriteBatch.Draw(Cursor, new Vector2(kx, ky),
+                spriteBatch.Draw(Stamp, new Vector2(kx, ky),
                     new Rectangle(0, 0, Select.Width * s, Select.Height * s),
                     col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                 spriteBatch.End();
@@ -523,6 +535,8 @@ namespace SGen_Tiler
             }
             //Поп-ап сообщение
             DrawPopUp();
+            //Указатель
+            spriteBatch.Draw(Cursor, Mouse.GetState().Position.ToVector2(), Color.White);
             //Мерцание курсора
             Cursorcolor += 8;
             if (Cursorcolor > 255) Cursorcolor = 0;
