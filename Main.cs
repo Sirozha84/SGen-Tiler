@@ -651,7 +651,8 @@ namespace SGen_Tiler
             int s = Project.ScaledSize;
             //Рисуем задник
             if (!Editor.ShowOnlyCurrentLayer && Background != null)
-                spriteBatch.Draw(Background, new Vector2(0, 0), Color.White);
+                spriteBatch.Draw(Background, new Rectangle(0, 0, Project.ScreenWidth, Project.ScreenHeight),
+                    new Rectangle(0, 0, Background.Width, Background.Height), Color.White);
             //Рисуем видимые слои текстурные
             for (int l = 1; l <= Project.Layers; l++)
             {
@@ -686,8 +687,9 @@ namespace SGen_Tiler
                 }
             }
             //Рисуем передник
-            if (!Editor.ShowOnlyCurrentLayer && Background != null)
-                spriteBatch.Draw(Front, new Vector2(0, 0), Color.White);
+            if (!Editor.ShowOnlyCurrentLayer && Front != null)
+                spriteBatch.Draw(Front, new Rectangle(0, 0, Project.ScreenWidth, Project.ScreenHeight),
+                    new Rectangle(0, 0, Front.Width, Front.Height), Color.White);
             //Затем рисуем, если видно каркасный слой
             if (EditMode == EditModes.Carcase)
             {
