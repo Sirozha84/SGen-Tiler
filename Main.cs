@@ -141,6 +141,7 @@ namespace SGen_Tiler
             {
                 graphics.ToggleFullScreen();
                 IsMouseVisible = !graphics.IsFullScreen;
+                //Чтоб небыло нежелательного скролла помешаем мышку в центр
                 if (graphics.IsFullScreen) Mouse.SetPosition(Project.ScreenWidth / 2, Project.ScreenHeight / 2);
             }
             //Обрабатываем анимацию
@@ -568,7 +569,6 @@ namespace SGen_Tiler
                     col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
                 spriteBatch.End();
                 spriteBatch.Begin();
-                Select.End(Mouse.GetState().X / s, Mouse.GetState().Y / s);
                 InfoPanel(l, Select.Left, Select.Top, Select.Width, Select.Height);
             }
             //Поп-ап сообщение
@@ -745,8 +745,8 @@ namespace SGen_Tiler
         /// </summary>
         public void InitialTextures()
         {
-            string patch = System.IO.Path.GetDirectoryName(Project.FileName) + "\\";
-
+            string patch = "";
+            if (Project.FileName != "") patch = System.IO.Path.GetDirectoryName(Project.FileName) + "\\";
             //Тайлы
             try
             {

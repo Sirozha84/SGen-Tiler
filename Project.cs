@@ -204,9 +204,10 @@ namespace SGen_Tiler
                 TileSize = file.ReadInt16();
                 ScreenWidth = file.ReadInt16();
                 ScreenHeight = file.ReadInt16();
-                Layers = file.ReadByte();
                 Width = file.ReadInt16();
                 Height = file.ReadInt16();
+                Layers = file.ReadByte();
+                AutoRule.Layer = file.ReadByte();
                 for (byte l = 0; l <= Layers; l++)
                 {
                     if (file.ReadString() != "Layer" + l.ToString()) throw new Exception("Слой " + l.ToString() + " не обнаружен."); //Маркер слоя
@@ -278,7 +279,6 @@ namespace SGen_Tiler
                     Animations.Add(new Animation(file.ReadUInt16(), file.ReadByte(), file.ReadByte(), (Animation.Types)file.ReadByte()));
                 //Правила автозаполнения каркаса
                 if (file.ReadString() != "AutoRules") throw new Exception(); //Маркер правил автозаполнения
-                AutoRule.Layer = file.ReadByte();
                 AutoRules.Clear();
                 count = file.ReadInt32();
                 for (int i = 0; i < count; i++) AutoRules.Add(new AutoRule(file.ReadUInt16(), file.ReadUInt16(), file.ReadUInt16()));
@@ -327,9 +327,10 @@ namespace SGen_Tiler
                 file.Write((short)TileSize);
                 file.Write((short)ScreenWidth);
                 file.Write((short)ScreenHeight);
-                file.Write(Layers);
                 file.Write((short)Width);
                 file.Write((short)Height);
+                file.Write(Layers);
+                file.Write((byte)AutoRule.Layer);
                 for (int l = 0; l <= Layers; l++)
                 {
                     file.Write("Layer" + l.ToString()); //Ставим маркер в файле для удобной визуализации
@@ -407,7 +408,6 @@ namespace SGen_Tiler
                     file.Write((byte)anim.Type);
                 }
                 file.Write("AutoRules");
-                file.Write((byte)AutoRule.Layer);
                 file.Write(AutoRules.Count);
                 foreach (AutoRule rule in AutoRules)
                 {
@@ -469,7 +469,7 @@ namespace SGen_Tiler
             //"Путим" ячейку
             M[l, x, y] = c;
             //Далее обрабатываем автозаполнение
-            if (AutoRule.Enable & l == AutoRule.Layer & Px[l].X == 1 & Px[l].Y == 1)
+            if (AutoRule.Enable & l == AutoRule.Layer)
                 foreach (AutoRule rule in AutoRules)
                     if (rule.In(c))
                     {

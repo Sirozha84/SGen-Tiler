@@ -256,6 +256,17 @@ namespace SGen_Tiler
             Change();
         }
 
+        /// <summary>
+        /// Выбор главного слоя
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void numericUpDown_avtoMain_ValueChanged_1(object sender, EventArgs e)
+        {
+            AutoRule.Layer = (int)numericUpDown_avtoMain.Value;
+            Change();
+        }
+
         private void numericUpDown8_ValueChanged(object sender, EventArgs e) { Project.Px[1].X = (float)numericUpDown_shiftx1.Value; Change(); }
         private void numericUpDown9_ValueChanged(object sender, EventArgs e) { Project.Px[1].Y = (float)numericUpDown_shifty1.Value; Change(); }
         private void numericUpDown10_ValueChanged(object sender, EventArgs e) { Project.Px[2].X = (float)numericUpDown_shiftx2.Value; Change(); }
@@ -306,12 +317,6 @@ namespace SGen_Tiler
         #endregion
 
         #region Автозаполнение
-        private void numericUpDown_avtoMain_ValueChanged(object sender, EventArgs e)
-        {
-            AutoRule.Layer = (int)numericUpDown_avtoMain.Value;
-            Change();
-        }
-
         private void button_avtoAdd_Click(object sender, EventArgs e)
         {
             AutoRule rule = new AutoRule((ushort)numericUpDown_avtoCode.Value,
@@ -374,7 +379,10 @@ namespace SGen_Tiler
                 return;
             for (int i = 0; i < Project.Width; i++)
                 for (int j = 0; j < Project.Height; j++)
-                    foreach (AutoRule rule in Project.AutoRules) if (rule.In(Project.M[AutoRule.Layer, i, j])) Project.M[0, i, j] = rule.Code;
+                    foreach (AutoRule rule in Project.AutoRules)
+                        if (rule.In(Project.M[AutoRule.Layer, i, j]))
+                            Project.Put(0, i, j, rule.Code);
+            Hystory.AddRecord();
             Change();
             MessageBox.Show("Каркас пересобран", Program.Name);
         }
