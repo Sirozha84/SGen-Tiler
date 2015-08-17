@@ -522,7 +522,7 @@ namespace SGen_Tiler
             if (Mode == Modes.SelectTool)
             {
                 if (Project.ToolBackground == 1) GraphicsDevice.Clear(Color.FromNonPremultiplied(0, 30, 50, 255));
-                if (Project.ToolBackground == 2) spriteBatch.Draw(Background, new Vector2(0, 0), Color.White);
+                if (Project.ToolBackground == 2 && Background != null) spriteBatch.Draw(Background, new Vector2(0, 0), Color.White);
                 //Рисуем сетку инструментов
                 int n = t.Scroll * (Project.ScreenWidth / Project.TileSize);
                 for (int j = 0; j < Project.ScreenHeight / Project.TileSize; j++)
