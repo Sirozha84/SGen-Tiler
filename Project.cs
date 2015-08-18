@@ -304,7 +304,6 @@ namespace SGen_Tiler
                 ToolBackground = file.ReadByte();
                 file.Close();
                 Saved = true;
-                Program.game.InitialTextures();
             }
             catch (Exception e)
             {

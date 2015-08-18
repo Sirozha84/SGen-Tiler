@@ -116,6 +116,7 @@ namespace SGen_Tiler
             if (open.ShowDialog() == DialogResult.Cancel) return;
             Project.FileName = open.FileName;
             Project.Load();
+            Program.game.InitialTextures();
             FormRefresh();
         }
 
