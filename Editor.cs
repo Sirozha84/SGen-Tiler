@@ -27,6 +27,11 @@
         /// </summary>
         public static bool Codes;
         /// <summary>
+        /// Режим отображения фантомного слоя (0 - выкл, 1 - прозрачный, 2 - видимый)
+        /// </summary>
+        public static byte Phantom;
+
+        /// <summary>
         /// Сброс переменных для работы с новой карты
         /// </summary>
         public static void Reset()
@@ -37,6 +42,7 @@
             ShowOnlyCurrentLayer = false;
             Scale = 1;
             Codes = false;
+            Phantom = 2;
         }
     }
 }

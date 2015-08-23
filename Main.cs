@@ -267,30 +267,42 @@ namespace SGen_Tiler
                 //Включение/выключение показа кодов
                 if (Keyboard.GetState().IsKeyDown(Keys.C) & !KeyHold)
                 {
-                    Editor.Codes ^= true; KeyHold = true;
+                    Editor.Codes ^= true;
                     if (Editor.Codes) PopUp("Отображение кодов включено", 300);
                     else PopUp("Отображение кодов выключено", 300);
+                    KeyHold = true;
                 }
                 //Включение/выключение анимации
                 if (Keyboard.GetState().IsKeyDown(Keys.A) & !KeyHold)
                 {
-                    Animation.Enable ^= true; KeyHold = true;
+                    Animation.Enable ^= true;
                     if (Animation.Enable) PopUp("Анимация включена", 190);
                     else PopUp("Анимация выключена", 190);
+                    KeyHold = true;
                 }
                 //Включение/выключение рандома
                 if (Keyboard.GetState().IsKeyDown(Keys.R) & !KeyHold)
                 {
-                    RandomTile.Enable ^= true; KeyHold = true;
+                    RandomTile.Enable ^= true;                   
                     if (RandomTile.Enable) PopUp("Рандом включен", 160);
                     else PopUp("Рандом выключен", 160);
+                    KeyHold = true;
                 }
                 //Включение/выключение автозаполнения
                 if (Keyboard.GetState().IsKeyDown(Keys.K) & !KeyHold)
                 {
-                    AutoRule.Enable ^= true; KeyHold = true;
+                    AutoRule.Enable ^= true;
+                    KeyHold = true;
                     if (AutoRule.Enable) PopUp("Автозаполнение включено", 250);
                     else PopUp("Автозаполнение выключено", 250);
+                }
+                //Переключение режима отображения фантомного слоя
+                if (Keyboard.GetState().IsKeyDown(Keys.F) & !KeyHold)
+                {
+                    Editor.Phantom++;
+                    if (Editor.Phantom > 2) Editor.Phantom = 0;
+                    PopUp("Видимость фантомного слоя: " + Editor.Phantom * 50 + "%", 310);
+                    KeyHold = true;
                 }
                 //Быстрый доступ к слоям
                 if (Keyboard.GetState().IsKeyDown(Keys.NumPad0) & !KeyHold) { EditMode = EditModes.Carcase; PopUp(); }
@@ -659,6 +671,8 @@ namespace SGen_Tiler
                 if (!Editor.ShowOnlyCurrentLayer | (Editor.ShowOnlyCurrentLayer & l == Editor.Layer))
                 {
                     Color col = Color.White;
+                    if (l == Project.Phantom && !Editor.ShowOnlyCurrentLayer & EditMode == EditModes.Layers)
+                        col = new Color(Editor.Phantom * 128, Editor.Phantom * 128, Editor.Phantom * 128, Editor.Phantom * 128);
                     if (l == Editor.Layer && !Editor.ShowOnlyCurrentLayer & EditMode == EditModes.Layers & TimerLayer > 0)
                     {
                         TimerLayer--;

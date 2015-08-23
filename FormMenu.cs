@@ -67,7 +67,8 @@ namespace SGen_Tiler
             numericUpDown_shifty8.Value = (decimal)Project.Px[8].Y;
             //Автозаполнение
             checkBox_avtoEnable.Checked = AutoRule.Enable;
-            numericUpDown_avtoMain.Value = AutoRule.Layer;
+            numericUpDown_main.Value = Project.Main;
+            numericUpDown_phantom.Value = Project.Phantom;
             RefreshRulesList();
             //Анимация
             checkBox_animation.Checked = Animation.Enable;
@@ -245,12 +246,22 @@ namespace SGen_Tiler
             Change();
         }
 
+        /// <summary>
+        /// Выбор ширины карты
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void numericUpDown4_ValueChanged(object sender, EventArgs e)
         {
             Project.Width = (int)numericUpDown_width.Value;
             Change();
         }
 
+        /// <summary>
+        /// Выбор высоты карты
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void numericUpDown5_ValueChanged(object sender, EventArgs e)
         {
             Project.Height = (int)numericUpDown_height.Value;
@@ -258,33 +269,19 @@ namespace SGen_Tiler
         }
 
         /// <summary>
-        /// Выбор главного слоя
+        /// Расчёт количества видимых тайлов на экране
+        /// </summary>
+        void CalculateVisibleTiles()
+        {
+            label_visibletiles.Text = (numericUpDown_resx.Value / Project.TileSize).ToString("0.00") + " x " +
+                                      (numericUpDown_rexy.Value / Project.TileSize).ToString("0.00");
+        }
+
+        /// <summary>
+        /// Выбор количества слоёв
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void numericUpDown_avtoMain_ValueChanged_1(object sender, EventArgs e)
-        {
-            AutoRule.Layer = (int)numericUpDown_avtoMain.Value;
-            Change();
-        }
-
-        private void numericUpDown8_ValueChanged(object sender, EventArgs e) { Project.Px[1].X = (float)numericUpDown_shiftx1.Value; Change(); }
-        private void numericUpDown9_ValueChanged(object sender, EventArgs e) { Project.Px[1].Y = (float)numericUpDown_shifty1.Value; Change(); }
-        private void numericUpDown10_ValueChanged(object sender, EventArgs e) { Project.Px[2].X = (float)numericUpDown_shiftx2.Value; Change(); }
-        private void numericUpDown11_ValueChanged(object sender, EventArgs e) { Project.Px[2].Y = (float)numericUpDown_shifty2.Value; Change(); }
-        private void numericUpDown12_ValueChanged(object sender, EventArgs e) { Project.Px[3].X = (float)numericUpDown_shiftx3.Value; Change(); }
-        private void numericUpDown13_ValueChanged(object sender, EventArgs e) { Project.Px[3].Y = (float)numericUpDown_shifty3.Value; Change(); }
-        private void numericUpDown14_ValueChanged(object sender, EventArgs e) { Project.Px[4].X = (float)numericUpDown_shiftx4.Value; Change(); }
-        private void numericUpDown15_ValueChanged(object sender, EventArgs e) { Project.Px[4].Y = (float)numericUpDown_shifty4.Value; Change(); }
-        private void numericUpDown16_ValueChanged(object sender, EventArgs e) { Project.Px[5].X = (float)numericUpDown_shiftx5.Value; Change(); }
-        private void numericUpDown17_ValueChanged(object sender, EventArgs e) { Project.Px[5].Y = (float)numericUpDown_shifty5.Value; Change(); }
-        private void numericUpDown18_ValueChanged(object sender, EventArgs e) { Project.Px[6].X = (float)numericUpDown_shiftx6.Value; Change(); }
-        private void numericUpDown19_ValueChanged(object sender, EventArgs e) { Project.Px[6].Y = (float)numericUpDown_shifty6.Value; Change(); }
-        private void numericUpDown20_ValueChanged(object sender, EventArgs e) { Project.Px[7].X = (float)numericUpDown_shiftx7.Value; Change(); }
-        private void numericUpDown21_ValueChanged(object sender, EventArgs e) { Project.Px[7].Y = (float)numericUpDown_shifty7.Value; Change(); }
-        private void numericUpDown22_ValueChanged(object sender, EventArgs e) { Project.Px[8].X = (float)numericUpDown_shiftx8.Value; Change(); }
-        private void numericUpDown23_ValueChanged(object sender, EventArgs e) { Project.Px[8].Y = (float)numericUpDown_shifty8.Value; Change(); }
-
         private void numericUpDown6_ValueChanged(object sender, EventArgs e)
         {
             byte n = (byte)numericUpDown_layers.Value;
@@ -297,23 +294,82 @@ namespace SGen_Tiler
             v = n > 7; label20.Visible = v; label28.Visible = v; numericUpDown_shiftx8.Visible = v; numericUpDown_shifty8.Visible = v;
             Project.Layers = n;
             if (Editor.Layer >= n) Editor.Layer = n;
-            numericUpDown_avtoMain.Maximum = numericUpDown_layers.Value;
+            numericUpDown_main.Maximum = Project.Layers;
+            numericUpDown_phantom.Maximum = Project.Layers;
+            if (numericUpDown_phantom.Value == Project.Main)
+                numericUpDown_phantom.Value = 0;
             Change();
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        /// <summary>
+        /// Выбор главного слоя
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void numericUpDown_avtoMain_ValueChanged_1(object sender, EventArgs e)
         {
-            FormAbout fa = new FormAbout();
-            fa.ShowDialog();
+            Project.Main = (byte)numericUpDown_main.Value;
+            Change();
+            ChechParallax();
         }
 
         /// <summary>
-        /// Расчёт количества видимых тайлов на экране
+        /// Выбор фантомного слоя
         /// </summary>
-        void CalculateVisibleTiles()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void numericUpDown_phantom_ValueChanged(object sender, EventArgs e)
         {
-            label_visibletiles.Text = (numericUpDown_resx.Value / Project.TileSize).ToString("0.00") + " x " +
-                                      (numericUpDown_rexy.Value / Project.TileSize).ToString("0.00");
+            Project.Phantom = (byte)numericUpDown_phantom.Value;
+            label_error1.Visible = Project.Phantom <= Project.Main & Project.Phantom != 0;
+            Change();
+            ChechParallax();
+        }
+        #endregion
+
+        #region Паралакс
+        private void numericUpDown8_ValueChanged(object sender, EventArgs e)
+            { Project.Px[1].X = (float)numericUpDown_shiftx1.Value; Change(); ChechParallax(); }
+        private void numericUpDown9_ValueChanged(object sender, EventArgs e)
+            { Project.Px[1].Y = (float)numericUpDown_shifty1.Value; Change(); ChechParallax(); }
+        private void numericUpDown10_ValueChanged(object sender, EventArgs e)
+            { Project.Px[2].X = (float)numericUpDown_shiftx2.Value; Change(); ChechParallax(); }
+        private void numericUpDown11_ValueChanged(object sender, EventArgs e)
+            { Project.Px[2].Y = (float)numericUpDown_shifty2.Value; Change(); ChechParallax(); }
+        private void numericUpDown12_ValueChanged(object sender, EventArgs e)
+            { Project.Px[3].X = (float)numericUpDown_shiftx3.Value; Change(); ChechParallax(); }
+        private void numericUpDown13_ValueChanged(object sender, EventArgs e)
+            { Project.Px[3].Y = (float)numericUpDown_shifty3.Value; Change(); ChechParallax(); }
+        private void numericUpDown14_ValueChanged(object sender, EventArgs e)
+            { Project.Px[4].X = (float)numericUpDown_shiftx4.Value; Change(); ChechParallax(); }
+        private void numericUpDown15_ValueChanged(object sender, EventArgs e)
+            { Project.Px[4].Y = (float)numericUpDown_shifty4.Value; Change(); ChechParallax(); }
+        private void numericUpDown16_ValueChanged(object sender, EventArgs e)
+            { Project.Px[5].X = (float)numericUpDown_shiftx5.Value; Change(); ChechParallax(); }
+        private void numericUpDown17_ValueChanged(object sender, EventArgs e)
+            { Project.Px[5].Y = (float)numericUpDown_shifty5.Value; Change(); ChechParallax(); }
+        private void numericUpDown18_ValueChanged(object sender, EventArgs e)
+            { Project.Px[6].X = (float)numericUpDown_shiftx6.Value; Change(); ChechParallax(); }
+        private void numericUpDown19_ValueChanged(object sender, EventArgs e)
+            { Project.Px[6].Y = (float)numericUpDown_shifty6.Value; Change(); ChechParallax(); }
+        private void numericUpDown20_ValueChanged(object sender, EventArgs e)
+            { Project.Px[7].X = (float)numericUpDown_shiftx7.Value; Change(); ChechParallax(); }
+        private void numericUpDown21_ValueChanged(object sender, EventArgs e)
+            { Project.Px[7].Y = (float)numericUpDown_shifty7.Value; Change(); ChechParallax(); }
+        private void numericUpDown22_ValueChanged(object sender, EventArgs e)
+            { Project.Px[8].X = (float)numericUpDown_shiftx8.Value; Change(); ChechParallax(); }
+        private void numericUpDown23_ValueChanged(object sender, EventArgs e)
+            { Project.Px[8].Y = (float)numericUpDown_shifty8.Value; Change(); ChechParallax(); }
+
+        /// <summary>
+        /// Проверка параметров параллакса
+        /// </summary>
+        private void ChechParallax()
+        {
+            label_error2.Visible = Project.Px[Project.Main].X != 1 |
+                                   Project.Px[Project.Main].Y != 1 |
+                                   Project.Px[Project.Phantom].X != 1 |
+                                   Project.Px[Project.Phantom].Y != 1;
         }
         #endregion
 
@@ -381,7 +437,7 @@ namespace SGen_Tiler
             for (int i = 0; i < Project.Width; i++)
                 for (int j = 0; j < Project.Height; j++)
                     foreach (AutoRule rule in Project.AutoRules)
-                        if (rule.In(Project.M[AutoRule.Layer, i, j]))
+                        if (rule.In(Project.M[Project.Main, i, j]))
                             Project.Put(0, i, j, rule.Code);
             Hystory.AddRecord();
             Change();
@@ -567,5 +623,17 @@ namespace SGen_Tiler
                 Text = Project.Label();
             }
         }
+
+        /// <summary>
+        /// Ссылка "Эбаут"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            FormAbout fa = new FormAbout();
+            fa.ShowDialog();
+        }
+
     }
 }

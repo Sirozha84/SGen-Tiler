@@ -63,6 +63,14 @@ namespace SGen_Tiler
         /// </summary>
         public static byte Layers;
         /// <summary>
+        /// Главный слой
+        /// </summary>
+        public static byte Main;
+        /// <summary>
+        /// Фантомный слой
+        /// </summary>
+        public static byte Phantom;
+        /// <summary>
         /// Смещение слоёв
         /// </summary>
         public static Parallax[] Px;
@@ -116,7 +124,9 @@ namespace SGen_Tiler
             Width = 20;
             Height = 15;
             Layers = MaxLayers;
-            Px= new Parallax[MaxLayers + 1];
+            Main = 6;
+            Phantom = 0;
+            Px = new Parallax[MaxLayers + 1];
             Px[0] = new Parallax();
             Px[1] = new Parallax(0);
             Px[2] = new Parallax(0.2f);
@@ -173,7 +183,6 @@ namespace SGen_Tiler
         public static void AutoRulesClear()
         {
             AutoRule.Enable = false;
-            AutoRule.Layer = 6;
             AutoRules.Clear();
             AutoRules.Add(new AutoRule(0, 0, 0));
         }
@@ -207,7 +216,8 @@ namespace SGen_Tiler
                 Width = file.ReadInt16();
                 Height = file.ReadInt16();
                 Layers = file.ReadByte();
-                AutoRule.Layer = file.ReadByte();
+                Main = file.ReadByte();
+                Phantom = file.ReadByte();
                 for (byte l = 0; l <= Layers; l++)
                 {
                     if (file.ReadString() != "Layer" + l.ToString()) throw new Exception("Слой " + l.ToString() + " не обнаружен."); //Маркер слоя
@@ -330,7 +340,8 @@ namespace SGen_Tiler
                 file.Write((short)Width);
                 file.Write((short)Height);
                 file.Write(Layers);
-                file.Write((byte)AutoRule.Layer);
+                file.Write(Main);
+                file.Write(Phantom);
                 for (int l = 0; l <= Layers; l++)
                 {
                     file.Write("Layer" + l.ToString()); //Ставим маркер в файле для удобной визуализации
@@ -469,7 +480,7 @@ namespace SGen_Tiler
             //"Путим" ячейку
             M[l, x, y] = c;
             //Далее обрабатываем автозаполнение
-            if (AutoRule.Enable & l == AutoRule.Layer)
+            if (AutoRule.Enable & l == Main)
                 foreach (AutoRule rule in AutoRules)
                     if (rule.In(c))
                     {

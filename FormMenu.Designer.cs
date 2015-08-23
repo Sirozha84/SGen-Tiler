@@ -53,6 +53,12 @@
             this.numericUpDown_tilesize = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label_error1 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label44 = new System.Windows.Forms.Label();
+            this.numericUpDown_phantom = new System.Windows.Forms.NumericUpDown();
+            this.label42 = new System.Windows.Forms.Label();
+            this.numericUpDown_main = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown_layers = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown_height = new System.Windows.Forms.NumericUpDown();
             this.label30 = new System.Windows.Forms.Label();
@@ -97,6 +103,7 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label43 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.button_remakecarcase = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -158,9 +165,7 @@
             this.button_open = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.button_saveas = new System.Windows.Forms.Button();
-            this.numericUpDown_avtoMain = new System.Windows.Forms.NumericUpDown();
-            this.label42 = new System.Windows.Forms.Label();
-            this.label43 = new System.Windows.Forms.Label();
+            this.label_error2 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -168,6 +173,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_resx)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_tilesize)).BeginInit();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_phantom)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_main)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_layers)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_height)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_width)).BeginInit();
@@ -207,7 +214,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_rnd_code)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_rnd_rdntile)).BeginInit();
             this.tabPage6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_avtoMain)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox2
@@ -352,7 +358,7 @@
             this.groupBox4.Controls.Add(this.label1);
             this.groupBox4.Location = new System.Drawing.Point(6, 172);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(507, 92);
+            this.groupBox4.Size = new System.Drawing.Size(507, 71);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Тайлы";
@@ -378,7 +384,7 @@
             // label_visibletiles
             // 
             this.label_visibletiles.AutoSize = true;
-            this.label_visibletiles.Location = new System.Drawing.Point(99, 72);
+            this.label_visibletiles.Location = new System.Drawing.Point(362, 46);
             this.label_visibletiles.Name = "label_visibletiles";
             this.label_visibletiles.Size = new System.Drawing.Size(30, 13);
             this.label_visibletiles.TabIndex = 7;
@@ -387,11 +393,11 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 72);
+            this.label4.Location = new System.Drawing.Point(257, 46);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(87, 13);
+            this.label4.Size = new System.Drawing.Size(99, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "Видимая карта:";
+            this.label4.Text = "Видимая область:";
             // 
             // numericUpDown_rexy
             // 
@@ -508,20 +514,98 @@
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.label_error1);
+            this.groupBox5.Controls.Add(this.label45);
+            this.groupBox5.Controls.Add(this.label44);
+            this.groupBox5.Controls.Add(this.numericUpDown_phantom);
             this.groupBox5.Controls.Add(this.label42);
-            this.groupBox5.Controls.Add(this.numericUpDown_avtoMain);
+            this.groupBox5.Controls.Add(this.numericUpDown_main);
             this.groupBox5.Controls.Add(this.numericUpDown_layers);
             this.groupBox5.Controls.Add(this.numericUpDown_height);
             this.groupBox5.Controls.Add(this.label30);
             this.groupBox5.Controls.Add(this.label9);
             this.groupBox5.Controls.Add(this.numericUpDown_width);
             this.groupBox5.Controls.Add(this.label8);
-            this.groupBox5.Location = new System.Drawing.Point(6, 270);
+            this.groupBox5.Location = new System.Drawing.Point(6, 249);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(507, 48);
+            this.groupBox5.Size = new System.Drawing.Size(507, 71);
             this.groupBox5.TabIndex = 4;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Размеры карты";
+            // 
+            // label_error1
+            // 
+            this.label_error1.AutoSize = true;
+            this.label_error1.ForeColor = System.Drawing.Color.Red;
+            this.label_error1.Location = new System.Drawing.Point(350, 47);
+            this.label_error1.Name = "label_error1";
+            this.label_error1.Size = new System.Drawing.Size(50, 13);
+            this.label_error1.TabIndex = 68;
+            this.label_error1.Text = "Ошибка!";
+            this.label_error1.Visible = false;
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(157, 47);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(180, 13);
+            this.label45.TabIndex = 67;
+            this.label45.Text = "оставьте 0, если не используется";
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(6, 47);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(99, 13);
+            this.label44.TabIndex = 66;
+            this.label44.Text = "Фантомный слой:";
+            // 
+            // numericUpDown_phantom
+            // 
+            this.numericUpDown_phantom.Location = new System.Drawing.Point(111, 45);
+            this.numericUpDown_phantom.Maximum = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            this.numericUpDown_phantom.Name = "numericUpDown_phantom";
+            this.numericUpDown_phantom.Size = new System.Drawing.Size(40, 20);
+            this.numericUpDown_phantom.TabIndex = 65;
+            this.numericUpDown_phantom.Value = new decimal(new int[] {
+            6,
+            0,
+            0,
+            0});
+            this.numericUpDown_phantom.ValueChanged += new System.EventHandler(this.numericUpDown_phantom_ValueChanged);
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(350, 21);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(81, 13);
+            this.label42.TabIndex = 64;
+            this.label42.Text = "Главный слой:";
+            // 
+            // numericUpDown_main
+            // 
+            this.numericUpDown_main.Location = new System.Drawing.Point(437, 19);
+            this.numericUpDown_main.Maximum = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            this.numericUpDown_main.Name = "numericUpDown_main";
+            this.numericUpDown_main.Size = new System.Drawing.Size(40, 20);
+            this.numericUpDown_main.TabIndex = 63;
+            this.numericUpDown_main.Value = new decimal(new int[] {
+            6,
+            0,
+            0,
+            0});
+            this.numericUpDown_main.ValueChanged += new System.EventHandler(this.numericUpDown_avtoMain_ValueChanged_1);
             // 
             // numericUpDown_layers
             // 
@@ -1206,6 +1290,7 @@
             // 
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Controls.Add(this.label_error2);
             this.groupBox6.Controls.Add(this.label43);
             this.groupBox6.Controls.Add(this.label13);
             this.groupBox6.Controls.Add(this.label22);
@@ -1245,6 +1330,15 @@
             this.groupBox6.TabIndex = 62;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Коэффициенты смещения слоёв";
+            // 
+            // label43
+            // 
+            this.label43.Location = new System.Drawing.Point(321, 24);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(178, 93);
+            this.label43.TabIndex = 62;
+            this.label43.Text = "Значение 0 указывается, если слой неподвижен на данной координате.\r\nЗначения для " +
+    "главного и фантомного слоев должны быть равны 1x1.";
             // 
             // tabPage3
             // 
@@ -1968,41 +2062,16 @@
             this.button_saveas.UseVisualStyleBackColor = true;
             this.button_saveas.Click += new System.EventHandler(this.button_saveas_Click);
             // 
-            // numericUpDown_avtoMain
+            // label_error2
             // 
-            this.numericUpDown_avtoMain.Location = new System.Drawing.Point(437, 19);
-            this.numericUpDown_avtoMain.Maximum = new decimal(new int[] {
-            8,
-            0,
-            0,
-            0});
-            this.numericUpDown_avtoMain.Name = "numericUpDown_avtoMain";
-            this.numericUpDown_avtoMain.Size = new System.Drawing.Size(40, 20);
-            this.numericUpDown_avtoMain.TabIndex = 63;
-            this.numericUpDown_avtoMain.Value = new decimal(new int[] {
-            6,
-            0,
-            0,
-            0});
-            this.numericUpDown_avtoMain.ValueChanged += new System.EventHandler(this.numericUpDown_avtoMain_ValueChanged_1);
-            // 
-            // label42
-            // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(350, 21);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(81, 13);
-            this.label42.TabIndex = 64;
-            this.label42.Text = "Главный слой:";
-            // 
-            // label43
-            // 
-            this.label43.Location = new System.Drawing.Point(321, 24);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(178, 93);
-            this.label43.TabIndex = 62;
-            this.label43.Text = "Значение 0 указывается, если слой неподвижен на данной координате.\r\nЗначения для " +
-    "главного слоя должны быть равны 1x1.";
+            this.label_error2.AutoSize = true;
+            this.label_error2.ForeColor = System.Drawing.Color.Red;
+            this.label_error2.Location = new System.Drawing.Point(449, 213);
+            this.label_error2.Name = "label_error2";
+            this.label_error2.Size = new System.Drawing.Size(50, 13);
+            this.label_error2.TabIndex = 69;
+            this.label_error2.Text = "Ошибка!";
+            this.label_error2.Visible = false;
             // 
             // FormMenu
             // 
@@ -2037,6 +2106,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_tilesize)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_phantom)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_main)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_layers)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_height)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_width)).EndInit();
@@ -2084,7 +2155,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_rnd_rdntile)).EndInit();
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_avtoMain)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2221,7 +2291,12 @@
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label42;
-        private System.Windows.Forms.NumericUpDown numericUpDown_avtoMain;
+        private System.Windows.Forms.NumericUpDown numericUpDown_main;
         private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.NumericUpDown numericUpDown_phantom;
+        private System.Windows.Forms.Label label_error1;
+        private System.Windows.Forms.Label label_error2;
     }
 }

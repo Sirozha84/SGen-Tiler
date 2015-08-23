@@ -11,11 +11,7 @@ namespace SGen_Tiler
     {
         public static Main game; //Вот как мне пришлось изъебнуться чтобы получить доступ к нестатичным полям класса game из других классов
         public const string Name = "SGen Tiler";
-<<<<<<< HEAD
-        public const string Version = "Версия: 3.1 - 18 августа 2015 года";
-=======
-        public const string Version = "Версия: 3.1 - 17 августа 2015 года";
->>>>>>> origin/master
+        public const string Version = "Версия: 3.1 - 23 августа 2015 года";
         public const string Autor = "Автор: Сергей Гордеев";
         public const string Web = "http://www.sg-software.ru";
         /// <summary>

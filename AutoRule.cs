@@ -12,10 +12,6 @@ namespace SGen_Tiler
         /// </summary>
         public static bool Enable;
         /// <summary>
-        /// Слой, с которым работает автозаполнение
-        /// </summary>
-        public static int Layer;
-        /// <summary>
         /// Код каркаса
         /// </summary>
         public ushort Code;
