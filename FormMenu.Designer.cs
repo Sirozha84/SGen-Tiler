@@ -103,6 +103,7 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label_error2 = new System.Windows.Forms.Label();
             this.label43 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.button_remakecarcase = new System.Windows.Forms.Button();
@@ -165,7 +166,6 @@
             this.button_open = new System.Windows.Forms.Button();
             this.button_save = new System.Windows.Forms.Button();
             this.button_saveas = new System.Windows.Forms.Button();
-            this.label_error2 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1331,6 +1331,17 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Коэффициенты смещения слоёв";
             // 
+            // label_error2
+            // 
+            this.label_error2.AutoSize = true;
+            this.label_error2.ForeColor = System.Drawing.Color.Red;
+            this.label_error2.Location = new System.Drawing.Point(449, 213);
+            this.label_error2.Name = "label_error2";
+            this.label_error2.Size = new System.Drawing.Size(50, 13);
+            this.label_error2.TabIndex = 69;
+            this.label_error2.Text = "Ошибка!";
+            this.label_error2.Visible = false;
+            // 
             // label43
             // 
             this.label43.Location = new System.Drawing.Point(321, 24);
@@ -1355,7 +1366,7 @@
             // 
             // button_remakecarcase
             // 
-            this.button_remakecarcase.Location = new System.Drawing.Point(313, 4);
+            this.button_remakecarcase.Location = new System.Drawing.Point(219, 3);
             this.button_remakecarcase.Name = "button_remakecarcase";
             this.button_remakecarcase.Size = new System.Drawing.Size(161, 21);
             this.button_remakecarcase.TabIndex = 12;
@@ -1553,9 +1564,9 @@
             this.checkBox_avtoEnable.AutoSize = true;
             this.checkBox_avtoEnable.Location = new System.Drawing.Point(6, 6);
             this.checkBox_avtoEnable.Name = "checkBox_avtoEnable";
-            this.checkBox_avtoEnable.Size = new System.Drawing.Size(255, 17);
+            this.checkBox_avtoEnable.Size = new System.Drawing.Size(207, 17);
             this.checkBox_avtoEnable.TabIndex = 4;
-            this.checkBox_avtoEnable.Text = "Автозаполнение каркаса включено для слоя";
+            this.checkBox_avtoEnable.Text = "Автозаполнение каркаса включено";
             this.checkBox_avtoEnable.UseVisualStyleBackColor = true;
             this.checkBox_avtoEnable.CheckedChanged += new System.EventHandler(this.checkBox_avtoEnable_CheckedChanged);
             // 
@@ -2061,17 +2072,6 @@
             this.button_saveas.Text = "Сохранить как...";
             this.button_saveas.UseVisualStyleBackColor = true;
             this.button_saveas.Click += new System.EventHandler(this.button_saveas_Click);
-            // 
-            // label_error2
-            // 
-            this.label_error2.AutoSize = true;
-            this.label_error2.ForeColor = System.Drawing.Color.Red;
-            this.label_error2.Location = new System.Drawing.Point(449, 213);
-            this.label_error2.Name = "label_error2";
-            this.label_error2.Size = new System.Drawing.Size(50, 13);
-            this.label_error2.TabIndex = 69;
-            this.label_error2.Text = "Ошибка!";
-            this.label_error2.Visible = false;
             // 
             // FormMenu
             // 

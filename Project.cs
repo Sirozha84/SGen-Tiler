@@ -474,7 +474,7 @@ namespace SGen_Tiler
             List<RandomTile> rnds = Randoms.FindAll(RandomTile => RandomTile.Code == c);
             if (rnds.Count > 0)
                 foreach (RandomTile rnd in rnds)
-                    if (RND.Next(100) > rnd.Persent) c = rnd.Tile;
+                    if (RND.Next(100) <= rnd.Persent) c = rnd.Tile;
             //Запоминаем что было в этой ячейке
             Hystory.AddRecord(l, x, y, M[l, x, y], c);
             //"Путим" ячейку
