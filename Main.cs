@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.IO;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -760,12 +761,10 @@ namespace SGen_Tiler
         /// </summary>
         public void InitialTextures()
         {
-            string patch = "";
-            if (Project.FileName != "") patch = System.IO.Path.GetDirectoryName(Project.FileName) + "\\";
             //Тайлы
             try
             {
-                System.IO.FileStream file = new System.IO.FileStream(patch + Project.FileTexture, System.IO.FileMode.Open);
+                FileStream file = new FileStream(TextureFile(Project.FileTexture), FileMode.Open);
                 WALL = Texture2D.FromStream(GraphicsDevice, file);
                 file.Dispose(); //Освобождаем файл вручную, ибо иначе его больше нельзя будет выбрать в этом сеансе (тупо, чё сказать...)
             }
@@ -773,7 +772,7 @@ namespace SGen_Tiler
             //Каркас
             try
             {
-                System.IO.FileStream file = new System.IO.FileStream(patch + Project.FileKarkas, System.IO.FileMode.Open);
+                FileStream file = new FileStream(TextureFile(Project.FileKarkas), FileMode.Open);
                 Karkas = Texture2D.FromStream(GraphicsDevice, file);
                 file.Dispose(); //Освобождаем файл вручную, ибо иначе его больше нельзя будет выбрать в этом сеансе (тупо, чё сказать...)
             }
@@ -781,7 +780,7 @@ namespace SGen_Tiler
             //Задник
             try
             {
-                System.IO.FileStream file = new System.IO.FileStream(patch + Project.FileBackground, System.IO.FileMode.Open);
+                FileStream file = new FileStream(TextureFile(Project.FileBackground), FileMode.Open);
                 Background = Texture2D.FromStream(GraphicsDevice, file);
                 file.Dispose(); //Освобождаем файл вручную, ибо иначе его больше нельзя будет выбрать в этом сеансе (тупо, чё сказать...)
             }
@@ -789,11 +788,23 @@ namespace SGen_Tiler
             //Передник
             try
             {
-                System.IO.FileStream file = new System.IO.FileStream(patch + Project.FileFront, System.IO.FileMode.Open);
+                FileStream file = new FileStream(TextureFile(Project.FileFront), FileMode.Open);
                 Front = Texture2D.FromStream(GraphicsDevice, file);
                 file.Dispose(); //Освобождаем файл вручную, ибо иначе его больше нельзя будет выбрать в этом сеансе (тупо, чё сказать...)
             }
             catch { }
+        }
+
+        /// <summary>
+        /// Подготовка имени файла для текстуры (если файл не имеет пути, ему добавляется путь файла карты)
+        /// </summary>
+        /// <param name="file">Файл (ваш КЭП)</param>
+        /// <returns></returns>
+        string TextureFile(string file)
+        {
+            if (file == "") return "";
+            if (Path.GetDirectoryName(file) == "") return Path.GetDirectoryName(Project.FileName) + "\\" + file;
+            else return file;
         }
 
         /// <summary>

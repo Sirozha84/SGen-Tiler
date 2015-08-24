@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Windows.Forms;
 
 namespace SGen_Tiler
@@ -182,26 +177,26 @@ namespace SGen_Tiler
         private void button_tiletexture_Click(object sender, EventArgs e)
         {
             TextureSelect(ref Project.FileTexture);
-            button_tiletexture.Text = System.IO.Path.GetFileName(Project.FileTexture);
-            Program.game.InitialTextures();
+            button_tiletexture.Text = Path.GetFileName(Project.FileTexture);
+            //Program.game.InitialTextures();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             TextureSelect(ref Project.FileKarkas);
-            button_carcasetexture.Text = System.IO.Path.GetFileName(Project.FileKarkas);
+            button_carcasetexture.Text = Path.GetFileName(Project.FileKarkas);
         }
 
         private void button2_Click_1(object sender, EventArgs e)
         {
             TextureSelect(ref Project.FileBackground);
-            button_backtexture.Text = System.IO.Path.GetFileName(Project.FileBackground);
+            button_backtexture.Text = Path.GetFileName(Project.FileBackground);
         }
 
         private void button_fronttexture_Click(object sender, EventArgs e)
         {
             TextureSelect(ref Project.FileFront);
-            button_fronttexture.Text = System.IO.Path.GetFileName(Project.FileFront);
+            button_fronttexture.Text = Path.GetFileName(Project.FileFront);
         }
 
         /// <summary>
