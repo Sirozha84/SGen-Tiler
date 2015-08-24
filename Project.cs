@@ -405,10 +405,10 @@ namespace SGen_Tiler
                     file.Write(Px[l].Y);
                 }
                 file.Write("Textures");
-                file.Write(FileBackground);
-                file.Write(FileTexture);
-                file.Write(FileFront);
-                file.Write(FileKarkas);
+                file.Write(Path.GetFileName(FileBackground));
+                file.Write(Path.GetFileName(FileTexture));
+                file.Write(Path.GetFileName(FileFront));
+                file.Write(Path.GetFileName(FileKarkas));
                 file.Write("Animation");
                 file.Write(Animations.Count);
                 foreach (Animation anim in Animations)
