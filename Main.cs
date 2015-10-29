@@ -19,6 +19,7 @@ namespace SGen_Tiler
         int Cursorcolor = 0;    //И его цвет
         Texture2D Checkbox;
         Texture2D Cursor;
+        Texture2D CursorMove;
         Texture2D Stamp;
         Texture2D SmallDigits;
         Texture2D WALL;
@@ -29,6 +30,7 @@ namespace SGen_Tiler
         SpriteFont Font;
         Modes Mode = Modes.Edit;
         EditModes EditMode = EditModes.Layers;
+        bool MoveMode;  //Режим перемещения средней кнопкой
         Tool ToolL = new Tool();    //Инструмент для слоёв
         Tool ToolC = new Tool();    //Инструмент для каркаса
         int TimerLayers = 255; //Таймер на отображение титров
@@ -37,6 +39,7 @@ namespace SGen_Tiler
         int LabelSize;
         byte TimerLayer = 0;    //Таймер на подсветку слоя
         int Wheel = 0;  //Последняя позиция колеса мышки (для вычисления инкремента)
+        Vector2 OldMouse; //Последнее положение мышки (для скрола средней кнопкой)
         bool RightClickHold = false;    //Держится ли до сих пор правая кнопка (чтобы корректно менять режим)
         bool KeyHold;   //Зажата ли какая-нибудь клавиша
         bool ZHold;     //Зажат ли Z
@@ -85,6 +88,7 @@ namespace SGen_Tiler
             Color[] color = { new Color(255, 255, 255, 255) };
             WhitePixel.SetData(color);
             Cursor = Content.Load<Texture2D>("Cursor");
+            CursorMove = Content.Load<Texture2D>("Move");
             SmallDigits = Content.Load<Texture2D>("SmallDigits");
             Stamp = Content.Load<Texture2D>("Stamp");
             Tiling = Content.Load<Texture2D>("Tiling");
@@ -162,8 +166,26 @@ namespace SGen_Tiler
             //Обработка режимов редактирования
             if (Mode == Modes.Edit)
             {
+                //Движение мышкой средней кнопкой
+                if (MoveMode) //Кнопка уже была нажата перемешаем экран на разницу мышки от старого положения
+                {
+                    Editor.X += (int)OldMouse.X - Mouse.GetState().Position.X;
+                    Editor.Y += (int)OldMouse.Y - Mouse.GetState().Position.Y;
+                }
+                OldMouse = Mouse.GetState().Position.ToVector2();
+                if (Mouse.GetState().MiddleButton == ButtonState.Pressed)
+                {
+                    MoveMode = true;
+                    if (!graphics.IsFullScreen) IsMouseVisible = false;
+                    //OldMouse = Mouse.GetState().Position.ToVector2();
+                }
+                else
+                {
+                    MoveMode = false;
+                    if (!graphics.IsFullScreen) IsMouseVisible = true;
+                }
                 //Проверка на тыканье мышкой
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed & !MoveMode)
                 {
                     for (int i = 0; i < t.Width; i++)
                         for (int j = 0; j < t.Height; j++)
@@ -172,31 +194,39 @@ namespace SGen_Tiler
                 }
                 int inc = 16;
                 if (ControlKey) inc = 128;
-                //Движение карты клавишами
-                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
-                    Keyboard.GetState().IsKeyDown(Keys.Right)) Editor.X += inc;
-                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
-                    Keyboard.GetState().IsKeyDown(Keys.Left)) Editor.X -= inc;
-                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
-                    Keyboard.GetState().IsKeyDown(Keys.Down)) Editor.Y += inc;
-                if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
-                    Keyboard.GetState().IsKeyDown(Keys.Up)) Editor.Y -= inc;
-                //Движение карты мышкой
-                if (Mouse.GetState().Position.X < 3 & Mouse.GetState().Position.X > -20 &
-                    Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
-                    Editor.X -= inc / 2;
-                if (Mouse.GetState().Position.Y < 3 & Mouse.GetState().Position.Y > -20 &
-                    Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
-                    Editor.Y -= inc / 2;
-                if (Mouse.GetState().Position.X > Project.ScreenWidth - 3 & Mouse.GetState().Position.X < Project.ScreenWidth + 20 &
-                    Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
-                    Editor.X += inc / 2;
-                if (Mouse.GetState().Position.Y > Project.ScreenHeight - 3 & Mouse.GetState().Position.Y < Project.ScreenHeight + 20 &
-                    Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
-                    Editor.Y += inc / 2;
+                //Прочие способы скола, если средняя кнопка не нажата
+                if (!MoveMode)
+                {
+                    //Движение карты клавишами
+                    if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
+                        Keyboard.GetState().IsKeyDown(Keys.Right))
+                        Editor.X += inc;
+                    if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
+                        Keyboard.GetState().IsKeyDown(Keys.Left))
+                        Editor.X -= inc;
+                    if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
+                        Keyboard.GetState().IsKeyDown(Keys.Down))
+                        Editor.Y += inc;
+                    if (Keyboard.GetState().IsKeyUp(Keys.LeftShift) & Keyboard.GetState().IsKeyUp(Keys.RightShift) &
+                        Keyboard.GetState().IsKeyDown(Keys.Up))
+                        Editor.Y -= inc;
+                    //Движение карты мышкой у края экрана
+                    if (Mouse.GetState().Position.X < 3 & Mouse.GetState().Position.X > -20 &
+                        Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
+                        Editor.X -= inc / 2;
+                    if (Mouse.GetState().Position.Y < 3 & Mouse.GetState().Position.Y > -20 &
+                        Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
+                        Editor.Y -= inc / 2;
+                    if (Mouse.GetState().Position.X > Project.ScreenWidth - 3 & Mouse.GetState().Position.X < Project.ScreenWidth + 20 &
+                        Mouse.GetState().Position.Y >= 0 & Mouse.GetState().Position.Y <= Project.ScreenHeight)
+                        Editor.X += inc / 2;
+                    if (Mouse.GetState().Position.Y > Project.ScreenHeight - 3 & Mouse.GetState().Position.Y < Project.ScreenHeight + 20 &
+                        Mouse.GetState().Position.X >= 0 & Mouse.GetState().Position.X <= Project.ScreenWidth)
+                        Editor.Y += inc / 2;
+                }
                 //Переход в режим выбора инструмента
                 if (Mouse.GetState().RightButton != ButtonState.Pressed) RightClickHold = false;
-                if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold)
+                if (Mouse.GetState().RightButton == ButtonState.Pressed & !RightClickHold & !MoveMode)
                 {
                     TimerLayers = 0;
                     RightClickHold = true;
@@ -500,16 +530,19 @@ namespace SGen_Tiler
                 //Курсор
                 float kx = Editor.X * Project.Px[l].X;
                 float ky = Editor.Y * Project.Px[l].Y;
-                int x = (int)(Mouse.GetState().X + kx) / s * s - (int)(kx);
-                int y = (int)(Mouse.GetState().Y + ky) / s * s - (int)(ky);
-                spriteBatch.Draw(WhitePixel, new Rectangle(x, y, t.Width * s, t.Height * s), new Rectangle(0, 0, 1, 1), col);
-                //Прозрачно рисуем инструмент на курсоре
-                for (int i = 0; i < t.Width; i++)
-                    for (int j = 0; j < t.Height; j++)
-                        spriteBatch.Draw(tex, new Rectangle(x + i * s, y + j * s, s, s),
-                            SpriteByNum(tex, t.M[i, j], false), Color.FromNonPremultiplied(255, 255, 255, al));
-                //Код штампа, если используется
-                if (StampNum > 0) DrawSmallNum(x, y, StampNum, Color.White);
+                if (!MoveMode)
+                {
+                    int x = (int)(Mouse.GetState().X + kx) / s * s - (int)(kx);
+                    int y = (int)(Mouse.GetState().Y + ky) / s * s - (int)(ky);
+                    spriteBatch.Draw(WhitePixel, new Rectangle(x, y, t.Width * s, t.Height * s), new Rectangle(0, 0, 1, 1), col);
+                    //Прозрачно рисуем инструмент на курсоре
+                    for (int i = 0; i < t.Width; i++)
+                        for (int j = 0; j < t.Height; j++)
+                            spriteBatch.Draw(tex, new Rectangle(x + i * s, y + j * s, s, s),
+                                SpriteByNum(tex, t.M[i, j], false), Color.FromNonPremultiplied(255, 255, 255, al));
+                    //Код штампа, если используется
+                    if (StampNum > 0) DrawSmallNum(x, y, StampNum, Color.White);
+                }
                 //Табличка слоёв
                 if (TimerLayers > 1)
                 {
@@ -528,13 +561,15 @@ namespace SGen_Tiler
                     }
                     TimerLayers -= 4;
                 }
-                InfoPanel(l, (int)(Mouse.GetState().X + kx) / s, (int)(Mouse.GetState().Y + ky) / s);
+                if (!MoveMode) InfoPanel(l, (int)(Mouse.GetState().X + kx) / s, (int)(Mouse.GetState().Y + ky) / s);
             }
             //Режим выбора инструментов
             if (Mode == Modes.SelectTool)
             {
                 if (Project.ToolBackground == 1) GraphicsDevice.Clear(Color.FromNonPremultiplied(0, 30, 50, 255));
-                if (Project.ToolBackground == 2 && Background != null) spriteBatch.Draw(Background, new Vector2(0, 0), Color.White);
+                if (Project.ToolBackground == 2 && Background != null)
+                    spriteBatch.Draw(Background, new Rectangle(0, 0, Project.ScreenWidth, Project.ScreenHeight),
+                        new Rectangle(0, 0, Background.Width, Background.Height), Color.White);
                 //Рисуем сетку инструментов
                 int n = t.Scroll * (Project.ScreenWidth / Project.TileSize);
                 for (int j = 0; j < Project.ScreenHeight / Project.TileSize; j++)
@@ -547,7 +582,6 @@ namespace SGen_Tiler
                         }
                         n++;
                     }
-                //Курсор
                 spriteBatch.Draw(WhitePixel, new Rectangle(Select.Left * Project.TileSize, Select.Top * Project.TileSize,
                     Select.Width * Project.TileSize, Select.Height * Project.TileSize), new Rectangle(0, 32, 32, 32), col);
             }
@@ -556,15 +590,18 @@ namespace SGen_Tiler
                 DrawLayers();
                 spriteBatch.End();
                 //Курсор
-                float kx = Select.Left * s - Editor.X * Project.Px[l].X;
-                float ky = Select.Top * s - Editor.Y * Project.Px[l].Y;
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
-                    DepthStencilState.Default, RasterizerState.CullNone);
-                spriteBatch.Draw(Stamp, new Vector2(kx, ky),
-                    new Rectangle(0, 0, Select.Width * s, Select.Height * s),
-                    col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-                spriteBatch.End();
-                spriteBatch.Begin();
+                if (!MoveMode)
+                {
+                    float kx = Select.Left * s - Editor.X * Project.Px[l].X;
+                    float ky = Select.Top * s - Editor.Y * Project.Px[l].Y;
+                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
+                        DepthStencilState.Default, RasterizerState.CullNone);
+                    spriteBatch.Draw(Stamp, new Vector2(kx, ky),
+                        new Rectangle(0, 0, Select.Width * s, Select.Height * s),
+                        col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+                    spriteBatch.End();
+                    spriteBatch.Begin();
+                }
                 InfoPanel(l, Select.Left, Select.Top, Select.Width, Select.Height);
             }
             if (Mode == Modes.Tiling)
@@ -572,21 +609,27 @@ namespace SGen_Tiler
                 DrawLayers();
                 spriteBatch.End();
                 //Курсор
-                float kx = Select.Left * s - Editor.X * Project.Px[l].X;
-                float ky = Select.Top * s - Editor.Y * Project.Px[l].Y;
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
-                    DepthStencilState.Default, RasterizerState.CullNone);
-                spriteBatch.Draw(Tiling, new Vector2(kx, ky),
-                    new Rectangle(0, 0, Select.Width * s, Select.Height * s),
-                    col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-                spriteBatch.End();
-                spriteBatch.Begin();
-                InfoPanel(l, Select.Left, Select.Top, Select.Width, Select.Height);
+                if (!MoveMode)
+                {
+                    float kx = Select.Left * s - Editor.X * Project.Px[l].X;
+                    float ky = Select.Top * s - Editor.Y * Project.Px[l].Y;
+                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap,
+                        DepthStencilState.Default, RasterizerState.CullNone);
+                    spriteBatch.Draw(Tiling, new Vector2(kx, ky),
+                        new Rectangle(0, 0, Select.Width * s, Select.Height * s),
+                        col, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+                    spriteBatch.End();
+                    spriteBatch.Begin();
+                    InfoPanel(l, Select.Left, Select.Top, Select.Width, Select.Height);
+                }
             }
             //Поп-ап сообщение
             DrawPopUp();
             //Указатель
-            if (graphics.IsFullScreen) spriteBatch.Draw(Cursor, Mouse.GetState().Position.ToVector2(), Color.White);
+            if (graphics.IsFullScreen & !MoveMode) spriteBatch.Draw(Cursor, Mouse.GetState().Position.ToVector2(), Color.White);
+            //Курсор перемещений
+            if (MoveMode)
+                spriteBatch.Draw(CursorMove, Mouse.GetState().Position.ToVector2() - new Vector2(12, 12), Color.White);
             //Мерцание курсора
             Cursorcolor += 8;
             if (Cursorcolor > 255) Cursorcolor = 0;

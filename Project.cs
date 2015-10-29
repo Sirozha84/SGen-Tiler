@@ -125,6 +125,7 @@ namespace SGen_Tiler
             Height = 15;
             Layers = MaxLayers;
             Main = 6;
+            Editor.Layer = Main;
             Phantom = 0;
             Px = new Parallax[MaxLayers + 1];
             Px[0] = new Parallax();
@@ -217,6 +218,7 @@ namespace SGen_Tiler
                 Height = file.ReadInt16();
                 Layers = file.ReadByte();
                 Main = file.ReadByte();
+                Editor.Layer = Main;
                 Phantom = file.ReadByte();
                 for (byte l = 0; l <= Layers; l++)
                 {
