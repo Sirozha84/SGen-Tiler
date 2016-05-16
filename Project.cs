@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -209,7 +210,7 @@ namespace SGen_Tiler
                 NewMap();
                 BinaryReader file = new BinaryReader(new FileStream(FileName, FileMode.Open));
 
-                if (file.ReadString() != Program.Name) throw new Exception("Файл не поддерживается.");  //Читаем маркер о формате
+                if (file.ReadString() != Application.ProductName) throw new Exception("Файл не поддерживается.");  //Читаем маркер о формате
                 int count;
                 TileSize = file.ReadInt16();
                 ScreenWidth = file.ReadInt16();
@@ -319,7 +320,7 @@ namespace SGen_Tiler
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show("Произошла ошибка при открытии файла.\n" + e.Message, Program.Name);
+                MessageBox.Show("Произошла ошибка при открытии файла.\n" + e.Message, Application.ProductName);
                 NewMap();
                 FileName = "";
             }
@@ -335,7 +336,7 @@ namespace SGen_Tiler
                 string name = FileName;
                 if (Template) name = FileNameTemplate;
                 BinaryWriter file = new BinaryWriter(new FileStream(name, FileMode.Create));
-                file.Write(Program.Name);
+                file.Write(Application.ProductName);
                 file.Write((short)TileSize);
                 file.Write((short)ScreenWidth);
                 file.Write((short)ScreenHeight);
@@ -456,7 +457,7 @@ namespace SGen_Tiler
             }
             catch
             {
-                System.Windows.Forms.MessageBox.Show("Произошла ошибка при записи файла. Файл не сохранён.", Program.Name);
+                MessageBox.Show("Произошла ошибка при записи файла. Файл не сохранён.", Application.ProductName);
                 FileName = "";
             }
         }
@@ -515,7 +516,7 @@ namespace SGen_Tiler
             string star = "";
             if (!Saved) star = "*";
             if (FileName != "") name = Path.GetFileNameWithoutExtension(FileName);
-            return name + star + " - " + Program.Name;
+            return name + star + " - " + Application.ProductName;
         }
 
         public static int ScaledSize { get { return (int)(TileSize * Editor.Scale); } }

@@ -28,8 +28,8 @@ namespace SGen_Tiler
 
         private void FormAbout_Load(object sender, EventArgs e)
         {
-            Text = "О " + Program.Name;
-            label1.Text = Program.Name;
+            Text = "О " + Application.ProductName;
+            label1.Text = Application.ProductName;
             label2.Text = Program.Version;
             label3.Text = Program.Autor;
         }

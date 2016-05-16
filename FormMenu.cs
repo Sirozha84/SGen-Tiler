@@ -87,7 +87,8 @@ namespace SGen_Tiler
         private void button_new_Click(object sender, EventArgs e)
         {
             DialogResult rslt = DialogResult.No;
-            if (!Project.Saved) rslt = MessageBox.Show("Сохранить карту перед созданием новой?", Program.Name, MessageBoxButtons.YesNoCancel);
+            if (!Project.Saved) rslt = MessageBox.Show("Сохранить карту перед созданием новой?",
+                Application.ProductName, MessageBoxButtons.YesNoCancel);
             if (rslt == DialogResult.Cancel) return;
             if (rslt == DialogResult.Yes && !Save(false)) return;
             Project.NewMap();
@@ -103,7 +104,8 @@ namespace SGen_Tiler
         private void button_open_Click(object sender, EventArgs e)
         {
             DialogResult rslt = DialogResult.No;
-            if (!Project.Saved) rslt = MessageBox.Show("Сохранить карту перед открытием другой?", Program.Name, MessageBoxButtons.YesNoCancel);
+            if (!Project.Saved) rslt = MessageBox.Show("Сохранить карту перед открытием другой?", 
+                Application.ProductName, MessageBoxButtons.YesNoCancel);
             if (rslt == DialogResult.Cancel) return;
             if (rslt == DialogResult.Yes && !Save(false)) return;
             //Диалог открытия
@@ -119,7 +121,8 @@ namespace SGen_Tiler
         DialogResult Ask()
         {
             DialogResult rslt = DialogResult.No;
-            if (!Project.Saved) rslt = MessageBox.Show("Сохранить перед этим текущий проект?", Program.Name, MessageBoxButtons.YesNoCancel);
+            if (!Project.Saved) rslt = MessageBox.Show("Сохранить перед этим текущий проект?", 
+                Application.ProductName, MessageBoxButtons.YesNoCancel);
             return rslt;
         }
 
@@ -395,7 +398,7 @@ namespace SGen_Tiler
         private void button_avtoDel_Click(object sender, EventArgs e)
         {
             if (listView_avto.SelectedIndices.Count == 0) return;
-            if (listView_avto.SelectedIndices[0] == 0) MessageBox.Show("Первое правило удалить нельзя", Program.Name);
+            if (listView_avto.SelectedIndices[0] == 0) MessageBox.Show("Первое правило удалить нельзя", Application.ProductName);
             if (listView_avto.SelectedIndices[0] > 0)
             {
                 Project.AutoRules.RemoveAt(listView_avto.SelectedIndices[0]);
@@ -411,7 +414,7 @@ namespace SGen_Tiler
         /// <param name="e"></param>
         private void button_avtoClear_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Уверены что хотити этого?", Program.Name, MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Уверены что хотити этого?", Application.ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Project.AutoRulesClear();
                 RefreshRulesList();
@@ -426,7 +429,7 @@ namespace SGen_Tiler
         /// <param name="e"></param>
         private void button_remakecarcase_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Этот процесс перерисует каркас с учётом введёных правил. Продолжить?", Program.Name, MessageBoxButtons.YesNo)
+            if (MessageBox.Show("Этот процесс перерисует каркас с учётом введёных правил. Продолжить?", Application.ProductName, MessageBoxButtons.YesNo)
                 == DialogResult.No)
                 return;
             for (int i = 0; i < Project.Width; i++)
@@ -436,7 +439,7 @@ namespace SGen_Tiler
                             Project.Put(0, i, j, rule.Code);
             Hystory.AddRecord();
             Change();
-            MessageBox.Show("Каркас пересобран", Program.Name);
+            MessageBox.Show("Каркас пересобран", Application.ProductName);
         }
 
         /// <summary>
@@ -466,7 +469,7 @@ namespace SGen_Tiler
             foreach (Animation anim in Project.Animations)
                 if (anim.Code == numericUpDown_animation_code.Value)
                 {
-                    MessageBox.Show("Анимация для этого кода уже существует.", Program.Name);
+                    MessageBox.Show("Анимация для этого кода уже существует.", Application.ProductName);
                     return;
                 }
             Project.Animations.Add(new Animation((ushort)numericUpDown_animation_code.Value, (byte)numericUpDown_animation_frames.Value,
@@ -509,7 +512,7 @@ namespace SGen_Tiler
         /// <param name="e"></param>
         private void button_animation_clear_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Уверены что хотити этого?", Program.Name, MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Уверены что хотити этого?", Application.ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Project.Animations.Clear();
                 listView_animation.Items.Clear();
@@ -585,7 +588,7 @@ namespace SGen_Tiler
         /// <param name="e"></param>
         private void button3_Click_1(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Уверены что хотити этого?", Program.Name, MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Уверены что хотити этого?", Application.ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Project.Randoms.Clear();
                 listView_random.Items.Clear();

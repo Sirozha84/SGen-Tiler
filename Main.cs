@@ -54,8 +54,16 @@ namespace SGen_Tiler
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            Window.Title = Program.Name;
-            Config.Load();
+            Window.Title = System.Windows.Forms.Application.ProductName;
+            if (Properties.Settings.Default.FirstStart)
+            {
+                System.Windows.Forms.MessageBox.Show("Похоже, программа запущена в первый раз.\n" +
+                    "Нажмите Esc, что бы вызвать главное меню, " +
+                    "в котором выберите файлы текстур и карту или создайте новую.", System.Windows.Forms.Application.ProductName);
+                Properties.Settings.Default.FirstStart = false;
+                Properties.Settings.Default.Save();        
+            }
+
             Project.NewMap();
             if (arg.Length > 0)
             {
