@@ -472,10 +472,9 @@ namespace SGen_Tiler
         public static void Put(int l, int x, int y, ushort c)
         {
             if (x < 0 | y < 0 | x >= Width | y >= Height) return;
-
             //Узнаём, есть ли правила рандома
             List<RandomTile> rnds = Randoms.FindAll(RandomTile => RandomTile.Code == c);
-            if (rnds.Count > 0)
+            if (rnds.Count > 0 & l > 0)
                 foreach (RandomTile rnd in rnds)
                     if (RND.Next(100) <= rnd.Persent) c = rnd.Tile;
             //Запоминаем что было в этой ячейке
