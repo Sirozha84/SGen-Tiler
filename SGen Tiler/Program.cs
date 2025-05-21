@@ -10,7 +10,7 @@ namespace SGen_Tiler
     public static class Program
     {
         public static Main game; //Вот как мне пришлось изъебнуться чтобы получить доступ к нестатичным полям класса game из других классов
-        public const string Version = "Версия: 3.3 - 16 мая 2016 года";
+        public const string Version = "Версия: 3.3 - 18 мая 2016 года";
         public const string Autor = "Автор: Сергей Гордеев";
         public const string Web = "http://www.sg-software.ru";
         /// <summary>
